@@ -7,6 +7,7 @@ import os
 import xml.etree.ElementTree as ET
 import xml
 import sys
+import re
 from optparse import OptionParser
 
 from jobTree.scriptTree.target import Target 
@@ -156,7 +157,7 @@ class MakeBlanchetteAlignments(Target):
         outputDir = os.path.join(self.options.outputDir, "blanchette-%s-%s" % (self.useOutgroup, self.doSelfAlignment))
         if not os.path.isdir(outputDir):
             os.mkdir(outputDir)
-        repeats = 2
+        repeats = 1
         for i in xrange(repeats):
             sequences, newickTreeString = getCactusInputs_blanchette(i)
             self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, os.path.join(outputDir, str(i)), 
@@ -180,9 +181,22 @@ class MakeBlanchetteStats(Target):
             trueAlignmentMAF = os.path.join(self.getLocalTempDir(), "temp.maf")
             treeFile = os.path.join(blanchettePath, "tree.newick")
             system("mfaToMaf --mfaFile %s --outputFile %s --treeFile %s" % (trueAlignmentMFA, trueAlignmentMAF, treeFile))
-            predictedAlignment = os.path.join(self.outputDir, str(i), "progressiveCactusAlignment", "Anc0", "Anc0.maf")
+            
+            #Remove the .0 zero from the MAFs
+            predictedAlignmentMaf = os.path.join(self.outputDir, str(i), "progressiveCactusAlignment", "Anc0", "Anc0.maf")
+            filteredPredictedAlignmentMAF = os.path.join(self.getLocalTempDir(), "temp2.maf")
+            f = open(filteredPredictedAlignmentMAF, 'w')
+            for line in open(predictedAlignmentMaf, 'r').readlines():
+                if re.compile("^s[\s]+[\S]+[\s]+[0-9]+").match(line):
+                    f.write("".join(re.compile("\.[\S]+").split(line)))
+                else:
+                    f.write(line)
+            f.close()
+            system("cp %s %s.filtered" % (filteredPredictedAlignmentMAF, predictedAlignmentMaf))
+            
             outputFile = os.path.join(self.getLocalTempDir(), "temp%i" % i)
-            system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s" % (trueAlignmentMAF, predictedAlignment, outputFile))
+            system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s" % (trueAlignmentMAF, filteredPredictedAlignmentMAF, outputFile))
+            system("cp %s %s" % (outputFile, os.path.join(self.outputDir, str(i), "mafComparison.xml")))
             if previousOutputFile != None:
                 system("mergeMafComparatorResults.py --results1 %s --results2 %s --outputFile %s" % (outputFile, previousOutputFile, outputFile))
             previousOutputFile = outputFile
@@ -198,7 +212,7 @@ class MakeEvolverPrimatesLoci1(MakeBlanchetteAlignments):
     
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "primates", "loci1")
-        sequences, newickTreeString = getInputs(simDir, ("simChimp.chr6", "simGorilla.chr6", "simHuman.chr6", "simOrang.chr6"))
+        sequences, newickTreeString = getInputs(simDir, ("simHuman.chr6", "simChimp.chr6", "simGorilla.chr6", "simOrang.chr6"))
         outputDir = os.path.join(self.options.outputDir, "evolverPrimatesLoci1-%s-%s"  % (self.useOutgroup, self.doSelfAlignment))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.useOutgroup, self.doSelfAlignment))
@@ -208,7 +222,7 @@ class MakeEvolverPrimatesLoci1(MakeBlanchetteAlignments):
 class MakeEvolverMammalsLoci1(MakeEvolverPrimatesLoci1):
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "loci1")
-        sequences, newickTreeString = getInputs(simDir, ("simCow.chr6", "simDog.chr6", "simHuman.chr6", "simMouse.chr6", "simRat.chr6"))
+        sequences, newickTreeString = getInputs(simDir, ("simHuman.chr6", "simMouse.chr6", "simRat.chr6", "simCow.chr6", "simDog.chr6"))
         outputDir = os.path.join(self.options.outputDir, "evolverMammalsLoci1-%s-%s"  % (self.useOutgroup, self.doSelfAlignment))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.useOutgroup, self.doSelfAlignment))
