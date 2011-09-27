@@ -29,13 +29,18 @@ from cactus.shared.test import getCactusInputs_blanchette
 
 from jobTree.test.jobTree.jobTreeTest import runJobTreeStatusAndFailIfNotComplete
 
+from cactus.shared.common import runCactusProgressive
+from cactus.shared.common import runCactusCreateMultiCactusProject
+from cactus.shared.test import getInputs
+
+from sonLib.bioio import TestStatus
+
 def getRootPathString():
     """
     function for finding external location
     """
-    import os
-    import referenceScripts.bin.pipeline
-    i = os.path.abspath(referenceScripts.bin.pipeline.__file__)
+    import progressiveTests.src.pipeline
+    i = os.path.abspath(progressiveTests.src.pipeline.__file__)
     return os.path.split(os.path.split(i)[0])[0] #os.path.split(os.path.split(os.path.split(i)[0])[0])[0]
 
 def getCactusDiskString(alignmentFile):
@@ -49,16 +54,15 @@ class MakeAlignment(Target):
                  newickTree,
                  outputDir, 
                  useOutgroup,
-                 doSelfAlignment, 
-                 trueAlignment=None):
+                 doSelfAlignment):
                  #requiredSpecies,
                  #singleCopySpecies,
                  #referenceAlgorithm, minimumBlockDegree, 
                  #blastAlignmentString, baseLevel, maxNumberOfChains, permutations,
                  #theta, useSimulatedAnnealing, heldOutSequence):
-        Target.__init__(self, cpu=1, memory=4000000000)
+        Target.__init__(self, cpu=4, memory=4000000000)
         self.sequences = sequences
-        self.newickTree = newicktree,
+        self.newickTree = newickTree
         #self.requiredSpecies = requiredSpecies
         #self.singleCopySpecies = singleCopySpecies
         self.outputDir = outputDir
@@ -74,14 +78,13 @@ class MakeAlignment(Target):
         #self.heldOutSequence = heldOutSequence
         self.useOutgroup = useOutgroup
         self.doSelfAlignment = doSelfAlignment
-        self.trueAlignment = trueAlignment
     
     def run(self):
+        logger.debug("Going to put the alignment in %s" % self.outputDir)
         if not os.path.isdir(self.outputDir):
             os.mkdir(self.outputDir)
-        cactusAlignmentName = "cactusAlignment"
-        outputFile = os.path.join(self.outputDir, cactusAlignmentName)
-        if not os.path.exists(outputFile):
+
+        if not os.path.exists(os.path.join(self.outputDir, "progressiveCactusAlignment")):
             config = ET.parse(os.path.join(getRootPathString(), "lib", "cactus_workflow_config.xml")).getroot()
             
             #Set the parameters
@@ -96,12 +99,13 @@ class MakeAlignment(Target):
          
             #Make the experiment file
             tempExperimentFile = os.path.join(self.getLocalTempDir(), "experiment.xml")
+            
             cactusWorkflowExperiment = CactusWorkflowExperiment(
-                                                 sequences=self.sequences.split(), 
+                                                 sequences=self.sequences, 
                                                  newickTreeString=self.newickTree, 
                                                  #requiredSpecies=self.requiredSpecies,
                                                  #singleCopySpecies=self.singleCopySpecies,
-                                                 databaseName=cactusAlignmentName,
+                                                 databaseName="cactusAlignment",
                                                  outputDir=self.getLocalTempDir(),
                                                  configFile=tempConfigFile)
             cactusWorkflowExperiment.writeExperimentFile(tempExperimentFile)
@@ -110,8 +114,7 @@ class MakeAlignment(Target):
             tempJobTreeDir = os.path.join(self.getLocalTempDir(), "jobTree")
             
             #The place to put the temporary experiment dir
-            tempDir = getTempDirectory(os.getcwd())
-            tempExperimentDir = os.path.join(tempDir, "exp")
+            tempExperimentDir = os.path.join(self.getLocalTempDir(), "progressiveCactusAlignment")
             
             #The temporary experiment 
             runCactusCreateMultiCactusProject(tempExperimentFile, 
@@ -120,13 +123,14 @@ class MakeAlignment(Target):
                                               doSelfAlignment=self.doSelfAlignment)
             logger.info("Setup the cactus progressive experiment")
             
-            runCactusProgressive(os.path.join(tempExperimentDir, "exp_project.xml"), 
+            runCactusProgressive(os.path.join(tempExperimentDir, "progressiveCactusAlignment_project.xml"), 
                                  tempJobTreeDir, 
-                                 batchSystem=batchSystem, 
-                                 buildMAF=True,
-                                 joinMAF=True,
+                                 #batchSystem=batchSystem, 
+                                 buildMaf=True,
+                                 joinMaf=True,
                                  #buildTrees=buildTrees, buildFaces=buildFaces, buildReference=buildReference,
-                                 jobTreeStats=True)
+                                 jobTreeStats=True,
+                                 maxThreads=4)
             logger.info("Ran the progressive workflow")
             
             #Check if the jobtree completed sucessively.
@@ -143,38 +147,86 @@ class MakeAlignment(Target):
 
 class MakeBlanchetteAlignments(Target):
     def __init__(self, options, useOutgroup, doSelfAlignment):
+        Target.__init__(self)
         self.options = options
         self.useOutgroup = useOutgroup
         self.doSelfAlignment = doSelfAlignment
     
     def run(self):
-        outputDir = "blanchette-%s-%s" % (self.useOutgroup, self.doSelfAlignment)
+        outputDir = os.path.join(self.options.outputDir, "blanchette-%s-%s" % (self.useOutgroup, self.doSelfAlignment))
         if not os.path.isdir(outputDir):
             os.mkdir(outputDir)
-        for i in xrange(5):
+        repeats = 2
+        for i in xrange(repeats):
             sequences, newickTreeString = getCactusInputs_blanchette(i)
-            outputDir = os.path.join(outputDir, str(i))
-            self.addChild(MakeAlignment(self.options, sequences, newickTree, outputDir, 
+            self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, os.path.join(outputDir, str(i)), 
                                         self.useOutgroup, self.doSelfAlignment))
-        #self.setFollowOnJob(MakeStats(options, outputDir))
+        self.setFollowOnTarget(MakeBlanchetteStats(self.options, outputDir, repeats))
         
-class MakeBlanchetteStats(MakeAlignment):
+class MakeBlanchetteStats(Target):
     """Builds basic stats and the maf alignment.
     """
+    def __init__(self, options, outputDir, repeats):
+        Target.__init__(self)
+        self.options = options
+        self.outputDir = outputDir
+        self.repeats = repeats
+    
     def run(self):
         previousOutputFile = None
         blanchettePath = os.path.join(TestStatus.getPathToDataSets(), "blanchettesSimulation")
-        for i in xrange(len(self.sequences)):
+        for i in xrange(self.repeats):
             trueAlignmentMFA = os.path.join(os.path.join(blanchettePath, "%.2i.job" % i), "true.mfa")
             trueAlignmentMAF = os.path.join(self.getLocalTempDir(), "temp.maf")
-            system("mfaToMaf --mfaFile %s --outputFile %s" % (trueAlignmentMFA, trueAlignmentMAF))
-            predictedAlignment = os.path.join(os.path.join(self.outputDir, str(i)), "alignment.maf")
+            treeFile = os.path.join(blanchettePath, "tree.newick")
+            system("mfaToMaf --mfaFile %s --outputFile %s --treeFile %s" % (trueAlignmentMFA, trueAlignmentMAF, treeFile))
+            predictedAlignment = os.path.join(self.outputDir, str(i), "progressiveCactusAlignment", "Anc0", "Anc0.maf")
             outputFile = os.path.join(self.getLocalTempDir(), "temp%i" % i)
-            system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s" % (trueAlignment, predictedAlignment, outputFile))
+            system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s" % (trueAlignmentMAF, predictedAlignment, outputFile))
             if previousOutputFile != None:
                 system("mergeMafComparatorResults.py --results1 %s --results2 %s --outputFile %s" % (outputFile, previousOutputFile, outputFile))
             previousOutputFile = outputFile
         system("mv %s %s" % (previousOutputFile, os.path.join(self.outputDir, "mafComparison.xml")))   
+        
+class MakeEvolverPrimatesLoci1(MakeBlanchetteAlignments):
+    def setupStats(self, outputDir, simDir):
+        #Setup the stat computation
+        trueMaf = os.path.join(simDir, "all.burnin.maf")
+        predictedMaf = os.path.join(outputDir, "progressiveCactusAlignment", "Anc0", "Anc0.maf")
+        outputFile = os.path.join(outputDir, "mafComparison.burnin.xml")
+        self.setFollowOnTarget(MakeStats(self.options, trueMaf, predictedMaf, outputFile))
+    
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "primates", "loci1")
+        sequences, newickTreeString = getInputs(simDir, ("simChimp.chr6", "simGorilla.chr6", "simHuman.chr6", "simOrang.chr6"))
+        outputDir = os.path.join(self.options.outputDir, "evolverPrimatesLoci1-%s-%s"  % (self.useOutgroup, self.doSelfAlignment))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.useOutgroup, self.doSelfAlignment))
+        self.setupStats(outputDir, simDir)
+        
+        
+class MakeEvolverMammalsLoci1(MakeEvolverPrimatesLoci1):
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "loci1")
+        sequences, newickTreeString = getInputs(simDir, ("simCow.chr6", "simDog.chr6", "simHuman.chr6", "simMouse.chr6", "simRat.chr6"))
+        outputDir = os.path.join(self.options.outputDir, "evolverMammalsLoci1-%s-%s"  % (self.useOutgroup, self.doSelfAlignment))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.useOutgroup, self.doSelfAlignment))
+        self.setupStats(outputDir, simDir)
+        
+class MakeStats(Target):
+    def __init__(self, options, trueMaf, predictedMaf, outputFile):
+        Target.__init__(self)
+        self.options = options
+        self.trueMaf = trueMaf
+        self.predictedMaf = predictedMaf
+        self.outputFile = outputFile
+    
+    def run(self):
+        if not os.path.exists(self.outputFile):
+            outputFile = os.path.join(self.getLocalTempDir(), "temp.xml")
+            system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s" % (self.trueMaf, self.predictedMaf, outputFile))
+            system("mv %s %s" % (outputFile, self.outputFile))
       
 class MakeAllAlignments(Target):
     """Makes alignments using pipeline.
@@ -184,11 +236,12 @@ class MakeAllAlignments(Target):
         self.options = options
     
     def run(self):
-        for useOutgroup in (True, False):
-            for doSelfAlignment in (True, False):
-                self.addChildTarge(MakeBlanchetteAlignments(self.options, useOutgroup, doSelfAlignment))
-                #self.addChildTarget(MakeEvolverPrimates(self.options, useOutgroup, doSelfAlignment))
-
+        for useOutgroup in (False,):
+            for doSelfAlignment in (False,):
+                self.addChildTarget(MakeBlanchetteAlignments(self.options, useOutgroup, doSelfAlignment))
+                self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, useOutgroup, doSelfAlignment))
+                #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, useOutgroup, doSelfAlignment))
+                
 def main():
     ##########################################
     #Construct the arguments.
@@ -213,7 +266,7 @@ def _test():
     return doctest.testmod()
 
 if __name__ == '__main__':
-    from referenceScripts.bin.pipeline import *
+    from progressiveTests.src.pipeline import *
     _test()
     main()
 
