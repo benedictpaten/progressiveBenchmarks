@@ -89,17 +89,19 @@ class MakeAlignment(Target):
             config = ET.parse(os.path.join(getRootPathString(), "lib", "cactus_workflow_config.xml")).getroot()
             
             #Set the parameters
-            
+            tempLocalDir = os.path.join(self.outputDir, "tempProgressiveCactusAlignment")
+            system("rm -rf %s" % tempLocalDir)
+            os.mkdir(tempLocalDir)
             
             #Write the config file
-            tempConfigFile = os.path.join(self.getLocalTempDir(), "config.xml")
+            tempConfigFile = os.path.join(tempLocalDir, "config.xml")
             fileHandle = open(tempConfigFile, 'w')
             tree = ET.ElementTree(config)
             tree.write(fileHandle)
             fileHandle.close()
          
             #Make the experiment file
-            tempExperimentFile = os.path.join(self.getLocalTempDir(), "experiment.xml")
+            tempExperimentFile = os.path.join(tempLocalDir, "experiment.xml")
             
             cactusWorkflowExperiment = CactusWorkflowExperiment(
                                                  sequences=self.sequences, 
@@ -107,15 +109,15 @@ class MakeAlignment(Target):
                                                  #requiredSpecies=self.requiredSpecies,
                                                  #singleCopySpecies=self.singleCopySpecies,
                                                  databaseName="cactusAlignment",
-                                                 outputDir=self.getLocalTempDir(),
+                                                 outputDir=tempLocalDir,
                                                  configFile=tempConfigFile)
             cactusWorkflowExperiment.writeExperimentFile(tempExperimentFile)
             
             #The jobtree
-            tempJobTreeDir = os.path.join(self.getLocalTempDir(), "jobTree")
+            tempJobTreeDir = os.path.join(tempLocalDir, "jobTree")
             
             #The place to put the temporary experiment dir
-            tempExperimentDir = os.path.join(self.getLocalTempDir(), "progressiveCactusAlignment")
+            tempExperimentDir = os.path.join(tempLocalDir, "progressiveCactusAlignment")
             
             #The temporary experiment 
             runCactusCreateMultiCactusProject(tempExperimentFile, 
@@ -157,7 +159,7 @@ class MakeBlanchetteAlignments(Target):
         outputDir = os.path.join(self.options.outputDir, "blanchette-%s-%s" % (self.useOutgroup, self.doSelfAlignment))
         if not os.path.isdir(outputDir):
             os.mkdir(outputDir)
-        repeats = 1
+        repeats = 2
         for i in xrange(repeats):
             sequences, newickTreeString = getCactusInputs_blanchette(i)
             self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, os.path.join(outputDir, str(i)), 
@@ -250,11 +252,11 @@ class MakeAllAlignments(Target):
         self.options = options
     
     def run(self):
-        for useOutgroup in (False,):
-            for doSelfAlignment in (False,):
+        for useOutgroup in (True,False):
+            for doSelfAlignment in (True,False):
                 self.addChildTarget(MakeBlanchetteAlignments(self.options, useOutgroup, doSelfAlignment))
                 self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, useOutgroup, doSelfAlignment))
-                #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, useOutgroup, doSelfAlignment))
+                self.addChildTarget(MakeEvolverMammalsLoci1(self.options, useOutgroup, doSelfAlignment))
                 
 def main():
     ##########################################
