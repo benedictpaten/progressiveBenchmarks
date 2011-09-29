@@ -196,7 +196,7 @@ class MakeBlanchetteAlignments(Target):
         outputDir = os.path.join(self.options.outputDir, "blanchette-%s-%s" % (self.useOutgroup, self.doSelfAlignment))
         if not os.path.isdir(outputDir):
             os.mkdir(outputDir)
-        repeats = 1
+        repeats = 3
         for i in xrange(repeats):
             sequences, newickTreeString = getCactusInputs_blanchette(i)
             self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, os.path.join(outputDir, str(i)), 
