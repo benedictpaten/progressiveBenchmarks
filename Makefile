@@ -1,5 +1,5 @@
 outputDir = output
-jobTreeParameters = --logDebug --maxThreads=30
+jobTreeParameters = --logDebug --maxThreads=1
 
 all : 
 	rm -rf jobTree

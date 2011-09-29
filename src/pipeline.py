@@ -55,7 +55,8 @@ class MakeAlignment(Target):
                  newickTree,
                  outputDir, 
                  useOutgroup,
-                 doSelfAlignment):
+                 doSelfAlignment,
+                 doVanillaAlignment=False):
                  #requiredSpecies,
                  #singleCopySpecies,
                  #referenceAlgorithm, minimumBlockDegree, 
@@ -79,6 +80,7 @@ class MakeAlignment(Target):
         #self.heldOutSequence = heldOutSequence
         self.useOutgroup = useOutgroup
         self.doSelfAlignment = doSelfAlignment
+        self.doVanillaAlignment=doVanillaAlignment
     
     def run(self):
         logger.debug("Going to put the alignment in %s" % self.outputDir)
@@ -138,32 +140,67 @@ class MakeAlignment(Target):
             
             #Check if the jobtree completed sucessively.
             runJobTreeStatusAndFailIfNotComplete(tempJobTreeDir)
-            logger.info("Checked the job tree dir")
+            logger.info("Checked the job tree dir for the progressive run")
             
             #Now copy the true assembly back to the output
             system("mv %s %s/experiment.xml" % (tempExperimentFile, self.outputDir))
-            system("mv %s %s/config.xml" % (tempConfigFile, self.outputDir))
             system("mv %s %s" % (tempExperimentDir, self.outputDir))
             system("jobTreeStats --jobTree %s --outputFile %s/jobTreeStats.xml" % (tempJobTreeDir, self.outputDir))
-            #We're done!
+                
+            if self.doVanillaAlignment:
+                #Now do standard cactus..
+                #Make the experiment file
+                tempExperimentFile2 = os.path.join(tempLocalDir, "experimentVanilla.xml")
+                
+                cactusWorkflowExperiment = CactusWorkflowExperiment(
+                                                     sequences=self.sequences, 
+                                                     newickTreeString=self.newickTree, 
+                                                     #requiredSpecies=self.requiredSpecies,
+                                                     #singleCopySpecies=self.singleCopySpecies,
+                                                     databaseName="cactusAlignmentVanilla",
+                                                     outputDir=tempLocalDir,
+                                                     configFile=tempConfigFile)
+                tempExperimentDir2 = os.path.join(tempLocalDir, "cactusAlignmentVanilla")
+                cactusWorkflowExperiment.writeExperimentFile(tempExperimentFile2)
+                
+                
+                #We're done with the progressive, now run the vanilla cactus for comparison
+                tempJobTreeDir2 = os.path.join(tempLocalDir, "jobTreeVanilla")
+                runCactusWorkflow(tempExperimentFile2, tempJobTreeDir2,
+                                  jobTreeStats=True,
+                                  setupAndBuildAlignments=True,
+                                  buildReference=True,
+                                  maxThreads=4)
+                
+                runJobTreeStatusAndFailIfNotComplete(tempJobTreeDir2)
+                logger.info("Checked the job tree dir for the vanilla run")
+                
+                runCactusMAFGenerator(os.path.join(self.outputDir, "cactusVanilla.maf"), getCactusDiskString(tempExperimentDir2))
+                
+                system("jobTreeStats --jobTree %s --outputFile %s/jobTreeStatsVanilla.xml" % (tempJobTreeDir2, self.outputDir))
+                system("mv %s %s" % (tempExperimentDir2, self.outputDir))
+                system("mv %s %s/experimentVanilla.xml" % (tempExperimentFile2, self.outputDir))
+            
+            system("mv %s %s/config.xml" % (tempConfigFile, self.outputDir))
         #self.addChildTarget(MakeStats(outputFile, self.outputDir, self.options)) 
 
 class MakeBlanchetteAlignments(Target):
-    def __init__(self, options, useOutgroup, doSelfAlignment):
+    def __init__(self, options, useOutgroup, doSelfAlignment, doVanillaAlignment):
         Target.__init__(self)
         self.options = options
         self.useOutgroup = useOutgroup
         self.doSelfAlignment = doSelfAlignment
+        self.doVanillaAlignment = doVanillaAlignment
     
     def run(self):
         outputDir = os.path.join(self.options.outputDir, "blanchette-%s-%s" % (self.useOutgroup, self.doSelfAlignment))
         if not os.path.isdir(outputDir):
             os.mkdir(outputDir)
-        repeats = 2
+        repeats = 1
         for i in xrange(repeats):
             sequences, newickTreeString = getCactusInputs_blanchette(i)
             self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, os.path.join(outputDir, str(i)), 
-                                        self.useOutgroup, self.doSelfAlignment))
+                                        self.useOutgroup, self.doSelfAlignment, self.doVanillaAlignment))
         self.setFollowOnTarget(MakeBlanchetteStats(self.options, outputDir, repeats))
         
 class MakeBlanchetteStats(Target):
@@ -177,6 +214,7 @@ class MakeBlanchetteStats(Target):
     
     def run(self):
         previousOutputFile = None
+        previousOutputFile2 = None
         blanchettePath = os.path.join(TestStatus.getPathToDataSets(), "blanchettesSimulation")
         for i in xrange(self.repeats):
             trueAlignmentMFA = os.path.join(os.path.join(blanchettePath, "%.2i.job" % i), "true.mfa")
@@ -202,6 +240,7 @@ class MakeBlanchetteStats(Target):
             if previousOutputFile != None:
                 system("mergeMafComparatorResults.py --results1 %s --results2 %s --outputFile %s" % (outputFile, previousOutputFile, outputFile))
             previousOutputFile = outputFile
+            
         system("mv %s %s" % (previousOutputFile, os.path.join(self.outputDir, "mafComparison.xml")))   
         
 class MakeEvolverPrimatesLoci1(MakeBlanchetteAlignments):
@@ -217,7 +256,7 @@ class MakeEvolverPrimatesLoci1(MakeBlanchetteAlignments):
         sequences, newickTreeString = getInputs(simDir, ("simHuman.chr6", "simChimp.chr6", "simGorilla.chr6", "simOrang.chr6"))
         outputDir = os.path.join(self.options.outputDir, "evolverPrimatesLoci1-%s-%s"  % (self.useOutgroup, self.doSelfAlignment))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
-                                          self.useOutgroup, self.doSelfAlignment))
+                                          self.useOutgroup, self.doSelfAlignment, self.doVanillaAlignment))
         self.setupStats(outputDir, simDir)
         
         
@@ -227,7 +266,7 @@ class MakeEvolverMammalsLoci1(MakeEvolverPrimatesLoci1):
         sequences, newickTreeString = getInputs(simDir, ("simHuman.chr6", "simMouse.chr6", "simRat.chr6", "simCow.chr6", "simDog.chr6"))
         outputDir = os.path.join(self.options.outputDir, "evolverMammalsLoci1-%s-%s"  % (self.useOutgroup, self.doSelfAlignment))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
-                                          self.useOutgroup, self.doSelfAlignment))
+                                          self.useOutgroup, self.doSelfAlignment, self.doVanillaAlignment))
         self.setupStats(outputDir, simDir)
         
 class MakeStats(Target):
@@ -252,11 +291,11 @@ class MakeAllAlignments(Target):
         self.options = options
     
     def run(self):
-        for useOutgroup in (True,False):
-            for doSelfAlignment in (True,False):
-                self.addChildTarget(MakeBlanchetteAlignments(self.options, useOutgroup, doSelfAlignment))
-                self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, useOutgroup, doSelfAlignment))
-                self.addChildTarget(MakeEvolverMammalsLoci1(self.options, useOutgroup, doSelfAlignment))
+        for useOutgroup in (False,True): #,False):
+            for doSelfAlignment in (False,True): #,False):
+                self.addChildTarget(MakeBlanchetteAlignments(self.options, useOutgroup, doSelfAlignment, not useOutgroup and not doSelfAlignment))
+                self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, useOutgroup, doSelfAlignment, not useOutgroup and not doSelfAlignment))
+                self.addChildTarget(MakeEvolverMammalsLoci1(self.options, useOutgroup, doSelfAlignment, not useOutgroup and not doSelfAlignment))
                 
 def main():
     ##########################################
