@@ -78,7 +78,7 @@ class MakeAlignment(Target):
         #self.useSimulatedAnnealing = useSimulatedAnnealing
         self.options = options
         #self.heldOutSequence = heldOutSequence
-        self.useOutgroup = useOutgroup
+        self.outgroupStrategy = outgroupStrategy
         self.doSelfAlignment = doSelfAlignment
         self.doVanillaAlignment=doVanillaAlignment
     
@@ -94,6 +94,10 @@ class MakeAlignment(Target):
             tempLocalDir = os.path.join(self.outputDir, "tempProgressiveCactusAlignment")
             system("rm -rf %s" % tempLocalDir)
             os.mkdir(tempLocalDir)
+            
+            #Set the config parameters
+            config.find("multi_cactus").find("outgroup").attrib["strategy"] = self.outgroupStrategy
+            config.find("multi_cactus").find("decomposition").attrib["self_alignment"] = str(self.doSelfAlignment)
             
             #Write the config file
             tempConfigFile = os.path.join(tempLocalDir, "config.xml")
@@ -123,9 +127,7 @@ class MakeAlignment(Target):
             
             #The temporary experiment 
             runCactusCreateMultiCactusProject(tempExperimentFile, 
-                                              tempExperimentDir,
-                                              useOutgroup=self.useOutgroup,
-                                              doSelfAlignment=self.doSelfAlignment)
+                                              tempExperimentDir)
             logger.info("Setup the cactus progressive experiment")
             
             runCactusProgressive(os.path.join(tempExperimentDir, "progressiveCactusAlignment_project.xml"), 
@@ -185,22 +187,22 @@ class MakeAlignment(Target):
         #self.addChildTarget(MakeStats(outputFile, self.outputDir, self.options)) 
 
 class MakeBlanchetteAlignments(Target):
-    def __init__(self, options, useOutgroup, doSelfAlignment, doVanillaAlignment):
+    def __init__(self, options, outgroupStrategy, doSelfAlignment, doVanillaAlignment):
         Target.__init__(self)
         self.options = options
-        self.useOutgroup = useOutgroup
+        self.outgroupStrategy = outgroupStrategy
         self.doSelfAlignment = doSelfAlignment
         self.doVanillaAlignment = doVanillaAlignment
     
     def run(self):
-        outputDir = os.path.join(self.options.outputDir, "blanchette-%s-%s" % (self.useOutgroup, self.doSelfAlignment))
+        outputDir = os.path.join(self.options.outputDir, "blanchette-%s-%s" % (self.outgroupStrategy, self.doSelfAlignment))
         if not os.path.isdir(outputDir):
             os.mkdir(outputDir)
         repeats = 3
         for i in xrange(repeats):
             sequences, newickTreeString = getCactusInputs_blanchette(i)
             self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, os.path.join(outputDir, str(i)), 
-                                        self.useOutgroup, self.doSelfAlignment, self.doVanillaAlignment))
+                                        self.outgroupStrategy, self.doSelfAlignment, self.doVanillaAlignment))
         self.setFollowOnTarget(MakeBlanchetteStats(self.options, outputDir, repeats))
         
 class MakeBlanchetteStats(Target):
@@ -254,9 +256,9 @@ class MakeEvolverPrimatesLoci1(MakeBlanchetteAlignments):
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "primates", "loci1")
         sequences, newickTreeString = getInputs(simDir, ("simHuman.chr6", "simChimp.chr6", "simGorilla.chr6", "simOrang.chr6"))
-        outputDir = os.path.join(self.options.outputDir, "evolverPrimatesLoci1-%s-%s"  % (self.useOutgroup, self.doSelfAlignment))
+        outputDir = os.path.join(self.options.outputDir, "evolverPrimatesLoci1-%s-%s"  % (self.outgroupStrategy, self.doSelfAlignment))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
-                                          self.useOutgroup, self.doSelfAlignment, self.doVanillaAlignment))
+                                          self.outgroupStrategy, self.doSelfAlignment, self.doVanillaAlignment))
         self.setupStats(outputDir, simDir)
         
         
@@ -264,9 +266,9 @@ class MakeEvolverMammalsLoci1(MakeEvolverPrimatesLoci1):
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "loci1")
         sequences, newickTreeString = getInputs(simDir, ("simHuman.chr6", "simMouse.chr6", "simRat.chr6", "simCow.chr6", "simDog.chr6"))
-        outputDir = os.path.join(self.options.outputDir, "evolverMammalsLoci1-%s-%s"  % (self.useOutgroup, self.doSelfAlignment))
+        outputDir = os.path.join(self.options.outputDir, "evolverMammalsLoci1-%s-%s"  % (self.outgroupStrategy, self.doSelfAlignment))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
-                                          self.useOutgroup, self.doSelfAlignment, self.doVanillaAlignment))
+                                          self.outgroupStrategy, self.doSelfAlignment, self.doVanillaAlignment))
         self.setupStats(outputDir, simDir)
         
 class MakeStats(Target):
@@ -291,11 +293,11 @@ class MakeAllAlignments(Target):
         self.options = options
     
     def run(self):
-        for useOutgroup in (False,True): #,False):
+        for outgroupStrategy in ("none","greedy","greedyLeaves"): #,False):
             for doSelfAlignment in (False,True): #,False):
-                self.addChildTarget(MakeBlanchetteAlignments(self.options, useOutgroup, doSelfAlignment, not useOutgroup and not doSelfAlignment))
-                self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, useOutgroup, doSelfAlignment, not useOutgroup and not doSelfAlignment))
-                self.addChildTarget(MakeEvolverMammalsLoci1(self.options, useOutgroup, doSelfAlignment, not useOutgroup and not doSelfAlignment))
+                self.addChildTarget(MakeBlanchetteAlignments(self.options, outgroupStrategy, doSelfAlignment, useOutgroup == "None" and not doSelfAlignment))
+                self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, useOutgroup, doSelfAlignment, useOutgroup == "None" and not doSelfAlignment))
+                self.addChildTarget(MakeEvolverMammalsLoci1(self.options, useOutgroup, doSelfAlignment, useOutgroup == "None" and not doSelfAlignment))
                 
 def main():
     ##########################################
