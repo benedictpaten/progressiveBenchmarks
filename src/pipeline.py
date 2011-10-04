@@ -40,8 +40,8 @@ def getRootPathString():
     """
     function for finding external location
     """
-    import progressiveTests.src.pipeline
-    i = os.path.abspath(progressiveTests.src.pipeline.__file__)
+    import progressiveBenchmarks.src.pipeline
+    i = os.path.abspath(progressiveBenchmarks.src.pipeline.__file__)
     return os.path.split(os.path.split(i)[0])[0] #os.path.split(os.path.split(os.path.split(i)[0])[0])[0]
 
 def getCactusDiskString(alignmentFile):
@@ -323,7 +323,7 @@ def _test():
     return doctest.testmod()
 
 if __name__ == '__main__':
-    from progressiveTests.src.pipeline import *
+    from progressiveBenchmarks.src.pipeline import *
     _test()
     main()
 
