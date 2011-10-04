@@ -54,7 +54,7 @@ class MakeAlignment(Target):
                  sequences, 
                  newickTree,
                  outputDir, 
-                 useOutgroup,
+                 outgroupStrategy,
                  doSelfAlignment,
                  doVanillaAlignment=False):
                  #requiredSpecies,
@@ -295,9 +295,9 @@ class MakeAllAlignments(Target):
     def run(self):
         for outgroupStrategy in ("none","greedy","greedyLeaves"): #,False):
             for doSelfAlignment in (False,True): #,False):
-                self.addChildTarget(MakeBlanchetteAlignments(self.options, outgroupStrategy, doSelfAlignment, useOutgroup == "None" and not doSelfAlignment))
-                self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, useOutgroup, doSelfAlignment, useOutgroup == "None" and not doSelfAlignment))
-                self.addChildTarget(MakeEvolverMammalsLoci1(self.options, useOutgroup, doSelfAlignment, useOutgroup == "None" and not doSelfAlignment))
+                self.addChildTarget(MakeBlanchetteAlignments(self.options, outgroupStrategy, doSelfAlignment, outgroupStrategy == "None" and not doSelfAlignment))
+                self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, outgroupStrategy, doSelfAlignment, outgroupStrategy == "None" and not doSelfAlignment))
+                self.addChildTarget(MakeEvolverMammalsLoci1(self.options, outgroupStrategy, doSelfAlignment, outgroupStrategy == "None" and not doSelfAlignment))
                 
 def main():
     ##########################################
