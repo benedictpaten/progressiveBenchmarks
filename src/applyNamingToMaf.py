@@ -28,8 +28,10 @@ class NamingMap:
         self.nameMap = None
     
     def cactusName(self, sequenceName):
-        assert sequenceName in self.nameMap
-        return self.nameMap[sequenceName]
+        if sequenceName in self.nameMap:
+            return self.nameMap[sequenceName]
+        else:
+            return sequenceName
     
     def readProject(self, projectXmlPath):
         mcProj = MultiCactusProject()
@@ -55,7 +57,8 @@ class NamingMap:
     def processSequence(self, eventName, sequencePath):
         fileHandle = open(sequencePath, "r")
         for header, sequence in fastaRead(fileHandle):
-            fixedHeader = fixHeader(header, event=eventName)
+            fixedHeader = fixHeader(header, event=eventName.replace(".", "_"))
+            print (header, fixedHeader, eventName)
             if header in self.nameMap:
                 assert self.nameMap[header] == fixedHeader
             else:
