@@ -1,7 +1,7 @@
 outputDir = output
 jobTreeParameters = --logDebug --maxThreads=20
 
-all : 
+run : 
 	rm -rf jobTree
 	python src/pipeline.py --outputDir ${outputDir} --jobTree jobTree ${jobTreeParameters}
 	rm -rf jobTree
