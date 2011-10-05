@@ -50,7 +50,7 @@ class ParamsGenerator:
         
 
 # all the progressive-related combinations                                
-class AllProgressiveCombos(ParamsGenerator):
+class AllProgressive(ParamsGenerator):
     def __init__(self):
         ParamsGenerator.__init__(self)
         self.outgroupStrategy = ['none', 'greedy', 'greedyLeaves']
@@ -58,6 +58,14 @@ class AllProgressiveCombos(ParamsGenerator):
         self.requiredFraction = [0, 0.67, 1]
         self.selfAlignment = [True, False]
 
+class BasicProgressive(ParamsGenerator):
+    def __init__(self):
+        ParamsGenerator.__init__(self)
+        self.outgroupStrategy = ['none', 'greedy']
+        self.singleCopyStrategy = ['outgroup']
+        self.requiredFraction = [0]
+        self.selfAlignment = [True, False]
+    
 class SmallProgressive(ParamsGenerator):
     def __init__(self):
         ParamsGenerator.__init__(self)
