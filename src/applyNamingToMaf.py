@@ -25,7 +25,6 @@ from sonLib.bioio import fastaRead
 
 class NamingMap:
     def __init__(self):
-        self.mcProj = None
         self.nameMap = None
     
     def cactusName(self, sequenceName):
@@ -33,12 +32,13 @@ class NamingMap:
         return self.nameMap[sequenceName]
     
     def readProject(self, projectXmlPath):
-        self.mcProj = MultiCactusProject()
-        self.mcProj.readXML(projectXmlPath)
+        mcProj = MultiCactusProject()
+        mcProj.readXML(projectXmlPath)
+        mcProj.mcTree.nameUnlabeledInternalNodes()
         self.nameMap = dict()
-        for leaf in self.mcProj.mcTree.getLeaves():
-            eventName = self.mcProj.mcTree.getName(leaf)
-            sequencePath = self.mcProj.sequencePath(eventName)
+        for leaf in mcProj.mcTree.getLeaves():
+            eventName = mcProj.mcTree.getName(leaf)
+            sequencePath = mcProj.sequencePath(eventName)
             for sequenceFile in fileList(sequencePath):
                 if not os.path.isdir(sequenceFile):
                     self.processSequence(eventName, sequenceFile)
@@ -46,7 +46,8 @@ class NamingMap:
     def readExperiment(self, experimentXmlPath):
         expXml = ET.parse(experimentXmlPath).getroot()
         exp = ExperimentWrapper(expXml)
-        for eventName, sequencePath in exp.seqMap:
+        self.nameMap = dict()
+        for eventName, sequencePath in exp.seqMap.items():
             for sequenceFile in fileList(sequencePath):
                 if not os.path.isdir(sequenceFile):
                     self.processSequence(eventName, sequenceFile)
@@ -64,13 +65,15 @@ def applyNamingToMaf(experimentPath, inputPath, outputPath):
     inFile = open(inputPath, "r")
     outFile = open(outputPath, "w")
     nameMap = NamingMap()
-    nameMap.readProject(experimentPath)
+    nameMap.readExperiment(experimentPath)
     
     for line in inFile:
         tokens = line.split()
         if len(tokens) >= 2 and tokens[0] == 's':
             name = tokens[1]
-            outFile.write(line.replace(name, nameMap.cactusName(name)))
+            outFile.write(line.replace(name, nameMap.cactusName(name), 1))
+        else:
+            outFile.write(line)
     
     inFile.close()
     outFile.close()
