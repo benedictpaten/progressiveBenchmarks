@@ -39,6 +39,7 @@ from sonLib.bioio import TestStatus
 from progressiveBenchmarks.src.params import Params
 from progressiveBenchmarks.src.paramsGenerator import AllProgressiveCombos
 from progressiveBenchmarks.src.paramsGenerator import SmallProgressive
+from progressiveBenchmarks.src.applyNamingToMaf import applyNamingToMaf
 
 def getRootPathString():
     """
@@ -195,7 +196,7 @@ class MakeBlanchetteAlignments(Target):
         outputDir = os.path.join(self.options.outputDir, "blanchette%s" % self.params)
         if not os.path.isdir(outputDir):
             os.mkdir(outputDir)
-        repeats = 3
+        repeats = 1
         for i in xrange(repeats):
             sequences, newickTreeString = getCactusInputs_blanchette(i)
             self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, os.path.join(outputDir, str(i)), 
@@ -220,21 +221,14 @@ class MakeBlanchetteStats(Target):
             trueAlignmentMAF = os.path.join(self.getLocalTempDir(), "temp.maf")
             treeFile = os.path.join(blanchettePath, "tree.newick")
             system("mfaToMaf --mfaFile %s --outputFile %s --treeFile %s" % (trueAlignmentMFA, trueAlignmentMAF, treeFile))
+            trueRenamedMAF = os.path.join(trueAlignmentMAF, ".renamed")
+            expPath = os.path.join(blanchettePath, "experiment.xml")
+            applyNamingToMaf(expPath, trueAlignmentMAF, trueRenamedMAF)
             
-            #Remove the .0 zero from the MAFs
             predictedAlignmentMaf = os.path.join(self.outputDir, str(i), "progressiveCactusAlignment", "Anc0", "Anc0.maf")
-            filteredPredictedAlignmentMAF = os.path.join(self.getLocalTempDir(), "temp2.maf")
-            f = open(filteredPredictedAlignmentMAF, 'w')
-            for line in open(predictedAlignmentMaf, 'r').readlines():
-                if re.compile("^s[\s]+[\S]+[\s]+[0-9]+").match(line):
-                    f.write("".join(re.compile("\.[\S]+").split(line)))
-                else:
-                    f.write(line)
-            f.close()
-            system("cp %s %s.filtered" % (filteredPredictedAlignmentMAF, predictedAlignmentMaf))
             
             outputFile = os.path.join(self.getLocalTempDir(), "temp%i" % i)
-            system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s" % (trueAlignmentMAF, filteredPredictedAlignmentMAF, outputFile))
+            system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s" % (trueRenamedMAF, filteredPredictedAlignmentMAF, outputFile))
             system("cp %s %s" % (outputFile, os.path.join(self.outputDir, str(i), "mafComparison.xml")))
             if previousOutputFile != None:
                 system("mergeMafComparatorResults.py --results1 %s --results2 %s --outputFile %s" % (outputFile, previousOutputFile, outputFile))
@@ -290,10 +284,10 @@ class MakeAllAlignments(Target):
         self.options = options
     
     def run(self):
-        for params in AllProgressiveCombos().generate():
+        for params in SmallProgressive().generate():
             self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
-            self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
-            self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
             
 def main():
     ##########################################
