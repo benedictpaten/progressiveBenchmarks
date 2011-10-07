@@ -17,6 +17,7 @@ from sonLib.bioio import logger
 from sonLib.bioio import system
 
 from progressiveBenchmarks.src.paramsGenerator import AllProgressive
+from progressiveBenchmarks.src.paramsGenerator import EverythingButSelf
 
 class TestCase(unittest.TestCase):
     
@@ -38,6 +39,14 @@ class TestCase(unittest.TestCase):
                 vinCount += 1
         print vinCount
         assert vinCount == 1
+    
+    def testAllEverythingButSelfUnique(self):
+        names = set()
+        for params in EverythingButSelf().generate():
+            name = str(params)
+            print name
+            assert name not in names
+    
             
 def main():
     unittest.main()

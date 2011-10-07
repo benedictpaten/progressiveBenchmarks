@@ -15,14 +15,11 @@ import sys
 
 
 class Params:
-    class IterationParams:
-        def __init__(self, minChainLength = None, minBlockDegree = None, 
-                     maxGroupSize = None):
-            self.minChainLength = minChainLength
-            self.minBlockDegree = minBlockDegree
-            self.maxGroupSize = maxGroupSize
-            
+    
     def __init__(self):
+        self.minChainLength = None
+        self.minBlockDegree = None
+        self.maxGroupSize = None
         self.iterationParams = None
         self.outgroupStrategy = None
         self.singleCopyStrategy = None
@@ -48,19 +45,12 @@ class Params:
         setAtt(decompElem, "self_alignment", self.selfAlignment)
         setAtt(decompElem, "subtree_size", self.subtreeSize)
     
-        if self.iterationParams is not None:
-            iterationsElem = config.find("alignment").find("iterations")
-            iterationNumber = 0
-            for iterationElem in iterationsElem.findall("iteration"):
-                if iterationNumber < len(self.iterationParams):
-                    setAtt(iterationElem, "minimumChainLength", 
-                           self.iterationParams[iterationNumber].minChainLength)
-                    setAtt(iterationElem, "minimumBlockDegree",
-                           self.iterationParams[iterationNumber].minBlockDegree)
-                    setAtt(iterationElem, "maximumGroupSize",
-                           self.iterationParams[iterationNumber].maxGroupSize)                   
-                iterationNumber += 1
-    
+        iterationsElem = config.find("alignment").find("iterations")
+        iterationElem = iterationsElem.findall("iteration")[-1]        
+        setAtt(iterationElem, "minimumChainLength", self.minChainLength)
+        setAtt(iterationElem, "minimumBlockDegree", self.minBlockDegree)
+        setAtt(iterationElem, "maximumGroupSize", self.maxGroupSize)                    
+
     def check(self):
         if self.doVanilla == True:
             assert self.outgroupStrategy is None
@@ -78,10 +68,10 @@ class Params:
         
         self.check()    
         token = ""
-        if self.iterationParams is not None:
-            token += printItem("mc", self.iterationParams.minChainLength)
-            token += printItem("mb", self.iterationParams.minBlockDegree)
-            token += printItem("mg", self.iterationParams.maxGroupSize)
+        
+        token += printItem("mc", self.minChainLength)
+        token += printItem("mb", self.minBlockDegree)
+        token += printItem("mg", self.maxGroupSize)
         token += printItem("og", self.outgroupStrategy)
         token += printItem("sc", self.singleCopyStrategy)
         token += printItem("cf", self.requiredFraction)

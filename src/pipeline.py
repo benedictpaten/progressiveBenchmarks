@@ -39,6 +39,7 @@ from cactus.progressive.experimentWrapper import ExperimentWrapper
 from cactus.progressive.cactus_createMultiCactusProject import cleanEventTree
 from progressiveBenchmarks.src.params import Params
 from progressiveBenchmarks.src.paramsGenerator import ParamsGenerator
+from progressiveBenchmarks.src.paramsGenerator import EverythingButSelf
 from progressiveBenchmarks.src.paramsGenerator import AllProgressive
 from progressiveBenchmarks.src.paramsGenerator import BasicProgressive
 from progressiveBenchmarks.src.paramsGenerator import SmallProgressive
@@ -354,8 +355,8 @@ class MakeSummary(Target):
     def run(self):
         for testCategory in [MakeBlanchetteAlignments, MakeEvolverPrimatesLoci1, MakeEvolverMammalsLoci1]:
             summary = Summary()
-            for params in self.paramsGenerator.generate():
-                for baseName, basePath in self.paths(testCategory, params):
+            for baseName, basePath in self.paths(testCategory, params):
+                for params in self.paramsGenerator.generate():
                     jobTreeStatsPath = os.path.join(basePath, "jobTreeStats.xml")
                     mafCompPath = os.path.join(basePath, "mafComparison.xml")
                     summary.addRow(baseName, params, jobTreeStatsPath, mafCompPath)
@@ -370,8 +371,9 @@ class MakeAllAlignments(Target):
     
     def run(self):
         #pg = ParamsGenerator()
-        pg = BasicProgressive()
+        #pg = BasicProgressive()
         #pg = AllProgressive()
+        pg = EverythingButSelf()
         for params in pg.generate():
             self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))

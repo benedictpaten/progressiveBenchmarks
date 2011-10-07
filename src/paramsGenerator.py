@@ -18,7 +18,9 @@ from progressiveBenchmarks.src.params import Params
 # doVanilla is set to true once for each set of iteration parameters
 class ParamsGenerator:
     def __init__(self):
-        self.iterationParams = [None]
+        self.minChainLength = [None]
+        self.minBlockDegree = [None]
+        self.maxGroupSize = [None]
         self.outgroupStrategy = [None]
         self.singleCopyStrategy = [None]
         self.requiredFraction = [None]
@@ -27,30 +29,45 @@ class ParamsGenerator:
         self.doVanilla = [True, False]
         
     def generate(self):   
-        for it in self.iterationParams:
-            for va in self.doVanilla:
-                if va == True:
-                    params = Params()
-                    params.iterationParams = it
-                    params.doVanilla = va
-                    yield params
-                else:     
-                    for og in self.outgroupStrategy:
-                        for sc in self.singleCopyStrategy:
-                            for cf in self.requiredFraction:
-                                for sa in self.selfAlignment:
-                                    for st in self.subtreeSize:
-                                        params = Params()
-                                        params.iterationParams = it
-                                        params.outgroupStrategy = og
-                                        params.singleCopyStrategy = sc
-                                        params.subtreeSize = st
-                                        params.requiredFraction = cf
-                                        params.selfAlignment = sa
-                                        params.doVanilla = va
-                                        yield params
-                
-
+        for mc in self.minChainLength:
+            for mb in self.minBlockDegree:
+                for mg in self.maxGroupSize:
+                    for va in self.doVanilla:
+                        if va == True:
+                            params = Params()
+                            params.minChainLength = mc
+                            params.minBlockDegree = mb
+                            params.maxGroupSize = mg
+                            params.doVanilla = va
+                            yield params
+                        else:     
+                            for og in self.outgroupStrategy:
+                                for sc in self.singleCopyStrategy:
+                                    for cf in self.requiredFraction:
+                                        for sa in self.selfAlignment:
+                                            for st in self.subtreeSize:
+                                                params = Params()
+                                                params.minChainLength = mc
+                                                params.minBlockDegree = mb
+                                                params.maxGroupSize = mg
+                                                params.outgroupStrategy = og
+                                                params.singleCopyStrategy = sc
+                                                params.subtreeSize = st
+                                                params.requiredFraction = cf
+                                                params.selfAlignment = sa
+                                                params.doVanilla = va
+                                                yield params
+                        
+class EverythingButSelf(ParamsGenerator):
+    def __init__(self):
+        ParamsGenerator.__init__(self)
+        self.minChainLength = [32, 64, 128, 256, 512, 1024]
+        self.minBlockDegree = [0, 2]
+        self.maxGroupSize = [10000000000]
+        self.outgroupStrategy = ['none', 'greedy', 'greedyLeaves']
+        self.singleCopyStrategy = ['none', 'outgroup', 'all']
+        self.requiredFraction = [0, 0.67, 1]
+        
 # all the progressive-related combinations                                
 class AllProgressive(ParamsGenerator):
     def __init__(self):
