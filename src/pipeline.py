@@ -310,7 +310,7 @@ class MakeEvolverMammalsLoci1(MakeEvolverPrimatesLoci1):
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "loci1")
         sequences, newickTreeString = getInputs(simDir, ("simHuman.chr6", "simMouse.chr6", "simRat.chr6", "simCow.chr6", "simDog.chr6"))
-        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.nameself.params))
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
         self.setupStats(outputDir, simDir, self.params)
