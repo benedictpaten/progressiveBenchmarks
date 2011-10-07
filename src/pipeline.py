@@ -343,20 +343,20 @@ class MakeSummary(Target):
         self.options = options
         self.paramsGenerator = paramsGenerator
     
-    def paths(self, testCategory, params):
+    def getNames(self, testCategory):
         if testCategory == MakeBlanchetteAlignments:
             for i in xrange(self.options.blanchetteRepeats):
-                yield (testCategory.name + str(i), 
-                       os.path.join(self.options.outputDir, testCategory.name + str(params), str(i)))
+                yield (testCategory.name + str(i))
         else:
-            yield (testCategory.name,
-                   os.path.join(self.options.outputDir, testCategory.name + str(params)))
+            yield testCategory.name
         
     def run(self):
         for testCategory in [MakeBlanchetteAlignments, MakeEvolverPrimatesLoci1, MakeEvolverMammalsLoci1]:
             summary = Summary()
-            for baseName, basePath in self.paths(testCategory, params):
+            for name in self.getNames(testCategory):
                 for params in self.paramsGenerator.generate():
+                    baseName = name + str(params)
+                    basePath = os.path.join(self.options.outputDir, baseName)
                     jobTreeStatsPath = os.path.join(basePath, "jobTreeStats.xml")
                     mafCompPath = os.path.join(basePath, "mafComparison.xml")
                     summary.addRow(baseName, params, jobTreeStatsPath, mafCompPath)
