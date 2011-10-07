@@ -16,7 +16,7 @@ from sonLib.bioio import getTempDirectory
 from sonLib.bioio import logger
 from sonLib.bioio import system
 
-from progressiveBenchmarks.src.paramsGenerator import AllProgressiveCombos
+from progressiveBenchmarks.src.paramsGenerator import AllProgressive
 
 class TestCase(unittest.TestCase):
     
@@ -25,7 +25,7 @@ class TestCase(unittest.TestCase):
     
     def testAllProgressiveUnique(self):
         names = set()
-        for params in AllProgressiveCombos().generate():
+        for params in AllProgressive().generate():
             name = str(params)
             print name
             assert name not in names
@@ -33,7 +33,7 @@ class TestCase(unittest.TestCase):
     def testAllDoVanillaOnce(self):
         names = set()
         vinCount = 0
-        for params in AllProgressiveCombos().generate():
+        for params in AllProgressive().generate():
             if params.doVanilla == True:
                 vinCount += 1
         print vinCount

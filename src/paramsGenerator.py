@@ -24,30 +24,32 @@ class ParamsGenerator:
         self.requiredFraction = [None]
         self.selfAlignment = [None]
         self.subtreeSize = [None]
+        self.doVanilla = [True, False]
         
     def generate(self):   
-        itCount = 0
-        vanCount = 0
         for it in self.iterationParams:
-            itCount += 1
-            for og in self.outgroupStrategy:
-                for sc in self.singleCopyStrategy:
-                    for cf in self.requiredFraction:
-                        for sa in self.selfAlignment:
-                            for st in self.subtreeSize:
-                                params = Params()
-                                params.iterationParams = it
-                                params.outgroupStrategy = og
-                                params.singleCopyStrategy = sc
-                                params.subtreeSize = st
-                                params.requiredFraction = cf
-                                params.selfAlignment = sa
-                                params.doVanilla = False
-                                if vanCount != itCount:
-                                    vanCount += 1
-                                    params.doVanilla = True
-                                yield params
-        
+            for va in self.doVanilla:
+                if va == True:
+                    params = Params()
+                    params.iterationParams = it
+                    params.doVanilla = va
+                    yield params
+                else:     
+                    for og in self.outgroupStrategy:
+                        for sc in self.singleCopyStrategy:
+                            for cf in self.requiredFraction:
+                                for sa in self.selfAlignment:
+                                    for st in self.subtreeSize:
+                                        params = Params()
+                                        params.iterationParams = it
+                                        params.outgroupStrategy = og
+                                        params.singleCopyStrategy = sc
+                                        params.subtreeSize = st
+                                        params.requiredFraction = cf
+                                        params.selfAlignment = sa
+                                        params.doVanilla = va
+                                        yield params
+                
 
 # all the progressive-related combinations                                
 class AllProgressive(ParamsGenerator):
