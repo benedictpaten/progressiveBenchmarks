@@ -16,10 +16,11 @@ import sys
 
 class Params:
     class IterationParams:
-        def __init__(self):
-            self.minChainLength = None
-            self.minBlockDegree = None
-            self.maxGroupSize = None
+        def __init__(self, minChainLength = None, minBlockDegree = None, 
+                     maxGroupSize = None):
+            self.minChainLength = minChainLength
+            self.minBlockDegree = minBlockDegree
+            self.maxGroupSize = maxGroupSize
             
     def __init__(self):
         self.iterationParams = None
