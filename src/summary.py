@@ -17,7 +17,8 @@ import copy
 from optparse import OptionParser
 
 class Summary:
-    SensIdx = 5
+    Header = ["Name", "Run_Time", "Clock_Time", "Sensitivity", "Specificity"]
+    SensIdx = len(Header)
     SpecIdx = SensIdx + 1 
     def __init__(self):
         self.table = []
@@ -89,7 +90,7 @@ class Summary:
     def getHeader(self):
         assert len(self.table) > 0
         row = self.table[0]
-        header = ["Name", "Run_Time", "Clock_Time", "Sensitivity", "Specificity"]
+        header = copy.deepcopy(self.Header)
         species = []
         assert type(row[self.SensIdx] == 'dict')
         for entry, value in row[self.SensIdx].items():
