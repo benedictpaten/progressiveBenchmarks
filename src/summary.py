@@ -17,6 +17,8 @@ import copy
 from optparse import OptionParser
 
 class Summary:
+    SensIdx = 5
+    SpecIdx = SensIdx + 1 
     def __init__(self):
         self.table = []
 
@@ -81,15 +83,16 @@ class Summary:
     
     # returns the total run time  
     def __jtStats(self, xmlRoot):
-        return [float(xmlRoot.attrib["total_run_time"])]
+        return [float(xmlRoot.attrib["total_run_time"]), 
+                float(xmlRoot.attrib["total_clock"])]
     
     def getHeader(self):
         assert len(self.table) > 0
         row = self.table[0]
-        header = ["Name", "Run_Time", "Sensitivity", "Specificity"]
+        header = ["Name", "Run_Time", "Clock_Time", "Sensitivity", "Specificity"]
         species = []
-        assert type(row[4] == 'dict')
-        for entry, value in row[4].items():
+        assert type(row[self.SensIdx] == 'dict')
+        for entry, value in row[self.SensIdx].items():
             species.append(entry)
         species = sorted(species)
         for i in species:
@@ -99,16 +102,16 @@ class Summary:
     
     def getRows(self):
         for entry in self.table:
-            row = entry[:4]
+            row = entry[:self.SensIdx]
             species = []
-            assert type(entry[4] == 'dict')
-            assert type(entry[5] == 'dict')
-            for name, value in entry[4].items():
+            assert type(entry[self.SensIdx] == 'dict')
+            assert type(entry[self.SpecIdx] == 'dict')
+            for name, value in entry[self.SensIdx].items():
                 species.append(name)
             species = sorted(species)
             for i in species:
-                row.append(entry[4][i])
-                row.append(entry[5][i])
+                row.append(entry[self.SensIdx][i])
+                row.append(entry[self.SpecIdx][i])
             yield row
     
 def main():
