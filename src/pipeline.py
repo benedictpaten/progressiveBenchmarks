@@ -343,23 +343,29 @@ class MakeSummary(Target):
         self.options = options
         self.paramsGenerator = paramsGenerator
     
-    def getNames(self, testCategory):
+    def getBaseNames(self, testCategory):
         if testCategory == MakeBlanchetteAlignments:
             for i in xrange(self.options.blanchetteRepeats):
-                yield (testCategory.name + str(i))
+                yield (testCategory.name + str(i), i)
         else:
-            yield testCategory.name
-        
+            yield (testCategory.name, None)
+    
+    def getPath(self, testCategory, params, i):
+        if i is not None:
+            return os.path.join(self.options.outputDir, testCategory.name + params, i)
+        else:
+            return os.path.join(self.options.outputDir, testCategory.name + params)
+     
     def run(self):
         for testCategory in [MakeBlanchetteAlignments, MakeEvolverPrimatesLoci1, MakeEvolverMammalsLoci1]:
             summary = Summary()
-            for name in self.getNames(testCategory):
+            for name, i in self.getBaseNames(testCategory):
                 for params in self.paramsGenerator.generate():
-                    baseName = name + str(params)
-                    basePath = os.path.join(self.options.outputDir, baseName)
+                    rowName = name + str(params)
+                    basePath = self.getPath(testCategory, params, i)
                     jobTreeStatsPath = os.path.join(basePath, "jobTreeStats.xml")
                     mafCompPath = os.path.join(basePath, "mafComparison.xml")
-                    summary.addRow(baseName, params, jobTreeStatsPath, mafCompPath)
+                    summary.addRow(rowName, params, jobTreeStatsPath, mafCompPath)
             summary.write(os.path.join(self.options.outputDir, "%s_summary.csv" % testCategory.name))
                    
 class MakeAllAlignments(Target):
