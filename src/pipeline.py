@@ -352,9 +352,9 @@ class MakeSummary(Target):
     
     def getPath(self, testCategory, params, i):
         if i is not None:
-            return os.path.join(self.options.outputDir, testCategory.name + params, i)
+            return os.path.join(self.options.outputDir, testCategory.name + str(params), str(i))
         else:
-            return os.path.join(self.options.outputDir, testCategory.name + params)
+            return os.path.join(self.options.outputDir, testCategory.name + str(params))
      
     def run(self):
         for testCategory in [MakeBlanchetteAlignments, MakeEvolverPrimatesLoci1, MakeEvolverMammalsLoci1]:
