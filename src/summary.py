@@ -19,7 +19,7 @@ from progressiveBenchmarks.src.params import Params
 
 class Summary:
     Header = Params.Header + \
-    ["Run_Time", "Clock_Time", "Sensitivity", "Specificity"]
+    ["Run_Time", "Clock_Time", "Sensitivity", "Specificity", "Bal. Accuracy"]
     SensIdx = len(Header)
     SpecIdx = SensIdx + 1 
     def __init__(self):
@@ -94,6 +94,8 @@ class Summary:
         for ht in homologyTests:
             agg = ht.find("aggregate_results").find("all")
             results.append(float(agg.attrib["average"]))
+        acc = (results[-1] + results[-2]) / 2
+        results.append(acc)
         return results
     
     # returns the total run time  
