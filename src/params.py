@@ -16,11 +16,13 @@ import sys
 
 class Params:
     
+    Header = ["Style", "MinChainLen", "MinBlockDeg", "MaxGroupSize", \
+              "Outgroup", "SingleCpy", "ReqFrac", "Self", "SubtreeSize"]
+                
     def __init__(self):
         self.minChainLength = None
         self.minBlockDegree = None
         self.maxGroupSize = None
-        self.iterationParams = None
         self.outgroupStrategy = None
         self.singleCopyStrategy = None
         self.requiredFraction = None
@@ -52,7 +54,7 @@ class Params:
         setAtt(iterationElem, "maximumGroupSize", self.maxGroupSize)                    
 
     def check(self):
-        if self.doVanilla == True:
+        if self.vanilla == True:
             assert self.outgroupStrategy is None
             assert self.singleCopyStrategy is None
             assert self.requiredFraction is None
@@ -77,10 +79,33 @@ class Params:
         token += printItem("cf", self.requiredFraction)
         token += printItem("sa", self.selfAlignment)
         token += printItem("st", self.subtreeSize)
-        if self.doVanilla:
+        if self.vanilla:
             token += printItem("", "vanilla")
         if token == "":
             token = "_Default"
         return token
+    
+    def asRow(self):
+        def addItem(row, value):
+            if value is None:
+                row.append("")
+            else:
+                row.append(value)
             
+        row = []
+        name = "Progressive"
+        if self.vanilla is True:
+            name = "Vanilla"
+        addItem(row, name)    
+        addItem(row, self.minChainLength)
+        addItem(row, self.minBlockDegree)
+        addItem(row, self.maxGroupSize)
+        addItem(row, self.outgroupStrategy)
+        addItem(row, self.singleCopyStrategy)
+        addItem(row, self.requiredFraction)
+        addItem(row, self.selfAlignment)
+        addItem(row, self.subtreeSize)
+        return row
+
+        
                 

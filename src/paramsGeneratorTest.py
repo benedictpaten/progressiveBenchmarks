@@ -35,7 +35,7 @@ class TestCase(unittest.TestCase):
         names = set()
         vinCount = 0
         for params in AllProgressive().generate():
-            if params.doVanilla == True:
+            if params.vanilla == True:
                 vinCount += 1
         print vinCount
         assert vinCount == 1
@@ -47,6 +47,9 @@ class TestCase(unittest.TestCase):
             print name
             assert name not in names
     
+    def testParamsAsRow(self):
+        for params in EverythingButSelf().generate():
+            assert len(params.asRow()) == len(params.Header)
             
 def main():
     unittest.main()

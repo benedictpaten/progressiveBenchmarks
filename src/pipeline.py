@@ -224,7 +224,7 @@ class MakeAlignment(Target):
         
     
     def run(self):
-        if self.params.doVanilla == True:
+        if self.params.vanilla == True:
            self.runVanilla()
         else:
             self.runProgressive()
@@ -271,7 +271,7 @@ class MakeBlanchetteStats(Target):
             expPath = os.path.join(self.outputDir, str(i), "experiment.xml")
             applyNamingToMaf(expPath, trueAlignmentMAF, trueRenamedMAF)
             trueAlignmentMAF = trueRenamedMAF
-            if self.params.doVanilla == False:            
+            if self.params.vanilla == False:            
                 predictedAlignmentMaf = os.path.join(self.outputDir, str(i), "progressiveCactusAlignment", "Anc0", "Anc0.maf")
             else:
                 predictedAlignmentMaf = os.path.join(self.outputDir, str(i), "cactusVanilla.maf")
@@ -290,7 +290,7 @@ class MakeEvolverPrimatesLoci1(MakeBlanchetteAlignments):
     def setupStats(self, outputDir, simDir, params):
         #Setup the stat computation
         trueMaf = os.path.join(simDir, "all.burnin.maf")
-        if self.params.doVanilla == False:
+        if self.params.vanilla == False:
             predictedMaf = os.path.join(outputDir, "progressiveCactusAlignment", "Anc0", "Anc0.maf")
         else:
             predictedMaf = os.path.join(outputDir, "cactusVanilla.maf")
@@ -358,15 +358,15 @@ class MakeSummary(Target):
      
     def run(self):
         for testCategory in [MakeBlanchetteAlignments, MakeEvolverPrimatesLoci1, MakeEvolverMammalsLoci1]:
-            summary = Summary()
             for name, i in self.getBaseNames(testCategory):
+                summary = Summary()
                 for params in self.paramsGenerator.generate():
                     rowName = name + str(params)
                     basePath = self.getPath(testCategory, params, i)
                     jobTreeStatsPath = os.path.join(basePath, "jobTreeStats.xml")
                     mafCompPath = os.path.join(basePath, "mafComparison.xml")
                     summary.addRow(rowName, params, jobTreeStatsPath, mafCompPath)
-            summary.write(os.path.join(self.options.outputDir, "%s_summary.csv" % testCategory.name))
+                summary.write(os.path.join(self.options.outputDir, "%s_summary.csv" % name))
                    
 class MakeAllAlignments(Target):
     """Makes alignments using pipeline.

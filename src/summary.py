@@ -15,9 +15,11 @@ import sys
 import copy
 
 from optparse import OptionParser
+from progressiveBenchmarks.src.params import Params
 
 class Summary:
-    Header = ["Name", "Run_Time", "Clock_Time", "Sensitivity", "Specificity"]
+    Header = Params.Header + \
+    ["Run_Time", "Clock_Time", "Sensitivity", "Specificity"]
     SensIdx = len(Header)
     SpecIdx = SensIdx + 1 
     def __init__(self):
@@ -27,25 +29,37 @@ class Summary:
         if os.path.isfile(jobTreeStatsPath) and os.path.isfile(mafCompPath):
             mafXmlRoot = ET.parse(mafCompPath).getroot()
             jtXmlRoot = ET.parse(jobTreeStatsPath).getroot()
-            row = [catName + str(params)]
+            row = params.asRow()
             row.extend(self.__jtStats(jtXmlRoot))
             row.extend(self.__totalAggregate(mafXmlRoot))
             row.extend(self.__speciesAggregate(mafXmlRoot))
             rowstring = str(row)
             self.table.append(row)
-            
+    
+    def addEmptyLine(self):
+        row = self.getRows().next()
+        emptyRow = []
+        for i in xrange(len(row)):
+            emptyRow.append("")
+        self.table.append(emptyRow)
+        
     def write(self, path):
         if len(self.table) > 0:
+            emptyCols = self.__findEmptyColumns()
             outFile = open(path, "w")
             header = self.getHeader()
-            outFile.write(self.__printLine(header))
+            outFile.write(self.__printLine(header, emptyCols))
             for row in self.getRows():
                 assert len(row) == len(header)
-                outFile.write(self.__printLine(row))
+                outFile.write(self.__printLine(row, emptyCols))
             outFile.close()
      
-    def __printLine(self, rowAsList):
-        return "%s\n" % ",".join([str(i) for i in rowAsList])
+    def __printLine(self, rowAsList, emptyCols):
+        rowString = ""
+        for col in xrange(len(rowAsList)):
+            if emptyCols[col] is False:
+                rowString += "%s," % str(rowAsList[col])
+        return "%s\n" % rowString[:len(rowString)-1] 
     
     def __pairTests(self, xmlRoot, i):
         assert i == 0 or i == 1
@@ -86,6 +100,20 @@ class Summary:
     def __jtStats(self, xmlRoot):
         return [float(xmlRoot.attrib["total_run_time"]), 
                 float(xmlRoot.attrib["total_clock"])]
+    
+    # return boolean vector identifying empty columns
+    def __findEmptyColumns(self):
+        ec = []
+        row = self.getRows().next()
+        for i in row:
+            ec.append(True)
+        for row in self.getRows():
+            colNum = 0
+            for col in row:
+                if col != "":
+                    ec[colNum] = False
+                colNum +=1
+        return ec
     
     def getHeader(self):
         assert len(self.table) > 0

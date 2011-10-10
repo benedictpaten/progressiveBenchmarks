@@ -15,7 +15,7 @@ import sys
 from progressiveBenchmarks.src.params import Params
 
 # default parameters (ie read directly from config xml)
-# doVanilla is set to true once for each set of iteration parameters
+# vanilla is set to true once for each set of iteration parameters
 class ParamsGenerator:
     def __init__(self):
         self.minChainLength = [None]
@@ -26,19 +26,19 @@ class ParamsGenerator:
         self.requiredFraction = [None]
         self.selfAlignment = [None]
         self.subtreeSize = [None]
-        self.doVanilla = [True, False]
+        self.vanilla = [True, False]
         
     def generate(self):   
         for mc in self.minChainLength:
             for mb in self.minBlockDegree:
                 for mg in self.maxGroupSize:
-                    for va in self.doVanilla:
+                    for va in self.vanilla:
                         if va == True:
                             params = Params()
                             params.minChainLength = mc
                             params.minBlockDegree = mb
                             params.maxGroupSize = mg
-                            params.doVanilla = va
+                            params.vanilla = va
                             yield params
                         else:     
                             for og in self.outgroupStrategy:
@@ -55,7 +55,7 @@ class ParamsGenerator:
                                                 params.subtreeSize = st
                                                 params.requiredFraction = cf
                                                 params.selfAlignment = sa
-                                                params.doVanilla = va
+                                                params.vanilla = va
                                                 yield params
                         
 class EverythingButSelf(ParamsGenerator):
