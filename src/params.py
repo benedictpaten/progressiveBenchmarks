@@ -48,10 +48,18 @@ class Params:
         setAtt(decompElem, "subtree_size", self.subtreeSize)
     
         iterationsElem = config.find("alignment").find("iterations")
-        iterationElem = iterationsElem.findall("iteration")[-1]        
-        setAtt(iterationElem, "minimumChainLength", self.minChainLength)
-        setAtt(iterationElem, "minimumBlockDegree", self.minBlockDegree)
-        setAtt(iterationElem, "maximumGroupSize", self.maxGroupSize)                    
+        iterations = iterationsElem.findall("iteration")
+        cafElem = iterations[-2]
+        assert cafElem.attrib["type"] == "blast"
+        assert cafElem.attrib["number"] == "0"
+        coreElem = cafElem.find("core")
+        setAtt(coreElem, "minimumChainLength", self.minChainLength)
+        setAtt(coreElem, "maximumGroupSize", self.maxGroupSize)
+        
+        barElem = iterations[-1]
+        assert barElem.attrib["type"] == "base"
+        assert barElem.attrib["number"] == "1"
+        setAtt(barElem, "minimumBlockDegree", self.minBlockDegree)                    
 
     def check(self):
         if self.vanilla == True:
