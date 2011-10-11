@@ -43,6 +43,7 @@ from progressiveBenchmarks.src.paramsGenerator import EverythingButSelf
 from progressiveBenchmarks.src.paramsGenerator import AllProgressive
 from progressiveBenchmarks.src.paramsGenerator import BasicProgressive
 from progressiveBenchmarks.src.paramsGenerator import SmallProgressive
+from progressiveBenchmarks.src.paramsGenerator import SingleCase
 from progressiveBenchmarks.src.applyNamingToMaf import applyNamingToMaf
 from progressiveBenchmarks.src.summary import Summary
 
@@ -380,6 +381,7 @@ class MakeAllAlignments(Target):
         #pg = BasicProgressive()
         #pg = AllProgressive()
         pg = EverythingButSelf()
+        #pg = SingleCase()
         for params in pg.generate():
             self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
@@ -401,7 +403,7 @@ def main():
     options, args = parser.parse_args()
     setLoggingFromOptions(options)
     
-    options.blanchetteRepeats = 3
+    options.blanchetteRepeats = 1
     
     if len(args) != 0:
         raise RuntimeError("Unrecognised input arguments: %s" % " ".join(args))

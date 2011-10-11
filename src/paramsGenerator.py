@@ -89,5 +89,14 @@ class SmallProgressive(ParamsGenerator):
     def __init__(self):
         ParamsGenerator.__init__(self)
         self.outgroupStrategy = ['none', 'greedy']
-
+        
+class SingleCase(ParamsGenerator):
+    def __init__(self):
+        ParamsGenerator.__init__(self)
+        self.minChainLength = [ 256 ]
+        self.outgroupStrategy = ['greedy']
+        self.singleCopyStrategy = ['outgroup']
+        self.requiredFraction = [0.67]
+        self.selfAlignment = [False]
+        self.vanilla = [ False ]
     
