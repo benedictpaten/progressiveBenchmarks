@@ -11,3 +11,6 @@ run :
 
 clean :
 	rm -rf ${outputDir}/*
+	
+test :
+	#Nothing currently
