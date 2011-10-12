@@ -146,7 +146,8 @@ class MakeAlignment(Target):
                                  joinMaf=True,
                                  #buildTrees=buildTrees, buildFaces=buildFaces, buildReference=buildReference,
                                  jobTreeStats=True,
-                                 maxThreads=4)
+                                 maxThreads=4,
+                                 logLevel="DEBUG")
             logger.info("Ran the progressive workflow")
             
             #Check if the jobtree completed sucessively.
