@@ -47,6 +47,15 @@ class TestCase(unittest.TestCase):
             print name
             assert name not in names
     
+    def testAllEverythingButSelfBlockDegree(self):
+        names = set()
+        for params in EverythingButSelf().generate():
+            if params.minBlockDegree == 0:
+                assert params.requiredFraction == None or \
+                str(params.requiredFraction) == '0'                
+                assert params.outgroupStrategy == None or \
+                params.outgroupStrategy == 'none'
+                
     def testParamsAsRow(self):
         for params in EverythingButSelf().generate():
             assert len(params.asRow()) == len(params.Header)
