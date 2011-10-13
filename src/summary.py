@@ -195,6 +195,8 @@ def main():
     usage = "usage: %prog <mafcomp xml> <jobtree xml>"
     description = "TEST: print summary row for input"
     parser = OptionParser(usage=usage, description=description)
+    parser.add_option("--project", dest="projectPath", 
+                      default = None, help="path to multi cactus project xml file")
     
     options, args = parser.parse_args()
     
@@ -203,7 +205,7 @@ def main():
         raise RuntimeError("Wrong number of arguments")
 
     summary = Summary()
-    summary.addRow("name", "options", args[1], args[0])
+    summary.addRow("name", Params(), args[1], args[0], options.projectPath)
     print summary.getHeader()
     for row in summary.getRows():
         print row
