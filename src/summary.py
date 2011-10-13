@@ -16,22 +16,32 @@ import copy
 
 from optparse import OptionParser
 from progressiveBenchmarks.src.params import Params
+from cactus.progressive.multiCactusProject import MultiCactusProject
+from cactus.progressive.multiCactusTree import MultiCactusTree
+from cactus.progressive.experimentWrapper import ExperimentWrapper
 
 class Summary:
     Header = Params.Header + \
-    ["Run_Time", "Clock_Time", "Sensitivity", "Specificity", "Bal. Accuracy"]
+    ["Run_Time", "Clock_Time", "Sensitivity", "Specificity", "Bal. Accuracy", \
+     "Root Growth", "Avg Growth"]
     SensIdx = len(Header)
     SpecIdx = SensIdx + 1 
     def __init__(self):
         self.table = []
 
-    def addRow(self, catName, params, jobTreeStatsPath, mafCompPath):
+    def addRow(self, catName, params, jobTreeStatsPath, mafCompPath, projPath):
         if os.path.isfile(jobTreeStatsPath) and os.path.isfile(mafCompPath):
             mafXmlRoot = ET.parse(mafCompPath).getroot()
             jtXmlRoot = ET.parse(jobTreeStatsPath).getroot()
+            if projPath is not None:
+                project = MultiCactusProject()
+                project.readXML(projPath)
+            else:
+                project = None
             row = params.asRow()
             row.extend(self.__jtStats(jtXmlRoot))
             row.extend(self.__totalAggregate(mafXmlRoot))
+            row.extend(self.__growthStats(project))
             row.extend(self.__speciesAggregate(mafXmlRoot))
             rowstring = str(row)
             self.table.append(row)
@@ -103,6 +113,42 @@ class Summary:
         return [float(xmlRoot.attrib["total_run_time"]), 
                 float(xmlRoot.attrib["total_clock"])]
     
+    # give some stats on how the reference geneomes grow:
+    # root growth: ratio of root to biggest leaf
+    # avg growth: average ratio of a genome's size to its children's
+    def __growthStats(self, project):
+        if project is None:
+            return ["", ""]
+        results = []
+        tree = project.mcTree
+        rootName = tree.getRootName()
+        rootExpPath = project.expMap[rootName]
+        rootExp = ExperimentWrapper(ET.parse(rootExpPath).getroot())
+        rootPath = rootExp.getReferencePath()
+        rootSize = float(os.path.getsize(rootPath))
+        leafNames = [tree.getName(i) for i in tree.getLeaves()]
+        leafSizes = []
+        for leaf in leafNames:
+            leafPath = project.sequencePath(leaf)
+            leafSize = float(os.path.getsize(leafPath))
+            leafSizes.append(leafSize)
+        results.append(rootSize / max(leafSizes))
+        
+        ratioSum = 0.0
+        ratioCount = 0
+        for expName, expPath in project.expMap.items():
+            exp = ExperimentWrapper(ET.parse(expPath).getroot())
+            rootPath = exp.getReferencePath()
+            rootSize = float(os.path.getsize(rootPath))
+            for leafName, leafPath in exp.seqMap.items():
+                leafSize = float(os.path.getsize(leafPath))
+                ratio = rootSize / leafSize
+                ratioSum += ratio
+                ratioCount += 1
+        avgRatio = ratioSum / ratioCount
+        results.append(avgRatio)
+        return results
+                        
     # return boolean vector identifying empty columns
     def __findEmptyColumns(self):
         ec = []

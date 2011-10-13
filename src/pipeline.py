@@ -159,6 +159,10 @@ class MakeAlignment(Target):
             system("mv %s %s" % (tempExperimentDir, self.outputDir))
             system("jobTreeStats --jobTree %s --outputFile %s/jobTreeStats.xml" % (tempJobTreeDir, self.outputDir))
             system("mv %s %s/config.xml" % (tempConfigFile, self.outputDir))
+            
+            #But keep a link to the multicactus project in its original path so we can navigate
+            # the paths in the xml...
+            system("ln -s %s %s" % (os.path.abspath(self.outputDir), tempExperimentDir))
                 
     def runVanilla(self):
         logger.debug("Going to put the alignment in %s" % self.outputDir)
@@ -367,7 +371,12 @@ class MakeSummary(Target):
                     basePath = self.getPath(testCategory, params, i)
                     jobTreeStatsPath = os.path.join(basePath, "jobTreeStats.xml")
                     mafCompPath = os.path.join(basePath, "mafComparison.xml")
-                    summary.addRow(rowName, params, jobTreeStatsPath, mafCompPath)
+                    if params.vanilla is False:
+                        projPath = os.path.join(basePath, "progressiveCactusAlignment", 
+                                                "progressiveCactusAlignment_project.xml")
+                    else:
+                        projPath = None                    
+                    summary.addRow(rowName, params, jobTreeStatsPath, mafCompPath, projPath)
                 summary.write(os.path.join(self.options.outputDir, "%s_summary.csv" % name))
                    
 class MakeAllAlignments(Target):
