@@ -162,7 +162,9 @@ class MakeAlignment(Target):
             
             #But keep a link to the multicactus project in its original path so we can navigate
             # the paths in the xml...
-            system("ln -s %s %s" % (os.path.abspath(self.outputDir), tempExperimentDir))
+            actualResultsDir = os.path.join(os.path.abspath(self.outputDir), "progressiveCactusAlignment")
+            tempResultsDir = os.path.join(self.outputDir, "tempProgressiveCactusAlignment")
+            system("ln -s %s %s" % (actualResultsDir, tempResultsDir))
                 
     def runVanilla(self):
         logger.debug("Going to put the alignment in %s" % self.outputDir)
