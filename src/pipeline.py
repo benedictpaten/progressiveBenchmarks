@@ -44,6 +44,7 @@ from progressiveBenchmarks.src.paramsGenerator import AllProgressive
 from progressiveBenchmarks.src.paramsGenerator import BasicProgressive
 from progressiveBenchmarks.src.paramsGenerator import SmallProgressive
 from progressiveBenchmarks.src.paramsGenerator import SingleCase
+from progressiveBenchmarks.src.paramsGenerator import KyotoTycoon
 from progressiveBenchmarks.src.applyNamingToMaf import applyNamingToMaf
 from progressiveBenchmarks.src.summary import Summary
 
@@ -117,6 +118,12 @@ class MakeAlignment(Target):
             #Make the experiment file
             tempExperimentFile = os.path.join(tempLocalDir, "experiment.xml")
             
+            if self.params.kyotoTycoon == True:
+                dbConfElem = ET.Element("st_kv_database_conf", type="kyoto_tycoon")
+                ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host="localhost", port="1978", database_dir="dummy")
+            else:
+                dbConfElem = None
+            
             cactusWorkflowExperiment = CactusWorkflowExperiment(
                                                  sequences=self.sequences, 
                                                  newickTreeString=self.newickTree, 
@@ -124,7 +131,8 @@ class MakeAlignment(Target):
                                                  #singleCopySpecies=self.singleCopySpecies,
                                                  databaseName="cactusAlignment",
                                                  outputDir=tempLocalDir,
-                                                 configFile=tempConfigFile)
+                                                 configFile=tempConfigFile,
+                                                 databaseConf = dbConfElem)
             cactusWorkflowExperiment.writeExperimentFile(tempExperimentFile)
             
             #The jobtree

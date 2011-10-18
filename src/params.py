@@ -17,7 +17,7 @@ import sys
 class Params:
     
     Header = ["Style", "MinChainLen", "MinBlockDeg", "MaxGroupSize", \
-              "Outgroup", "SingleCpy", "ReqFrac", "Self", "SubtreeSize"]
+              "Outgroup", "SingleCpy", "ReqFrac", "Self", "SubtreeSize", "Kyoto"]
                 
     def __init__(self):
         self.minChainLength = None
@@ -29,6 +29,7 @@ class Params:
         self.selfAlignment = None
         self.subtreeSize = None
         self.vanilla = False
+        self.kyotoTycoon = None
     
     # only write non-None attributes, idea being
     # that defaults are already in the config.        
@@ -68,6 +69,7 @@ class Params:
             assert self.requiredFraction is None
             assert self.selfAlignment is None
             assert self.subtreeSize is None
+            assert self.kyotoTycoon is None or self.kyotoTycoon is False
             
     def __str__( self ):
         def printItem(name, value):
@@ -87,6 +89,7 @@ class Params:
         token += printItem("cf", self.requiredFraction)
         token += printItem("sa", self.selfAlignment)
         token += printItem("st", self.subtreeSize)
+        token += printItem("kt", self.kyotoTycoon)
         if self.vanilla:
             token += printItem("", "vanilla")
         if token == "":
@@ -113,6 +116,7 @@ class Params:
         addItem(row, self.requiredFraction)
         addItem(row, self.selfAlignment)
         addItem(row, self.subtreeSize)
+        addItem(row, self.kyotoTycoon)
         return row
 
         
