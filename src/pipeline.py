@@ -25,6 +25,8 @@ from cactusTools.shared.common import runCactusMAFGenerator
 from sonLib.bioio import getTempFile, getTempDirectory
 from sonLib.bioio import fastaRead, fastaWrite
 from sonLib.bioio import system
+from sonLib.nxnewick import NXNewick
+from sonLib.nxtree import NXTree 
 
 from cactus.shared.test import getCactusInputs_blanchette
 
@@ -98,8 +100,6 @@ class MakeAlignment(Target):
 
         if not os.path.exists(os.path.join(self.outputDir, "progressiveCactusAlignment")):
             xmlTree = ET.parse(os.path.join(getRootPathString(), "lib", "cactus_workflow_config.xml"))
-            config = xmlTree.getroot()
-            assert config is not None
             
             #Set the parameters
             tempLocalDir = os.path.join(self.outputDir, "tempProgressiveCactusAlignment")
@@ -108,7 +108,9 @@ class MakeAlignment(Target):
             
             #Set the config parameters
             self.params.applyToXml(xmlTree)
-        
+            config = xmlTree.getroot()
+            assert config is not None
+            
             #Write the config file
             tempConfigFile = os.path.join(tempLocalDir, "config.xml")
             fileHandle = open(tempConfigFile, 'w')
@@ -190,8 +192,6 @@ class MakeAlignment(Target):
 
         if not os.path.exists(os.path.join(self.outputDir, "cactusAlignmentVanilla")):
             xmlTree = ET.parse(os.path.join(getRootPathString(), "lib", "cactus_workflow_config.xml"))
-            config = xmlTree.getroot()
-            assert config is not None
             
             #Set the parameters
             tempLocalDir = os.path.join(self.outputDir, "tempVanillaCactusAlignment")
@@ -200,6 +200,8 @@ class MakeAlignment(Target):
             
             #Set the config parameters
             self.params.applyToXml(xmlTree)
+            config = xmlTree.getroot()
+            assert config is not None
         
             #Write the config file
             tempConfigFile = os.path.join(tempLocalDir, "config.xml")
@@ -347,6 +349,18 @@ class MakeEvolverMammalsLoci1(MakeEvolverPrimatesLoci1):
                                           self.params))
         self.setupStats(outputDir, simDir, self.params)
         
+class MakeEevolverHumanMouseLarge(MakeEvolverPrimatesLoci1):
+    name = "evolverHumanMouseLarge"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "large")
+        sequences, newickTreeString = getInputs(simDir, ("simHuman.masked.fa", "simMouse.masked.fa"))
+        newickTreeString = "(simHuman:0.144018,simMouse:0.356483);"
+
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        self.setupStats(outputDir, simDir, self.params)
+        
 class MakeStats(Target):
     def __init__(self, options, trueMaf, predictedMaf, outputFile, params):
         Target.__init__(self)
@@ -422,9 +436,10 @@ class MakeAllAlignments(Target):
         #pg = KyotoTycoon()
         pg = LastzTuning()
         for params in pg.generate():
-            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
-            self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
-            self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+          #  self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+          #  self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
+          #  self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            self.addChildTarget(MakeEevolverHumanMouseLarge(self.options, params))
         
         self.setFollowOnTarget(MakeSummary(self.options, pg))
 

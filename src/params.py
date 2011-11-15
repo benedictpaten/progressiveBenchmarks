@@ -16,13 +16,13 @@ import copy
 
 class Params:
     
-    Header = ["Style", "Template", "MinChainLen", "MinBlockDeg", "MaxGroupSize", \
+    Header = ["Style", "Template", "AnnealingRounds", "MinBlockDeg", "RepeatMask", \
               "Outgroup", "SingleCpy", "ReqFrac", "Self", "SubtreeSize", "Kyoto"]
                 
     def __init__(self):
-        self.minChainLength = None
+        self.annealingRounds = None
         self.minBlockDegree = None
-        self.maxGroupSize = None
+        self.repeatMask = None
         self.outgroupStrategy = None
         self.singleCopyStrategy = None
         self.requiredFraction = None
@@ -56,18 +56,24 @@ class Params:
     
         iterationsElem = config.find("alignment").find("iterations")
         iterations = iterationsElem.findall("iteration")
-        cafElem = iterations[-2]
+        cafElem = iterations[0]
         assert cafElem.attrib["type"] == "blast"
         assert cafElem.attrib["number"] == "0"
         coreElem = cafElem.find("core")
-        setAtt(coreElem, "minimumChainLength", self.minChainLength)
-        setAtt(coreElem, "maximumGroupSize", self.maxGroupSize)
-        
+        setAtt(coreElem, "annealingRounds", self.annealingRounds)
+        trim = coreElem.attrib["trim"].split()[0]
+        trimList = [trim] * len(self.annealingRounds.split())
+        setAtt(coreElem, "trim", " ".join(trimList))
+               
         barElem = iterations[-1]
         assert barElem.attrib["type"] == "base"
-        assert barElem.attrib["number"] == "1"
-        setAtt(barElem, "minimumBlockDegree", self.minBlockDegree)                    
-
+        setAtt(barElem, "minimumBlockDegree", self.minBlockDegree)
+        
+        if self.repeatMask is not None:
+            prep = "<preprocessor chunkSize=\"100000000\" chunksPerJob=\"1\" compressFiles=\"True\" overlapSize=\"1000\" preprocessorString=\'cactus_lastzRepeatMask.py --minPeriod=%d --lastzOpts=--step=20 --notransition --ambiguous=iupac --nogapped QUERY_FILE TARGET_FILE OUT_FILE\'/>" % int(self.repeatMask)
+            prepElem = ET.fromstring(prep)
+            config.append(prepElem)
+            
     def check(self):
         if self.vanilla == True:
             assert self.outgroupStrategy is None
@@ -82,7 +88,7 @@ class Params:
             if value is None:
                 return ''
             else:
-                return "_%s%s" % (name, str(value).title())
+                return ("_%s%s" % (name, str(value).title())).replace(" ", ".")
         
         self.check()    
         token = ""
@@ -93,9 +99,9 @@ class Params:
             tpName = os.path.splitext(tpName)[0]
         
         token += printItem("tp", tpName)
-        token += printItem("mc", self.minChainLength)
+        token += printItem("ar", self.annealingRounds)
         token += printItem("mb", self.minBlockDegree)
-        token += printItem("mg", self.maxGroupSize)
+        token += printItem("rm", self.repeatMask)
         token += printItem("og", self.outgroupStrategy)
         token += printItem("sc", self.singleCopyStrategy)
         token += printItem("cf", self.requiredFraction)
@@ -127,9 +133,9 @@ class Params:
             
         addItem(row, name) 
         addItem(row, tpName)   
-        addItem(row, self.minChainLength)
+        addItem(row, self.annealingRounds)
         addItem(row, self.minBlockDegree)
-        addItem(row, self.maxGroupSize)
+        addItem(row, self.repeatMask)
         addItem(row, self.outgroupStrategy)
         addItem(row, self.singleCopyStrategy)
         addItem(row, self.requiredFraction)

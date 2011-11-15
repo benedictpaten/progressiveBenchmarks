@@ -26,9 +26,9 @@ def getRootPathString():
 # vanilla is set to true once for each set of iteration parameters
 class ParamsGenerator:
     def __init__(self):
-        self.minChainLength = [None]
+        self.annealingRounds = [None]
         self.minBlockDegree = [None]
-        self.maxGroupSize = [None]
+        self.repeatMask = [None]
         self.outgroupStrategy = [None]
         self.singleCopyStrategy = [None]
         self.requiredFraction = [None]
@@ -40,16 +40,16 @@ class ParamsGenerator:
         
     def generate(self):
         for tp in self.templatePath:   
-            for mc in self.minChainLength:
+            for ar in self.annealingRounds:
                 for mb in self.minBlockDegree:
-                    for mg in self.maxGroupSize:
+                    for rm in self.repeatMask:
                         for va in self.vanilla:
                             if va == True:
                                 params = Params()
                                 params.templatePath = tp
-                                params.minChainLength = mc
+                                params.annealingRounds = ar
                                 params.minBlockDegree = mb
-                                params.maxGroupSize = mg
+                                params.repeatMask = rm
                                 params.vanilla = va
                                 yield params
                             else:     
@@ -61,9 +61,9 @@ class ParamsGenerator:
                                                     for kt in self.kyotoTycoon:
                                                         params = Params()
                                                         params.templatePath = tp
-                                                        params.minChainLength = mc
+                                                        params.annealingRounds = ar
                                                         params.minBlockDegree = mb
-                                                        params.maxGroupSize = mg
+                                                        params.repeatMask = rm
                                                         params.outgroupStrategy = og
                                                         params.singleCopyStrategy = sc
                                                         params.subtreeSize = st
@@ -77,9 +77,7 @@ class EverythingButSelf():
     class EverythingButSelf_MB2(ParamsGenerator):
         def __init__(self):
             ParamsGenerator.__init__(self)
-            self.minChainLength = [32, 64, 128, 256, 512, 1024]
             self.minBlockDegree = [2]
-            self.maxGroupSize = [10000000000]
             self.outgroupStrategy = ['none', 'greedy', 'greedyLeaves']
             self.singleCopyStrategy = ['none', 'outgroup', 'all']
             self.requiredFraction = [0, 0.67, 1]
@@ -87,9 +85,7 @@ class EverythingButSelf():
     class EverythingButSelf_MB0(ParamsGenerator):
         def __init__(self):
             ParamsGenerator.__init__(self)
-            self.minChainLength = [32, 64, 128, 256, 512, 1024]
             self.minBlockDegree = [0]
-            self.maxGroupSize = [10000000000]
             self.outgroupStrategy = ['none']
             self.singleCopyStrategy = ['none', 'all']
             self.requiredFraction = [0]
@@ -125,7 +121,6 @@ class SmallProgressive(ParamsGenerator):
 class SingleCase(ParamsGenerator):
     def __init__(self):
         ParamsGenerator.__init__(self)
-        self.minChainLength = [ 256 ]
         self.outgroupStrategy = ['greedy']
         self.singleCopyStrategy = ['outgroup']
         self.requiredFraction = [0.67]
@@ -148,7 +143,12 @@ class LastzTuning(ParamsGenerator):
                             "config_lastz_%d.xml" % x) 
     def __init__(self):
         ParamsGenerator.__init__(self)
-        self.templatePath = [self.lastzPath(1)]
-        self.vanilla = [True, False]
+        self.repeatMask = [None, 10]
+        #self.repeatMask = [10]
+        self.templatePath = [self.lastzPath(i) for i in range(1,6)]
+        #self.templatePath = [self.lastzPath(1)]
+        self.annealingRounds = ["2 3 4 8 16 32 64 128", "2 3 4 8 16 32 64 128 256 512", "8 128 512"]
+        #self.annealingRounds = ["2 3 4 8 16 32 64 128"]
+        self.vanilla = [False]
                              
     
