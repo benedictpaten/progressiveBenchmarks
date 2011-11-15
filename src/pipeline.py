@@ -45,6 +45,7 @@ from progressiveBenchmarks.src.paramsGenerator import BasicProgressive
 from progressiveBenchmarks.src.paramsGenerator import SmallProgressive
 from progressiveBenchmarks.src.paramsGenerator import SingleCase
 from progressiveBenchmarks.src.paramsGenerator import KyotoTycoon
+from progressiveBenchmarks.src.paramsGenerator import LastzTuning
 from progressiveBenchmarks.src.applyNamingToMaf import applyNamingToMaf
 from progressiveBenchmarks.src.summary import Summary
 
@@ -96,7 +97,8 @@ class MakeAlignment(Target):
             os.mkdir(self.outputDir)
 
         if not os.path.exists(os.path.join(self.outputDir, "progressiveCactusAlignment")):
-            config = ET.parse(os.path.join(getRootPathString(), "lib", "cactus_workflow_config.xml")).getroot()
+            xmlTree = ET.parse(os.path.join(getRootPathString(), "lib", "cactus_workflow_config.xml"))
+            config = xmlTree.getroot()
             assert config is not None
             
             #Set the parameters
@@ -105,7 +107,7 @@ class MakeAlignment(Target):
             os.mkdir(tempLocalDir)
             
             #Set the config parameters
-            self.params.applyToXml(config)
+            self.params.applyToXml(xmlTree)
         
             #Write the config file
             tempConfigFile = os.path.join(tempLocalDir, "config.xml")
@@ -162,6 +164,13 @@ class MakeAlignment(Target):
             runJobTreeStatusAndFailIfNotComplete(tempJobTreeDir)
             logger.info("Checked the job tree dir for the progressive run")
             
+            #Run the cactus tree stats
+            expPath = os.path.join(tempExperimentDir, "Anc0", "Anc0_experiment.xml")
+            exp = ExperimentWrapper(ET.parse(expPath).getroot())
+            treeStatsFile = os.path.join(self.outputDir, "treeStats.xml")
+            system("cactus_treeStats --cactusDisk \'%s\' --flowerName 0 --outputFile %s" %(exp.getDiskDatabaseString(),
+                                                                                        treeStatsFile))
+            
             #Now copy the true assembly back to the output
             system("mv %s %s/experiment.xml" % (tempExperimentFile, self.outputDir))
             system("mv %s %s" % (tempExperimentDir, self.outputDir))
@@ -180,7 +189,8 @@ class MakeAlignment(Target):
             os.mkdir(self.outputDir)
 
         if not os.path.exists(os.path.join(self.outputDir, "cactusAlignmentVanilla")):
-            config = ET.parse(os.path.join(getRootPathString(), "lib", "cactus_workflow_config.xml")).getroot()
+            xmlTree = ET.parse(os.path.join(getRootPathString(), "lib", "cactus_workflow_config.xml"))
+            config = xmlTree.getroot()
             assert config is not None
             
             #Set the parameters
@@ -189,7 +199,7 @@ class MakeAlignment(Target):
             os.mkdir(tempLocalDir)
             
             #Set the config parameters
-            self.params.applyToXml(config)
+            self.params.applyToXml(xmlTree)
         
             #Write the config file
             tempConfigFile = os.path.join(tempLocalDir, "config.xml")
@@ -215,7 +225,7 @@ class MakeAlignment(Target):
                                                  configFile=tempConfigFile)
             tempExperimentDir2 = os.path.join(tempLocalDir, "cactusAlignmentVanilla")
             cactusWorkflowExperiment.writeExperimentFile(tempExperimentFile2)
-            
+           
             # apply naming to the event tree to be consistent with progressive
             exp = ExperimentWrapper(ET.parse(tempExperimentFile2).getroot())
             cleanEventTree(exp)
@@ -233,6 +243,11 @@ class MakeAlignment(Target):
             logger.info("Checked the job tree dir for the vanilla run")
             
             runCactusMAFGenerator(os.path.join(self.outputDir, "cactusVanilla.maf"), getCactusDiskString(tempExperimentDir2))
+            
+            #Run the cactus tree stats
+            treeStatsFile = os.path.join(self.outputDir, "treeStats.xml")
+            system("cactus_treeStats --cactusDisk \'%s\' --flowerName 0 --outputFile %s" %(exp.getDiskDatabaseString(),
+                                                                                        treeStatsFile))
             
             system("jobTreeStats --jobTree %s --outputFile %s/jobTreeStats.xml" % (tempJobTreeDir2, self.outputDir))
             system("mv %s %s" % (tempExperimentDir2, self.outputDir))
@@ -381,12 +396,14 @@ class MakeSummary(Target):
                     basePath = self.getPath(testCategory, params, i)
                     jobTreeStatsPath = os.path.join(basePath, "jobTreeStats.xml")
                     mafCompPath = os.path.join(basePath, "mafComparison.xml")
+                    treeStatsPath = os.path.join(basePath, "treeStats.xml")
                     if params.vanilla is False:
                         projPath = os.path.join(basePath, "progressiveCactusAlignment", 
                                                 "progressiveCactusAlignment_project.xml")
                     else:
                         projPath = None                    
-                    summary.addRow(rowName, params, jobTreeStatsPath, mafCompPath, projPath)
+                    summary.addRow(rowName, params, jobTreeStatsPath, mafCompPath, 
+                                   treeStatsPath, projPath)
                 summary.write(os.path.join(self.options.outputDir, "%s_summary.csv" % name))
                    
 class MakeAllAlignments(Target):
@@ -400,12 +417,14 @@ class MakeAllAlignments(Target):
         #pg = ParamsGenerator()
         #pg = BasicProgressive()
         #pg = AllProgressive()
-        pg = EverythingButSelf()
+        #pg = EverythingButSelf()
         #pg = SingleCase()
+        #pg = KyotoTycoon()
+        pg = LastzTuning()
         for params in pg.generate():
             self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
-            self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
-            self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
         
         self.setFollowOnTarget(MakeSummary(self.options, pg))
 

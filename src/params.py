@@ -12,11 +12,11 @@ progressive cactus
 import os
 import xml.etree.ElementTree as ET
 import sys
-
+import copy
 
 class Params:
     
-    Header = ["Style", "MinChainLen", "MinBlockDeg", "MaxGroupSize", \
+    Header = ["Style", "Template", "MinChainLen", "MinBlockDeg", "MaxGroupSize", \
               "Outgroup", "SingleCpy", "ReqFrac", "Self", "SubtreeSize", "Kyoto"]
                 
     def __init__(self):
@@ -30,14 +30,20 @@ class Params:
         self.subtreeSize = None
         self.vanilla = False
         self.kyotoTycoon = None
+        self.templatePath = None
     
     # only write non-None attributes, idea being
     # that defaults are already in the config.        
-    def applyToXml(self, config):
+    def applyToXml(self, xmlTree):
         def setAtt(elem, atName, val):
             if val is not None:
                 elem.attrib[atName] = str(val)
         
+        if self.templatePath != None:
+            xmlTree._setroot(ET.parse(self.templatePath).getroot())
+           
+        config = xmlTree.getroot()
+                
         mcElem = config.find("multi_cactus")
         ogElem = mcElem.find("outgroup")
         setAtt(ogElem, "strategy", self.outgroupStrategy)
@@ -81,6 +87,12 @@ class Params:
         self.check()    
         token = ""
         
+        tpName = self.templatePath
+        if tpName is not None:
+            tpName = os.path.basename(tpName)
+            tpName = os.path.splitext(tpName)[0]
+        
+        token += printItem("tp", tpName)
         token += printItem("mc", self.minChainLength)
         token += printItem("mb", self.minBlockDegree)
         token += printItem("mg", self.maxGroupSize)
@@ -107,7 +119,14 @@ class Params:
         name = "Progressive"
         if self.vanilla is True:
             name = "Vanilla"
-        addItem(row, name)    
+            
+        tpName = self.templatePath
+        if tpName is not None:
+            tpName = os.path.basename(tpName)
+            tpName = os.path.splitext(tpName)[0]
+            
+        addItem(row, name) 
+        addItem(row, tpName)   
         addItem(row, self.minChainLength)
         addItem(row, self.minBlockDegree)
         addItem(row, self.maxGroupSize)
