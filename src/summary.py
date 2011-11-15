@@ -23,16 +23,19 @@ from cactus.progressive.experimentWrapper import ExperimentWrapper
 class Summary:
     Header = Params.Header + \
     ["Run_Time", "Clock_Time", "Sensitivity", "Specificity", "Bal. Accuracy", \
-     "Root Growth", "Avg Growth"]
+     "Root Growth", "Avg Growth", "BBL_Min", "BBL_Max", "BBL_Avg", "TGS_Min", \
+     "TGS_Max", "TGS_Avg"]
     SensIdx = len(Header)
     SpecIdx = SensIdx + 1 
     def __init__(self):
         self.table = []
 
-    def addRow(self, catName, params, jobTreeStatsPath, mafCompPath, projPath):
+    def addRow(self, catName, params, jobTreeStatsPath, mafCompPath, 
+               treeStatsPath, projPath):
         if os.path.isfile(jobTreeStatsPath) and os.path.isfile(mafCompPath):
             mafXmlRoot = ET.parse(mafCompPath).getroot()
             jtXmlRoot = ET.parse(jobTreeStatsPath).getroot()
+            tsXmlRoot = ET.parse(treeStatsPath).getroot()
             if projPath is not None:
                 project = MultiCactusProject()
                 project.readXML(projPath)
@@ -42,6 +45,7 @@ class Summary:
             row.extend(self.__jtStats(jtXmlRoot))
             row.extend(self.__totalAggregate(mafXmlRoot))
             row.extend(self.__growthStats(project))
+            row.extend(self.__cactusTreeStats(tsXmlRoot))
             row.extend(self.__speciesAggregate(mafXmlRoot))
             rowstring = str(row)
             self.table.append(row)
@@ -147,6 +151,23 @@ class Summary:
                 ratioCount += 1
         avgRatio = ratioSum / ratioCount
         results.append(avgRatio)
+        return results
+    
+    # get some stats on the cactus graph structure 
+    # bbl = <chains><base_block_lengths >
+    # tgs = <terminal_group_sizes>
+    def __cactusTreeStats(self, treeStatsXmlRoot):
+        results = []
+        chains = treeStatsXmlRoot.find("chains")
+        bbl = chains.find("base_block_lengths")
+        results.append(bbl.attrib["min"])
+        results.append(bbl.attrib["max"])
+        results.append(bbl.attrib["avg"])
+        
+        tgs = treeStatsXmlRoot.find("terminal_group_sizes")
+        results.append(tgs.attrib["min"])
+        results.append(tgs.attrib["max"])
+        results.append(tgs.attrib["avg"])
         return results
                         
     # return boolean vector identifying empty columns
