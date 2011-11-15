@@ -423,8 +423,8 @@ class MakeAllAlignments(Target):
         pg = LastzTuning()
         for params in pg.generate():
             self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
-            #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
-            #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
+            self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
         
         self.setFollowOnTarget(MakeSummary(self.options, pg))
 
