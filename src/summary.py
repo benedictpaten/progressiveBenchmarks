@@ -22,7 +22,11 @@ from cactus.progressive.experimentWrapper import ExperimentWrapper
 
 class Summary:
     Header = Params.Header + \
-    ["Run_Time", "Clock_Time", "Sensitivity", "Specificity", "Bal. Accuracy", \
+    ["Run_Time", "Clock_Time", "Base_tot_run", "Base_tot_clock", \
+     "Core_tot_run", "Core_tot_clock", "RefCoord_tot_run", 
+     "RefCoord_tot_clock", "SelfBlast_tot_run", "SelfBlast_tot_clock",\
+     "Blast_tot_run", "Blast_tot_clcok",\
+     "Sensitivity", "Specificity", "Bal. Accuracy", \
      "Root Growth", "Avg Growth", "BBL_Min", "BBL_Max", "BBL_Avg", "TGS_Min", \
      "TGS_Max", "TGS_Avg"]
     SensIdx = len(Header)
@@ -112,10 +116,29 @@ class Summary:
         results.append(acc)
         return results
     
+    def __getElemAtt(self, node, elemName, attributeName, default=""):
+            elem = node.find(elemName)
+            if elem is not None:
+                if attributeName in elem.attrib:
+                    return elem.attrib[attributeName]
+            return default
+        
     # returns the total run time  
-    def __jtStats(self, xmlRoot):
-        return [float(xmlRoot.attrib["total_run_time"]), 
+    def __jtStats(self, xmlRoot):       
+        jtRow = [float(xmlRoot.attrib["total_run_time"]), 
                 float(xmlRoot.attrib["total_clock"])]
+        ttElem = xmlRoot.find("target_types")
+        jtRow.append(self.__getElemAtt(ttElem, "CactusBaseLevelAlignerWrapper", "total_time"))
+        jtRow.append(self.__getElemAtt(ttElem, "CactusBaseLevelAlignerWrapper", "total_clock"))
+        jtRow.append(self.__getElemAtt(ttElem, "CactusCoreWrapper", "total_time"))
+        jtRow.append(self.__getElemAtt(ttElem, "CactusCoreWrapper", "total_clock"))
+        jtRow.append(self.__getElemAtt(ttElem, "CactusSetReferenceCoordinates", "total_time"))
+        jtRow.append(self.__getElemAtt(ttElem, "CactusSetReferenceCoordinates", "total_clock"))
+        jtRow.append(self.__getElemAtt(ttElem, "RunSelfBlast", "total_time"))
+        jtRow.append(self.__getElemAtt(ttElem, "RunSelfBlast", "total_clock"))
+        jtRow.append(self.__getElemAtt(ttElem, "RunBlast", "total_time"))
+        jtRow.append(self.__getElemAtt(ttElem, "RunBlast", "total_clock"))
+        return jtRow
     
     # give some stats on how the reference geneomes grow:
     # root growth: ratio of root to biggest leaf

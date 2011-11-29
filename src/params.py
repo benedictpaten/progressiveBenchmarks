@@ -17,7 +17,8 @@ import copy
 class Params:
     
     Header = ["Style", "Template", "AnnealingRounds", "MinBlockDeg", "RepeatMask", \
-              "Outgroup", "SingleCpy", "ReqFrac", "Self", "SubtreeSize", "Kyoto"]
+              "Outgroup", "SingleCpy", "ReqFrac", "Self", "SubtreeSize", "Kyoto", \
+              "numThreads"]
                 
     def __init__(self):
         self.annealingRounds = None
@@ -31,6 +32,7 @@ class Params:
         self.vanilla = False
         self.kyotoTycoon = None
         self.templatePath = None
+        self.numThreads = None
     
     # only write non-None attributes, idea being
     # that defaults are already in the config.        
@@ -60,14 +62,16 @@ class Params:
         assert cafElem.attrib["type"] == "blast"
         assert cafElem.attrib["number"] == "0"
         coreElem = cafElem.find("core")
-        setAtt(coreElem, "annealingRounds", self.annealingRounds)
-        trim = coreElem.attrib["trim"].split()[0]
-        trimList = [trim] * len(self.annealingRounds.split())
-        setAtt(coreElem, "trim", " ".join(trimList))
+        if self.annealingRounds is not None:
+            setAtt(coreElem, "annealingRounds", self.annealingRounds)
+            trim = coreElem.attrib["trim"].split()[0]
+            trimList = [trim] * len(self.annealingRounds.split())
+            setAtt(coreElem, "trim", " ".join(trimList))
                
         barElem = iterations[-1]
         assert barElem.attrib["type"] == "base"
         setAtt(barElem, "minimumBlockDegree", self.minBlockDegree)
+        setAtt(barElem, "num_threads", self.numThreads)
         
         if self.repeatMask is not None:
             prep = "<preprocessor chunkSize=\"100000000\" chunksPerJob=\"1\" compressFiles=\"True\" overlapSize=\"1000\" preprocessorString=\"cactus_lastzRepeatMask.py --minPeriod=%d --lastzOpts=\'--step=20 --notransition --ambiguous=iupac --nogapped\' QUERY_FILE TARGET_FILE OUT_FILE\"/>" % int(self.repeatMask)
@@ -108,6 +112,7 @@ class Params:
         token += printItem("sa", self.selfAlignment)
         token += printItem("st", self.subtreeSize)
         token += printItem("kt", self.kyotoTycoon)
+        token += printItem("nt", self.numThreads)
         if self.vanilla:
             token += printItem("", "vanilla")
         if token == "":
@@ -142,6 +147,7 @@ class Params:
         addItem(row, self.selfAlignment)
         addItem(row, self.subtreeSize)
         addItem(row, self.kyotoTycoon)
+        addItem(row, self.numThreads)
         return row
 
         

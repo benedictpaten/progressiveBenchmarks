@@ -37,41 +37,45 @@ class ParamsGenerator:
         self.vanilla = [True, False]
         self.kyotoTycoon = [None]
         self.templatePath = [None]
+        self.numThreads = [None]
         
     def generate(self):
         for tp in self.templatePath:   
             for ar in self.annealingRounds:
                 for mb in self.minBlockDegree:
                     for rm in self.repeatMask:
-                        for va in self.vanilla:
-                            if va == True:
-                                params = Params()
-                                params.templatePath = tp
-                                params.annealingRounds = ar
-                                params.minBlockDegree = mb
-                                params.repeatMask = rm
-                                params.vanilla = va
-                                yield params
-                            else:     
-                                for og in self.outgroupStrategy:
-                                    for sc in self.singleCopyStrategy:
-                                        for cf in self.requiredFraction:
-                                            for sa in self.selfAlignment:
-                                                for st in self.subtreeSize:
-                                                    for kt in self.kyotoTycoon:
-                                                        params = Params()
-                                                        params.templatePath = tp
-                                                        params.annealingRounds = ar
-                                                        params.minBlockDegree = mb
-                                                        params.repeatMask = rm
-                                                        params.outgroupStrategy = og
-                                                        params.singleCopyStrategy = sc
-                                                        params.subtreeSize = st
-                                                        params.requiredFraction = cf
-                                                        params.selfAlignment = sa
-                                                        params.vanilla = va
-                                                        params.kyotoTycoon = kt
-                                                        yield params
+                        for nt in self.numThreads:
+                            for va in self.vanilla:
+                                if va == True:
+                                    params = Params()
+                                    params.templatePath = tp
+                                    params.annealingRounds = ar
+                                    params.minBlockDegree = mb
+                                    params.repeatMask = rm
+                                    params.numThreads = nt
+                                    params.vanilla = va
+                                    yield params
+                                else:     
+                                    for og in self.outgroupStrategy:
+                                        for sc in self.singleCopyStrategy:
+                                            for cf in self.requiredFraction:
+                                                for sa in self.selfAlignment:
+                                                    for st in self.subtreeSize:
+                                                        for kt in self.kyotoTycoon:
+                                                            params = Params()
+                                                            params.templatePath = tp
+                                                            params.annealingRounds = ar
+                                                            params.minBlockDegree = mb
+                                                            params.repeatMask = rm
+                                                            params.outgroupStrategy = og
+                                                            params.singleCopyStrategy = sc
+                                                            params.subtreeSize = st
+                                                            params.requiredFraction = cf
+                                                            params.selfAlignment = sa
+                                                            params.vanilla = va
+                                                            params.kyotoTycoon = kt
+                                                            params.numThreads = nt
+                                                            yield params
                                 
 class EverythingButSelf():
     class EverythingButSelf_MB2(ParamsGenerator):
@@ -150,5 +154,16 @@ class LastzTuning(ParamsGenerator):
         self.annealingRounds = ["2 3 4 8 16 32 64 128", "2 3 4 8 16 32 64 128 256 512", "8 128 512"]
         #self.annealingRounds = ["2 3 4 8 16 32 64 128"]
         self.vanilla = [False]
+
+class DefaultProgTest(ParamsGenerator):
+    def __init__(self):
+        ParamsGenerator.__init__(self)
+        self.vanilla = [False]
+        
+class NumThreadsTest(SingleCase):
+    def __init__(self):
+        SingleCase.__init__(self)
+        self.numThreads = [1, 2, 3, 4]
+        self.outgroupStrategy = ['greedy', 'none']
                              
     
