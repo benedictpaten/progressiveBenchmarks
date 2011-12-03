@@ -81,9 +81,9 @@ class Summary:
     
     def __pairTests(self, xmlRoot, i):
         assert i == 0 or i == 1
-        homologyTest = xmlRoot.findall("homology_tests")[i]
-        pairTests = homologyTest.find("homology_pair_tests")
-        for test in pairTests.findall("homology_test"):
+        homologyTest = xmlRoot.findall("homologyTests")[i]
+        pairTests = homologyTest.find("homologyPairTests")
+        for test in pairTests.findall("homologyTest"):
             yield test
     
     # returns [map of species names to aggregate sensitivity, 
@@ -94,23 +94,23 @@ class Summary:
             for test in self.__pairTests(xmlRoot, i):
                 if test.attrib["sequenceB"] == "aggregate":
                     name = test.attrib["sequenceA"]
-                    agg = test.find("aggregate_results").find("all")
+                    agg = test.find("aggregateResults").find("all")
                     val = agg.attrib["average"]
                     results[i][name] = val
                 elif test.attrib["sequenceA"] == "aggregate":
                     name = test.attrib["sequenceB"]
-                    agg = test.find("aggregate_results").find("all")
+                    agg = test.find("aggregateResults").find("all")
                     val = agg.attrib["average"]
                     results[i][name] = val
         return results            
         
     # returns [sensitivity, specificity]
     def __totalAggregate(self, xmlRoot):
-        homologyTests = xmlRoot.findall("homology_tests")
+        homologyTests = xmlRoot.findall("homologyTests")
         assert len(homologyTests) == 2
         results = []
         for ht in homologyTests:
-            agg = ht.find("aggregate_results").find("all")
+            agg = ht.find("aggregateResults").find("all")
             results.append(float(agg.attrib["average"]))
         acc = (results[-1] + results[-2]) / 2
         results.append(acc)
