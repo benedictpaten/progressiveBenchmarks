@@ -39,6 +39,7 @@ from cactus.shared.test import getInputs
 from sonLib.bioio import TestStatus
 from cactus.progressive.experimentWrapper import ExperimentWrapper
 from cactus.progressive.cactus_createMultiCactusProject import cleanEventTree
+from cactus.progressive.ktserverLauncher import KtserverLauncher
 from progressiveBenchmarks.src.params import Params
 from progressiveBenchmarks.src.paramsGenerator import ParamsGenerator
 from progressiveBenchmarks.src.paramsGenerator import EverythingButSelf
@@ -169,10 +170,15 @@ class MakeAlignment(Target):
             #Run the cactus tree stats
             expPath = os.path.join(tempExperimentDir, "Anc0", "Anc0_experiment.xml")
             exp = ExperimentWrapper(ET.parse(expPath).getroot())
+            if exp.getDbType() == "kyoto_tycoon":
+                ktserver = KtserverLauncher()
+                ktserver.spawnServer(exp) 
             treeStatsFile = os.path.join(self.outputDir, "treeStats.xml")
             system("cactus_treeStats --cactusDisk \'%s\' --flowerName 0 --outputFile %s" %(exp.getDiskDatabaseString(),
                                                                                         treeStatsFile))
-            
+            if exp.getDbType() == "kyoto_tycoon":
+                ktserver.killServer(exp)
+                
             #Now copy the true assembly back to the output
             system("mv %s %s/experiment.xml" % (tempExperimentFile, self.outputDir))
             system("mv %s %s" % (tempExperimentDir, self.outputDir))
@@ -433,13 +439,13 @@ class MakeAllAlignments(Target):
         #pg = AllProgressive()
         #pg = EverythingButSelf()
         #pg = SingleCase()
-        #pg = KyotoTycoon()
-        pg = LastzTuning()
+        pg = KyotoTycoon()
+        #pg = LastzTuning()
         for params in pg.generate():
           #  self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
-          #  self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
+            self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
           #  self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
-            self.addChildTarget(MakeEevolverHumanMouseLarge(self.options, params))
+          #  self.addChildTarget(MakeEevolverHumanMouseLarge(self.options, params))
         
         self.setFollowOnTarget(MakeSummary(self.options, pg))
 
