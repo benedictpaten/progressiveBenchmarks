@@ -36,7 +36,8 @@ class Summary:
 
     def addRow(self, catName, params, jobTreeStatsPath, mafCompPath, 
                treeStatsPath, projPath):
-        if os.path.isfile(jobTreeStatsPath) and os.path.isfile(mafCompPath):
+        if os.path.isfile(jobTreeStatsPath) and os.path.isfile(mafCompPath) \
+           and os.path.isfile(treeStatsPath):
             mafXmlRoot = ET.parse(mafCompPath).getroot()
             jtXmlRoot = ET.parse(jobTreeStatsPath).getroot()
             tsXmlRoot = ET.parse(treeStatsPath).getroot()
