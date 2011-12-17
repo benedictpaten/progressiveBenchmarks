@@ -326,9 +326,8 @@ class MakeBlanchetteStats(Target):
         
 class MakeEvolverPrimatesLoci1(MakeBlanchetteAlignments):
     name = "evolverPrimatesLoci1"
-    def setupStats(self, outputDir, simDir, params):
+    def setupStats(self, outputDir, trueMaf, params):
         #Setup the stat computation
-        trueMaf = os.path.join(simDir, "all.burnin.maf")
         if self.params.vanilla == False:
             predictedMaf = os.path.join(outputDir, "progressiveCactusAlignment", "Anc0", "Anc0.maf")
         else:
@@ -342,7 +341,7 @@ class MakeEvolverPrimatesLoci1(MakeBlanchetteAlignments):
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
-        self.setupStats(outputDir, simDir, self.params)
+        self.setupStats(outputDir, os.path.join(simDir, "all.burnin.maf"), self.params)
         
         
 class MakeEvolverMammalsLoci1(MakeEvolverPrimatesLoci1):
@@ -353,7 +352,7 @@ class MakeEvolverMammalsLoci1(MakeEvolverPrimatesLoci1):
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
-        self.setupStats(outputDir, simDir, self.params)
+        self.setupStats(outputDir, os.path.join(simDir, "all.burnin.maf"), self.params)
         
 class MakeEevolverHumanMouseLarge(MakeEvolverPrimatesLoci1):
     name = "evolverHumanMouseLarge"
@@ -365,7 +364,31 @@ class MakeEevolverHumanMouseLarge(MakeEvolverPrimatesLoci1):
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
-        self.setupStats(outputDir, simDir, self.params)
+        self.setupStats(outputDir, os.path.join(simDir, "all.burnin.maf"), self.params)
+        
+class MakeBlanchetteHumanMouse(MakeEvolverPrimatesLoci1):
+    name = "blanchetteHumanMouse"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "blanchettesSimulation", "00.job")
+        sequences = os.path.join(simDir, "HUMAN"), os.path.join(simDir, "MOUSE")
+        #, newickTreeString = getInputs(simDir, ("HUMAN", "MOUSE"))
+        newickTreeString = "(HUMAN:0.144018,MOUSE:0.356483);"
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        self.setupStats(outputDir, os.path.join(simDir, "true.maf"), self.params)
+        
+class MakeBlanchetteHumanMouseDog(MakeEvolverPrimatesLoci1):
+    name = "blanchetteHumanMouseDog"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "blanchettesSimulation", "00.job")
+        sequences = os.path.join(simDir, "HUMAN"), os.path.join(simDir, "MOUSE"), os.path.join(simDir, "DOG")
+        #, newickTreeString = getInputs(simDir, ("HUMAN", "MOUSE"))
+        newickTreeString = "((HUMAN:0.144018,MOUSE:0.356483):0.0238,DOG:0.197);"
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        self.setupStats(outputDir, os.path.join(simDir, "true.maf"), self.params)
         
 class MakeStats(Target):
     def __init__(self, options, trueMaf, predictedMaf, outputFile, params):
@@ -438,14 +461,16 @@ class MakeAllAlignments(Target):
         #pg = BasicProgressive()
         #pg = AllProgressive()
         #pg = EverythingButSelf()
-        #pg = SingleCase()
-        pg = KyotoTycoon()
+        pg = SingleCase()
+        #pg = KyotoTycoon()
         #pg = LastzTuning()
         for params in pg.generate():
-          #  self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
-            self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
-          #  self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
-          #  self.addChildTarget(MakeEevolverHumanMouseLarge(self.options, params))
+            #self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
+            self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
+            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            #self.addChildTarget(MakeEevolverHumanMouseLarge(self.options, params))
         
         self.setFollowOnTarget(MakeSummary(self.options, pg))
 
