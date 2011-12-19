@@ -2,14 +2,15 @@
 	<alignment>
 		<blast_misc chunksPerJob="1" compressFiles="True" overlapSize="10000" filterByIdentity="0" identityRatio="6" minimumDistance="0.01" minimumSequenceLength="30"/>
 		<iterations>
-			<iteration min_sequence_size="10000" number="0" type="blast">
-				<blast blastString="lastz --format=cigar --nogapped --hspthresh=1800 --maxwordcount=90% SEQ_FILE_1[multiple][nameparse=darkspace][unmask] SEQ_FILE_2[nameparse=darkspace][unmask] &gt; CIGARS_FILE" chunkSize="1000000" selfBlastString="lastz --format=cigar --hspthresh=1800 --nogapped --maxwordcount=90% SEQ_FILE[multiple][nameparse=darkspace][unmask] SEQ_FILE[nameparse=darkspace][unmask] --notrivial &gt; CIGARS_FILE" />
-				<core alignRepeatsAtRound="0" annealingRounds="2 3 4 8 16 32 64 128 256 512" deannealingRounds="1 2 3 4 8 16 32 64 128 256 512" blockTrim="2" minimumTreeCoverage="1.0" trim="5 5 5 5 5 5 5 5 5 5 5 5 0 0 0 0 0 0 0 0 0" minimumBlockDegree="2"/>
+			
+			<iteration min_sequence_size="5000" number="0" type="blast">
+				<blast blastString="lastz --format=cigar --nogapped --hspthresh=1800 SEQ_FILE_1[multiple][nameparse=darkspace] SEQ_FILE_2[nameparse=darkspace] &gt; CIGARS_FILE" chunkSize="1000000" selfBlastString="lastz --format=cigar --nogapped --hspthresh=1800 SEQ_FILE[multiple][nameparse=darkspace] SEQ_FILE[nameparse=darkspace] --notrivial &gt; CIGARS_FILE" />
+				<core alignRepeatsAtRound="0" annealingRounds="2 3 4 8 16 32 64 128 256 512" deannealingRounds="1 2 3 4 8 16 32 64 128 256 512" blockTrim="0" minimumTreeCoverage="1.0" trim="5 5 5 5 5 5 5 5 5 5 5 5 0 0 0 0 0 0 0 0 0" minimumBlockDegree="2"/>
 			</iteration>
 			
-			<iteration min_sequence_size="500" max_sequence_size="50000000" number="1" type="blast">
-				<blast blastString="lastz --format=cigar --hspthresh=1800 --maxwordcount=90% SEQ_FILE_1[multiple][nameparse=darkspace][unmask] SEQ_FILE_2[nameparse=darkspace][unmask] &gt; CIGARS_FILE" chunkSize="1000000" selfBlastString="lastz --format=cigar --hspthresh=1800 --maxwordcount=90% SEQ_FILE[multiple][nameparse=darkspace][unmask] SEQ_FILE[nameparse=darkspace][unmask] --notrivial &gt; CIGARS_FILE" />
-				<core alignRepeatsAtRound="0" annealingRounds="2 3 4 8 16 32 64 128 256 512" deannealingRounds="1 2 3 4 8 16 32 64 128 256 512" blockTrim="2" minimumTreeCoverage="0.0" trim="5 5 5 5 5 5 5 5 5 5 5 5 5 5 0 0 0 0 0 0 0" minimumBlockDegree="2"/>
+			<iteration min_sequence_size="5000" number="0" type="blast">
+				<blast blastString="lastz --format=cigar --hspthresh=1800 SEQ_FILE_1[multiple][nameparse=darkspace] SEQ_FILE_2[nameparse=darkspace] &gt; CIGARS_FILE" chunkSize="1000000" selfBlastString="lastz --format=cigar --hspthresh=1800 SEQ_FILE[multiple][nameparse=darkspace] SEQ_FILE[nameparse=darkspace] --notrivial &gt; CIGARS_FILE" />
+				<core alignRepeatsAtRound="0" annealingRounds="2 3 4 8 16 32 64 128" deannealingRounds="1 2 3 4 8 16 32 64 128" blockTrim="0" minimumTreeCoverage="1.0" trim="5 5 5 5 5 5 5 5 5 5 5 5 0 0 0 0 0 0 0 0 0" minimumBlockDegree="2"/>
 			</iteration>
 		
 			<iteration type="base" number="2" min_sequence_size="1" spanning_trees="10" gap_gamma="0.2" use_banding="1" banding_limit="100000" max_banding_size="3000" min_banding_size="1000" min_banding_constraint_distance="300" min_trace_back_diag="42" min_trace_gap_diags="10" constraint_diagonal_trim="4" minimumBlockDegree="0" alignAmbiguityCharacters="1"/>
