@@ -354,6 +354,17 @@ class MakeEvolverMammalsLoci1(MakeEvolverPrimatesLoci1):
                                           self.params))
         self.setupStats(outputDir, os.path.join(simDir, "all.burnin.maf"), self.params)
         
+class MakeEvolverMammalsLoci1HumanMouse(MakeEvolverPrimatesLoci1):
+    name = "evolverMammalsHumanMouseLoci1"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "loci1")
+        sequences, newickTreeString = getInputs(simDir, ("simHuman.chr6", "simMouse.chr6"))
+        newickTreeString = "(simHuman:0.144018,simMouse:0.356483);"
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        self.setupStats(outputDir, os.path.join(simDir, "all.burnin.maf"), self.params)
+        
 class MakeEevolverHumanMouseLarge(MakeEvolverPrimatesLoci1):
     name = "evolverHumanMouseLarge"
     def run(self):
@@ -469,7 +480,8 @@ class MakeAllAlignments(Target):
             self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
             self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
-            #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
             #self.addChildTarget(MakeEevolverHumanMouseLarge(self.options, params))
         
         self.setFollowOnTarget(MakeSummary(self.options, pg))
