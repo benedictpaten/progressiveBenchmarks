@@ -129,7 +129,7 @@ class SingleCase(ParamsGenerator):
         self.singleCopyStrategy = ['outgroup']
         self.requiredFraction = [0.67]
         self.selfAlignment = [False]
-        self.vanilla = [ True, False ]
+        self.vanilla = [ False ]
         self.minBlockDegree = [ 2]
 
 class KyotoTycoon(ParamsGenerator):
