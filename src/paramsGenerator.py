@@ -136,8 +136,9 @@ class KyotoTycoon(ParamsGenerator):
     def __init__(self):
         ParamsGenerator.__init__(self)
         self.kyotoTycoon = [True]
-        self.outgroupStrategy = ['greedy', 'greedyLeaves']
+        self.outgroupStrategy = ['greedy' ]
         self.singleCopyStrategy = ['outgroup']
+        self.requiredFraction = [0.67]
         self.selfAlignment = [False]
         self.vanilla = [False]
         
