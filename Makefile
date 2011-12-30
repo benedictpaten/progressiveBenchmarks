@@ -1,5 +1,5 @@
 outputDir = output
-jobTreeParameters = --logDebug --maxThreads=20
+jobTreeParameters = --logDebug --maxThreads=1
 
 all :
 	#Nothing currently
