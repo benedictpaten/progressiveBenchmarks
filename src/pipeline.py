@@ -246,6 +246,7 @@ class MakeAlignment(Target):
                               jobTreeStats=True,
                               setupAndBuildAlignments=True,
                               buildReference=True,
+                              #Passing options
                               maxThreads=int(self.options.cpus),
                               maxJobs=int(self.options.cpus))
             
