@@ -76,7 +76,7 @@ class MakeAlignment(Target):
                  #referenceAlgorithm, minimumBlockDegree, 
                  #blastAlignmentString, baseLevel, maxNumberOfChains, permutations,
                  #theta, useSimulatedAnnealing, heldOutSequence):
-        Target.__init__(self, cpu=4, memory=4000000000)
+        Target.__init__(self, cpu=int(options.cpus), memory=4000000000)
         self.sequences = sequences
         self.newickTree = newickTree
         #self.requiredSpecies = requiredSpecies
@@ -159,7 +159,8 @@ class MakeAlignment(Target):
                                  joinMaf=True,
                                  #buildTrees=buildTrees, buildFaces=buildFaces, buildReference=buildReference,
                                  jobTreeStats=True,
-                                 maxThreads=4,
+                                 maxThreads=int(self.options.cpus),
+                                 maxJobs=int(self.options.cpus),
                                  logLevel="DEBUG")
             logger.info("Ran the progressive workflow")
             
@@ -245,7 +246,8 @@ class MakeAlignment(Target):
                               jobTreeStats=True,
                               setupAndBuildAlignments=True,
                               buildReference=True,
-                              maxThreads=4)
+                              maxThreads=int(self.options.cpus),
+                              maxJobs=int(self.options.cpus))
             
             runJobTreeStatusAndFailIfNotComplete(tempJobTreeDir2)
             logger.info("Checked the job tree dir for the vanilla run")
@@ -365,7 +367,7 @@ class MakeEvolverMammalsLoci1HumanMouse(MakeEvolverPrimatesLoci1):
                                           self.params))
         self.setupStats(outputDir, os.path.join(simDir, "all.burnin.maf"), self.params)
         
-class MakeEevolverHumanMouseLarge(MakeEvolverPrimatesLoci1):
+class MakeEvolverHumanMouseLarge(MakeEvolverPrimatesLoci1):
     name = "evolverHumanMouseLarge"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "large")
@@ -478,15 +480,14 @@ class MakeAllAlignments(Target):
         for params in pg.generate():
             self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
             self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
-            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
-            self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
-            self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
-            self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
-            #self.addChildTarget(MakeEevolverHumanMouseLarge(self.options, params))
+            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
+            #self.addChildTarget(MakeEvolverHumanMouseLarge(self.options, params))
         
         self.setFollowOnTarget(MakeSummary(self.options, pg))
 
-        
 def main():
     ##########################################
     #Construct the arguments.
@@ -494,6 +495,7 @@ def main():
     
     parser = OptionParser()
     parser.add_option("--outputDir", dest="outputDir")
+    parser.add_option("--cpus", dest="cpus")
     
     Stack.addJobTreeOptions(parser)
     
