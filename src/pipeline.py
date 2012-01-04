@@ -160,6 +160,7 @@ class MakeAlignment(Target):
                                  #buildTrees=buildTrees, buildFaces=buildFaces, buildReference=buildReference,
                                  jobTreeStats=True,
                                  maxThreads=4,
+                                 maxJobs=4,
                                  logLevel="DEBUG")
             logger.info("Ran the progressive workflow")
             
@@ -245,7 +246,8 @@ class MakeAlignment(Target):
                               jobTreeStats=True,
                               setupAndBuildAlignments=True,
                               buildReference=True,
-                              maxThreads=4)
+                              maxThreads=4,
+                              maxJobs=4)
             
             runJobTreeStatusAndFailIfNotComplete(tempJobTreeDir2)
             logger.info("Checked the job tree dir for the vanilla run")
