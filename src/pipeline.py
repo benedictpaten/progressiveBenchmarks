@@ -159,7 +159,7 @@ class MakeAlignment(Target):
                                  joinMaf=True,
                                  #buildTrees=buildTrees, buildFaces=buildFaces, buildReference=buildReference,
                                  jobTreeStats=True,
-                                 maxThreads=40,
+                                 maxThreads=4,
                                  logLevel="DEBUG")
             logger.info("Ran the progressive workflow")
             
@@ -482,7 +482,7 @@ class MakeAllAlignments(Target):
             self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
             self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
-            self.addChildTarget(MakeEevolverHumanMouseLarge(self.options, params))
+            #self.addChildTarget(MakeEevolverHumanMouseLarge(self.options, params))
         
         self.setFollowOnTarget(MakeSummary(self.options, pg))
 

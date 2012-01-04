@@ -141,6 +141,7 @@ class KyotoTycoon(ParamsGenerator):
         self.requiredFraction = [0.67]
         self.selfAlignment = [False]
         self.vanilla = [False]
+        self.repeatMask = [10]
         
 class LastzTuning(ParamsGenerator):
     def lastzPath(self, x):
