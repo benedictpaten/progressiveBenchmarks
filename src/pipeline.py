@@ -152,6 +152,9 @@ class MakeAlignment(Target):
                                               tempExperimentDir)
             logger.info("Setup the cactus progressive experiment")
             
+            #Make the logfile for jobTree
+            jobTreeLogFile = os.path.join(self.outputDir, "log.txt")
+            
             runCactusProgressive(os.path.join(tempExperimentDir, "progressiveCactusAlignment_project.xml"), 
                                  tempJobTreeDir, 
                                  #batchSystem=batchSystem, 
@@ -161,7 +164,8 @@ class MakeAlignment(Target):
                                  jobTreeStats=True,
                                  maxThreads=int(self.options.cpus),
                                  maxJobs=int(self.options.cpus),
-                                 logLevel="DEBUG")
+                                 logLevel="DEBUG",
+                                 logFile = jobTreeLogFile)
             logger.info("Ran the progressive workflow")
             
             #Check if the jobtree completed sucessively.
@@ -224,6 +228,9 @@ class MakeAlignment(Target):
             #Make the experiment file
             tempExperimentFile2 = os.path.join(tempLocalDir, "experiment.xml")
 
+            #Make the logfile for jobTree
+            jobTreeLogFile = os.path.join(self.outputDir, "log.txt")
+            
             cactusWorkflowExperiment = CactusWorkflowExperiment(
                                                  sequences=self.sequences, 
                                                  newickTreeString=self.newickTree, 
@@ -231,7 +238,8 @@ class MakeAlignment(Target):
                                                  #singleCopySpecies=self.singleCopySpecies,
                                                  databaseName="cactusAlignmentVanilla",
                                                  outputDir=tempLocalDir,
-                                                 configFile=tempConfigFile)
+                                                 configFile=tempConfigFile,
+                                                 logFile=jobTreeLogFile)
             tempExperimentDir2 = os.path.join(tempLocalDir, "cactusAlignmentVanilla")
             cactusWorkflowExperiment.writeExperimentFile(tempExperimentFile2)
            
