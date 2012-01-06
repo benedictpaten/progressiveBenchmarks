@@ -30,6 +30,7 @@ class ParamsGenerator:
         self.minBlockDegree = [None]
         self.repeatMask = [None]
         self.outgroupStrategy = [None]
+        self.outgroupThreshold = [None]
         self.singleCopyStrategy = [None]
         self.requiredFraction = [None]
         self.selfAlignment = [None]
@@ -57,25 +58,29 @@ class ParamsGenerator:
                                     yield params
                                 else:     
                                     for og in self.outgroupStrategy:
-                                        for sc in self.singleCopyStrategy:
-                                            for cf in self.requiredFraction:
-                                                for sa in self.selfAlignment:
-                                                    for st in self.subtreeSize:
-                                                        for kt in self.kyotoTycoon:
-                                                            params = Params()
-                                                            params.templatePath = tp
-                                                            params.annealingRounds = ar
-                                                            params.minBlockDegree = mb
-                                                            params.repeatMask = rm
-                                                            params.outgroupStrategy = og
-                                                            params.singleCopyStrategy = sc
-                                                            params.subtreeSize = st
-                                                            params.requiredFraction = cf
-                                                            params.selfAlignment = sa
-                                                            params.vanilla = va
-                                                            params.kyotoTycoon = kt
-                                                            params.numThreads = nt
-                                                            yield params
+                                        for ot in self.outgroupThreshold:
+                                            if og != 'greedy' and self.outgroupThreshold.index(ot) > 0:
+                                                continue
+                                            for sc in self.singleCopyStrategy:
+                                                for cf in self.requiredFraction:
+                                                    for sa in self.selfAlignment:
+                                                        for st in self.subtreeSize:
+                                                            for kt in self.kyotoTycoon:
+                                                                params = Params()
+                                                                params.templatePath = tp
+                                                                params.annealingRounds = ar
+                                                                params.minBlockDegree = mb
+                                                                params.repeatMask = rm
+                                                                params.outgroupStrategy = og
+                                                                params.outgroupThreshold = ot
+                                                                params.singleCopyStrategy = sc
+                                                                params.subtreeSize = st
+                                                                params.requiredFraction = cf
+                                                                params.selfAlignment = sa
+                                                                params.vanilla = va
+                                                                params.kyotoTycoon = kt
+                                                                params.numThreads = nt
+                                                                yield params
                                 
 class EverythingButSelf():
     class EverythingButSelf_MB2(ParamsGenerator):

@@ -17,14 +17,15 @@ import copy
 class Params:
     
     Header = ["Style", "Template", "AnnealingRounds", "MinBlockDeg", "RepeatMask", \
-              "Outgroup", "SingleCpy", "ReqFrac", "Self", "SubtreeSize", "Kyoto", \
-              "numThreads"]
+              "Outgroup", "OgThreshold", "SingleCpy", "ReqFrac", "Self", \
+              "SubtreeSize", "Kyoto", "numThreads"]
                 
     def __init__(self):
         self.annealingRounds = None
         self.minBlockDegree = None
         self.repeatMask = None
         self.outgroupStrategy = None
+        self.outgroupThreshold = None
         self.singleCopyStrategy = None
         self.requiredFraction = None
         self.selfAlignment = None
@@ -49,6 +50,7 @@ class Params:
         mcElem = config.find("multi_cactus")
         ogElem = mcElem.find("outgroup")
         setAtt(ogElem, "strategy", self.outgroupStrategy)
+        setAtt(ogElem, "threshold", self.outgroupThreshold)
         coverageElem = mcElem.find("coverage")
         setAtt(coverageElem, "required_fraction", self.requiredFraction)
         setAtt(coverageElem, "single_copy_strategy", self.singleCopyStrategy)
@@ -81,6 +83,7 @@ class Params:
     def check(self):
         if self.vanilla == True:
             assert self.outgroupStrategy is None
+            assert self.outgroupThreshold is None
             assert self.singleCopyStrategy is None
             assert self.requiredFraction is None
             assert self.selfAlignment is None
@@ -107,6 +110,7 @@ class Params:
         token += printItem("mb", self.minBlockDegree)
         token += printItem("rm", self.repeatMask)
         token += printItem("og", self.outgroupStrategy)
+        token += printItem("ot", self.outgroupThreshold)
         token += printItem("sc", self.singleCopyStrategy)
         token += printItem("cf", self.requiredFraction)
         token += printItem("sa", self.selfAlignment)
@@ -142,6 +146,7 @@ class Params:
         addItem(row, self.minBlockDegree)
         addItem(row, self.repeatMask)
         addItem(row, self.outgroupStrategy)
+        addItem(row, self.outgroupThreshold)
         addItem(row, self.singleCopyStrategy)
         addItem(row, self.requiredFraction)
         addItem(row, self.selfAlignment)
