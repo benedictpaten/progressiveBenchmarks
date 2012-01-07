@@ -16,8 +16,8 @@ import copy
 
 class Params:
     
-    Header = ["Style", "Template", "AnnealingRounds", "MinBlockDeg", "RepeatMask", \
-              "Outgroup", "OgThreshold", "SingleCpy", "ReqFrac", "Self", \
+    Header = ["Style", "Template", "AnnealingRounds", "MinBlockDeg", 
+              "RepeatMask", "Outgroup", "OgThreshold", "Self", \
               "SubtreeSize", "Kyoto", "numThreads"]
                 
     def __init__(self):
@@ -26,8 +26,6 @@ class Params:
         self.repeatMask = None
         self.outgroupStrategy = None
         self.outgroupThreshold = None
-        self.singleCopyStrategy = None
-        self.requiredFraction = None
         self.selfAlignment = None
         self.subtreeSize = None
         self.vanilla = False
@@ -51,9 +49,6 @@ class Params:
         ogElem = mcElem.find("outgroup")
         setAtt(ogElem, "strategy", self.outgroupStrategy)
         setAtt(ogElem, "threshold", self.outgroupThreshold)
-        coverageElem = mcElem.find("coverage")
-        setAtt(coverageElem, "required_fraction", self.requiredFraction)
-        setAtt(coverageElem, "single_copy_strategy", self.singleCopyStrategy)
         decompElem = mcElem.find("decomposition")
         setAtt(decompElem, "self_alignment", self.selfAlignment)
         setAtt(decompElem, "subtree_size", self.subtreeSize)
@@ -84,8 +79,6 @@ class Params:
         if self.vanilla == True:
             assert self.outgroupStrategy is None
             assert self.outgroupThreshold is None
-            assert self.singleCopyStrategy is None
-            assert self.requiredFraction is None
             assert self.selfAlignment is None
             assert self.subtreeSize is None
             assert self.kyotoTycoon is None or self.kyotoTycoon is False
@@ -111,8 +104,6 @@ class Params:
         token += printItem("rm", self.repeatMask)
         token += printItem("og", self.outgroupStrategy)
         token += printItem("ot", self.outgroupThreshold)
-        token += printItem("sc", self.singleCopyStrategy)
-        token += printItem("cf", self.requiredFraction)
         token += printItem("sa", self.selfAlignment)
         token += printItem("st", self.subtreeSize)
         token += printItem("kt", self.kyotoTycoon)
@@ -147,8 +138,6 @@ class Params:
         addItem(row, self.repeatMask)
         addItem(row, self.outgroupStrategy)
         addItem(row, self.outgroupThreshold)
-        addItem(row, self.singleCopyStrategy)
-        addItem(row, self.requiredFraction)
         addItem(row, self.selfAlignment)
         addItem(row, self.subtreeSize)
         addItem(row, self.kyotoTycoon)

@@ -31,8 +31,6 @@ class ParamsGenerator:
         self.repeatMask = [None]
         self.outgroupStrategy = [None]
         self.outgroupThreshold = [None]
-        self.singleCopyStrategy = [None]
-        self.requiredFraction = [None]
         self.selfAlignment = [None]
         self.subtreeSize = [None]
         self.vanilla = [True, False]
@@ -61,43 +59,35 @@ class ParamsGenerator:
                                         for ot in self.outgroupThreshold:
                                             if og != 'greedy' and self.outgroupThreshold.index(ot) > 0:
                                                 continue
-                                            for sc in self.singleCopyStrategy:
-                                                for cf in self.requiredFraction:
-                                                    for sa in self.selfAlignment:
-                                                        for st in self.subtreeSize:
-                                                            for kt in self.kyotoTycoon:
-                                                                params = Params()
-                                                                params.templatePath = tp
-                                                                params.annealingRounds = ar
-                                                                params.minBlockDegree = mb
-                                                                params.repeatMask = rm
-                                                                params.outgroupStrategy = og
-                                                                params.outgroupThreshold = ot
-                                                                params.singleCopyStrategy = sc
-                                                                params.subtreeSize = st
-                                                                params.requiredFraction = cf
-                                                                params.selfAlignment = sa
-                                                                params.vanilla = va
-                                                                params.kyotoTycoon = kt
-                                                                params.numThreads = nt
-                                                                yield params
-                                
+                                            for sa in self.selfAlignment:
+                                                for st in self.subtreeSize:
+                                                    for kt in self.kyotoTycoon:
+                                                        params = Params()
+                                                        params.templatePath = tp
+                                                        params.annealingRounds = ar
+                                                        params.minBlockDegree = mb
+                                                        params.repeatMask = rm
+                                                        params.outgroupStrategy = og
+                                                        params.outgroupThreshold = ot
+                                                        params.subtreeSize = st
+                                                        params.selfAlignment = sa
+                                                        params.vanilla = va
+                                                        params.kyotoTycoon = kt
+                                                        params.numThreads = nt
+                                                        yield params
+                        
 class EverythingButSelf():
     class EverythingButSelf_MB2(ParamsGenerator):
         def __init__(self):
             ParamsGenerator.__init__(self)
             self.minBlockDegree = [2]
             self.outgroupStrategy = ['none', 'greedy', 'greedyLeaves']
-            self.singleCopyStrategy = ['none', 'outgroup', 'all']
-            self.requiredFraction = [0, 0.67, 1]
 
     class EverythingButSelf_MB0(ParamsGenerator):
         def __init__(self):
             ParamsGenerator.__init__(self)
             self.minBlockDegree = [0]
             self.outgroupStrategy = ['none']
-            self.singleCopyStrategy = ['none', 'all']
-            self.requiredFraction = [0]
    
     def generate(self):
         for p in self.EverythingButSelf_MB2().generate():
@@ -110,16 +100,12 @@ class AllProgressive(ParamsGenerator):
     def __init__(self):
         ParamsGenerator.__init__(self)
         self.outgroupStrategy = ['none', 'greedy', 'greedyLeaves']
-        self.singleCopyStrategy = ['none', 'outgroup', 'all']
-        self.requiredFraction = [0, 0.67, 1]
         self.selfAlignment = [True, False]
 
 class BasicProgressive(ParamsGenerator):
     def __init__(self):
         ParamsGenerator.__init__(self)
         self.outgroupStrategy = ['none', 'greedy']
-        self.singleCopyStrategy = ['outgroup']
-        self.requiredFraction = [0]
         self.selfAlignment = [True, False]
     
 class SmallProgressive(ParamsGenerator):
@@ -131,8 +117,6 @@ class SingleCase(ParamsGenerator):
     def __init__(self):
         ParamsGenerator.__init__(self)
         self.outgroupStrategy = ['greedy']
-        self.singleCopyStrategy = ['outgroup']
-        self.requiredFraction = [0.67]
         self.selfAlignment = [False]
         self.vanilla = [ False ]
         #self.minBlockDegree = [ 2]
@@ -142,8 +126,6 @@ class KyotoTycoon(ParamsGenerator):
         ParamsGenerator.__init__(self)
         self.kyotoTycoon = [True]
         self.outgroupStrategy = ['greedy' ]
-        self.singleCopyStrategy = ['outgroup']
-        self.requiredFraction = [0.67]
         self.selfAlignment = [False]
         self.vanilla = [False]
         self.repeatMask = [10]
