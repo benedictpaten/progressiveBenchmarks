@@ -483,8 +483,8 @@ class MakeAllAlignments(Target):
         #pg = BasicProgressive()
         #pg = AllProgressive()
         #pg = EverythingButSelf()
-        #pg = SingleCase()
-        pg = KyotoTycoon()
+        pg = SingleCase()
+        #pg = KyotoTycoon()
         #pg = LastzTuning()
         for params in pg.generate():
             self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))

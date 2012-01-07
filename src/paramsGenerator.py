@@ -119,7 +119,8 @@ class SingleCase(ParamsGenerator):
         self.outgroupStrategy = ['greedy']
         self.selfAlignment = [False]
         self.vanilla = [ False ]
-        #self.minBlockDegree = [ 2]
+        #self.repeatMask = [10]
+        #self.minBlockDegree = [ 2 ]
 
 class KyotoTycoon(ParamsGenerator):
     def __init__(self):
