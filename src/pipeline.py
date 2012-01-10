@@ -412,6 +412,26 @@ class MakeBlanchetteHumanMouseDog(MakeEvolverPrimatesLoci1):
                                           self.params))
         self.setupStats(outputDir, os.path.join(simDir, "true.maf"), self.params)
         
+class MakeEvolverMammalsLociMedium(MakeEvolverPrimatesLoci1):
+    name = "evolverMammalsLociMedium"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "medium")
+        sequences, newickTreeString = getInputs(simDir, ("simHuman.chr6", "simMouse.chr6", "simRat.chr6", "simCow.chr6", "simDog.chr6"))
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        self.setupStats(outputDir, os.path.join(simDir, "all.burnin.maf"), self.params)
+        
+class MakeEvolverPrimatesMedium(MakeEvolverPrimatesLoci1):
+    name = "evolverPrimatesMedium"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "primates", "medium")
+        sequences, newickTreeString = getInputs(simDir, ("simHuman.chr6", "simChimp.chr6", "simGorilla.chr6", "simOrang.chr6"))
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        self.setupStats(outputDir, os.path.join(simDir, "all.maf"), self.params)
+        
 class MakeStats(Target):
     def __init__(self, options, trueMaf, predictedMaf, outputFile, params):
         Target.__init__(self)
@@ -492,7 +512,9 @@ class MakeAllAlignments(Target):
             self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
-            self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
+            self.addChildTarget(MakeEvolverMammalsLociMedium(self.options, params))
+            #self.addChildTarget(MakeEvolverPrimatesMedium(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
             #self.addChildTarget(MakeEvolverHumanMouseLarge(self.options, params))
         
         self.setFollowOnTarget(MakeSummary(self.options, pg))
