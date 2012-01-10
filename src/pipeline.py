@@ -416,17 +416,17 @@ class MakeEvolverMammalsLociMedium(MakeEvolverPrimatesLoci1):
     name = "evolverMammalsLociMedium"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "medium")
-        sequences, newickTreeString = getInputs(simDir, ("simHuman.chr6", "simMouse.chr6", "simRat.chr6", "simCow.chr6", "simDog.chr6"))
+        sequences, newickTreeString = getInputs(simDir, ("simHuman.fa", "simMouse.fa", "simRat.fa", "simCow.fa", "simDog.fa"))
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
-        self.setupStats(outputDir, os.path.join(simDir, "all.burnin.maf"), self.params)
+        self.setupStats(outputDir, os.path.join(simDir, "burnin.maf"), self.params)
         
 class MakeEvolverPrimatesMedium(MakeEvolverPrimatesLoci1):
     name = "evolverPrimatesMedium"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "primates", "medium")
-        sequences, newickTreeString = getInputs(simDir, ("simHuman.chr6", "simChimp.chr6", "simGorilla.chr6", "simOrang.chr6"))
+        sequences, newickTreeString = getInputs(simDir, ("simGorilla.fa", "simHuman.fa", "simChimp.fa", "simOrang.fa"))
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
