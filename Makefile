@@ -1,6 +1,6 @@
 outputDir = output
-maxCpus=10
-maxCpusPerAlignment=10
+maxCpus=4
+maxCpusPerAlignment=4
 jobTreeParameters = --logDebug --maxThreads=${maxCpus} --maxJobs=${maxCpus}
 
 all :

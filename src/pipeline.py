@@ -164,7 +164,7 @@ class MakeAlignment(Target):
                                  jobTreeStats=True,
                                  maxThreads=int(self.options.cpus),
                                  maxJobs=int(self.options.cpus),
-                                 logLevel="DEBUG",
+                                 logLevel="CRITICAL",
                                  logFile = jobTreeLogFile)
             logger.info("Ran the progressive workflow")
             
@@ -483,16 +483,16 @@ class MakeAllAlignments(Target):
         #pg = BasicProgressive()
         #pg = AllProgressive()
         #pg = EverythingButSelf()
-        pg = SingleCase()
-        #pg = KyotoTycoon()
+        #pg = SingleCase()
+        pg = KyotoTycoon()
         #pg = LastzTuning()
         for params in pg.generate():
             self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
             self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
-            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
-            #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
-            #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
-            #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
+            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
+            self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
             #self.addChildTarget(MakeEvolverHumanMouseLarge(self.options, params))
         
         self.setFollowOnTarget(MakeSummary(self.options, pg))
