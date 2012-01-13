@@ -511,10 +511,10 @@ class MakeAllAlignments(Target):
             self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
             self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
-            self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
-            self.addChildTarget(MakeEvolverMammalsLociMedium(self.options, params))
+            self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLociMedium(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesMedium(self.options, params))
-            #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
             #self.addChildTarget(MakeEvolverHumanMouseLarge(self.options, params))
         
         self.setFollowOnTarget(MakeSummary(self.options, pg))

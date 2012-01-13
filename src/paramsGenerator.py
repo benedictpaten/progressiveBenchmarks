@@ -117,16 +117,18 @@ class SingleCase(ParamsGenerator):
     def __init__(self):
         ParamsGenerator.__init__(self)
         self.outgroupStrategy = ['greedy']
+        #self.outgroupThreshold = [0]
         self.selfAlignment = [False]
         self.vanilla = [ False ]
-        #self.repeatMask = [10]
+        self.repeatMask = [10]
         #self.minBlockDegree = [ 2 ]
 
 class KyotoTycoon(ParamsGenerator):
     def __init__(self):
         ParamsGenerator.__init__(self)
         self.kyotoTycoon = [True]
-        self.outgroupStrategy = ['greedy' ]
+        #self.outgroupStrategy = ['greedy' ]
+        #self.outgroupThreshold = [0]
         self.selfAlignment = [False]
         self.vanilla = [False]
         self.repeatMask = [10]
