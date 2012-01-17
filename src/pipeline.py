@@ -180,7 +180,7 @@ class MakeAlignment(Target):
                 ktserver.spawnServer(exp) 
             treeStatsFile = os.path.join(self.outputDir, "treeStats.xml")
             system("cactus_treeStats --cactusDisk \'%s\' --flowerName 0 --outputFile %s" %(exp.getDiskDatabaseString(),
-                                                                                        treeStatsFile))
+                                                                                           treeStatsFile))
             if exp.getDbType() == "kyoto_tycoon":
                 ktserver.killServer(exp)
                 
@@ -503,8 +503,8 @@ class MakeAllAlignments(Target):
         #pg = BasicProgressive()
         #pg = AllProgressive()
         #pg = EverythingButSelf()
-        #pg = SingleCase()
-        pg = KyotoTycoon()
+        pg = SingleCase()
+        #pg = KyotoTycoon()
         #pg = LastzTuning()
         for params in pg.generate():
             self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
@@ -512,7 +512,7 @@ class MakeAllAlignments(Target):
             self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
-            #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLociMedium(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesMedium(self.options, params))
             #self.addChildTarget(MakeEvolverHumanMouseLarge(self.options, params))

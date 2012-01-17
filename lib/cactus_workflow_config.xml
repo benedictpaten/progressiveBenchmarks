@@ -46,7 +46,7 @@
 		</iterations>
 	</alignment>
 
-	<normal max_number_of_chains="30" rounds="1">
+	<normal max_number_of_chains="30" rounds="0">
 	</normal>
 
 	<phylogeny>
@@ -59,7 +59,7 @@
 	
 	</reference>
 
-	<check>
+	<check runCheck="1">
 	</check>
 	 <preprocessor chunkSize="100000000" preprocessorString='cactus_addFastaHeaderDots.py TARGET_FILE OUT_FILE --event EVENT_STRING'/>
   <multi_cactus>
