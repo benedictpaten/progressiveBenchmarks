@@ -36,11 +36,12 @@ class Summary:
 
     def addRow(self, catName, params, jobTreeStatsPath, mafCompPath, 
                treeStatsPath, projPath):
-        if os.path.isfile(jobTreeStatsPath) and os.path.isfile(mafCompPath) \
-           and os.path.isfile(treeStatsPath):
+        if os.path.isfile(jobTreeStatsPath) and os.path.isfile(mafCompPath):
             mafXmlRoot = ET.parse(mafCompPath).getroot()
             jtXmlRoot = ET.parse(jobTreeStatsPath).getroot()
-            tsXmlRoot = ET.parse(treeStatsPath).getroot()
+            tsXmlRoot = None
+            if os.path.isfile(treeStatsPath):
+                tsXmlRoot = ET.parse(treeStatsPath).getroot()
             if projPath is not None:
                 project = MultiCactusProject()
                 project.readXML(projPath)
@@ -181,17 +182,20 @@ class Summary:
     # bbl = <chains><base_block_lengths >
     # tgs = <terminal_group_sizes>
     def __cactusTreeStats(self, treeStatsXmlRoot):
-        results = []
-        chains = treeStatsXmlRoot.find("chains")
-        bbl = chains.find("base_block_lengths")
-        results.append(bbl.attrib["min"])
-        results.append(bbl.attrib["max"])
-        results.append(bbl.attrib["avg"])
-        
-        tgs = treeStatsXmlRoot.find("terminal_group_sizes")
-        results.append(tgs.attrib["min"])
-        results.append(tgs.attrib["max"])
-        results.append(tgs.attrib["avg"])
+        if treeStatsXmlRoot is not None:
+            results = []
+            chains = treeStatsXmlRoot.find("chains")
+            bbl = chains.find("base_block_lengths")
+            results.append(bbl.attrib["min"])
+            results.append(bbl.attrib["max"])
+            results.append(bbl.attrib["avg"])
+            
+            tgs = treeStatsXmlRoot.find("terminal_group_sizes")
+            results.append(tgs.attrib["min"])
+            results.append(tgs.attrib["max"])
+            results.append(tgs.attrib["avg"])
+        else:
+            results = ["NA", "NA", "NA", "NA", "NA", "NA"] 
         return results
                         
     # return boolean vector identifying empty columns

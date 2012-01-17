@@ -123,9 +123,14 @@ class MakeAlignment(Target):
             #Make the experiment file
             tempExperimentFile = os.path.join(tempLocalDir, "experiment.xml")
             
-            if self.params.kyotoTycoon == True:
+            if self.params.kyotoTycoon != False and self.params.kyotoTycoon != None:
                 dbConfElem = ET.Element("st_kv_database_conf", type="kyoto_tycoon")
-                ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host="localhost", port="1978", database_dir="dummy")
+                if self.params.kyotoTycoon == True or str(self.params.kyotoTycoon).lower() == "true":
+                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host="localhost", port="1978", database_dir="dummy")
+                elif self.params.kyotoTycoon == "inMemory":
+                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host="localhost", port="1978", database_dir="dummy", in_memory="true")
+                elif self.params.kyotoTycoon == "inMemoryNoSnapshot":
+                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host="localhost", port="1978", database_dir="dummy", in_memory="true", snapshot="false")                
             else:
                 dbConfElem = None
             
@@ -173,16 +178,17 @@ class MakeAlignment(Target):
             logger.info("Checked the job tree dir for the progressive run")
             
             #Run the cactus tree stats
-            expPath = os.path.join(tempExperimentDir, "Anc0", "Anc0_experiment.xml")
-            exp = ExperimentWrapper(ET.parse(expPath).getroot())
-            if exp.getDbType() == "kyoto_tycoon":
-                ktserver = KtserverLauncher()
-                ktserver.spawnServer(exp) 
-            treeStatsFile = os.path.join(self.outputDir, "treeStats.xml")
-            system("cactus_treeStats --cactusDisk \'%s\' --flowerName 0 --outputFile %s" %(exp.getDiskDatabaseString(),
-                                                                                           treeStatsFile))
-            if exp.getDbType() == "kyoto_tycoon":
-                ktserver.killServer(exp)
+            if self.params.kyotoTycoon != "inMemoryNoSnapshot":
+                expPath = os.path.join(tempExperimentDir, "Anc0", "Anc0_experiment.xml")
+                exp = ExperimentWrapper(ET.parse(expPath).getroot())
+                if exp.getDbType() == "kyoto_tycoon":
+                    ktserver = KtserverLauncher()
+                    ktserver.spawnServer(exp) 
+                treeStatsFile = os.path.join(self.outputDir, "treeStats.xml")
+                system("cactus_treeStats --cactusDisk \'%s\' --flowerName 0 --outputFile %s" %(exp.getDiskDatabaseString(),
+                                                                                               treeStatsFile))
+                if exp.getDbType() == "kyoto_tycoon":
+                    ktserver.killServer(exp)
                 
             #Now copy the true assembly back to the output
             system("mv %s %s/experiment.xml" % (tempExperimentFile, self.outputDir))
@@ -473,7 +479,9 @@ class MakeSummary(Target):
             return os.path.join(self.options.outputDir, testCategory.name + str(params))
      
     def run(self):
-        for testCategory in [MakeBlanchetteAlignments, MakeEvolverPrimatesLoci1, MakeEvolverMammalsLoci1]:
+        for testCategory in [MakeBlanchetteHumanMouse, MakeBlanchetteHumanMouseDog, MakeBlanchetteAlignments, 
+                             MakeEvolverPrimatesLoci1, MakeEvolverMammalsLoci1HumanMouse, MakeEvolverMammalsLoci1,
+                             MakeEvolverMammalsLociMedium, MakeEvolverPrimatesMedium, MakeEvolverHumanMouseLarge]:
             for name, i in self.getBaseNames(testCategory):
                 summary = Summary()
                 for params in self.paramsGenerator.generate():
