@@ -126,7 +126,7 @@ class SingleCase(ParamsGenerator):
 class KyotoTycoon(ParamsGenerator):
     def __init__(self):
         ParamsGenerator.__init__(self)
-        self.kyotoTycoon = [True, "inMemory", "inMemoryNoSnapshot"]
+        self.kyotoTycoon = [ "inMemoryNoSnapshot" ] #[True, "inMemory", "inMemoryNoSnapshot"]
         self.outgroupStrategy = ['greedy' ]
         self.outgroupThreshold = [0]
         self.selfAlignment = [False]
