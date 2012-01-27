@@ -57,7 +57,7 @@ class Params:
         iterations = iterationsElem.findall("iteration")
         cafElem = iterations[0]
         assert cafElem.attrib["type"] == "blast"
-        assert cafElem.attrib["number"] == "0"
+        #assert cafElem.attrib["number"] == "0"
         coreElem = cafElem.find("core")
         if self.annealingRounds is not None:
             setAtt(coreElem, "annealingRounds", self.annealingRounds)
@@ -67,8 +67,9 @@ class Params:
                
         barElem = iterations[-1]
         assert barElem.attrib["type"] == "base"
+        barElem = barElem.find("base")
         setAtt(barElem, "minimumBlockDegree", self.minBlockDegree)
-        setAtt(barElem, "num_threads", self.numThreads)
+        setAtt(barElem, "numThreads", self.numThreads)
         
         if self.repeatMask is not None:
             prep = "<preprocessor chunkSize=\"100000000\" chunksPerJob=\"1\" compressFiles=\"True\" overlapSize=\"1000\" preprocessorString=\"cactus_lastzRepeatMask.py --minPeriod=%d --lastzOpts=\'--step=20 --notransition --ambiguous=iupac --nogapped\' QUERY_FILE TARGET_FILE OUT_FILE\"/>" % int(self.repeatMask)
