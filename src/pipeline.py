@@ -398,11 +398,11 @@ class MakeEvolverMammalsLarge(MakeEvolverPrimatesLoci1):
     name = "evolverMammalsLarge"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "large")
-        sequences, newickTreeString = getInputs(simDir, ("simHuman.masked.fa", "simMouse.masked.fa", "simRat.masked.fa", "simCow.masked.fa", "simDog.masked.fa"))
+        sequences, newickTreeString = getInputs(simDir, ("simCow.trf.repmask.fa", "simDog.trf.repmask.fa", "simHuman.trf.repmask.fa", "simMouse.trf.repmask.fa", "simRat.trf.repmask.fa"))
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
-        self.setupStats(outputDir, os.path.join(simDir, "all.burnin.maf"), self.params)
+        self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
         
 class MakeBlanchetteHumanMouse(MakeEvolverPrimatesLoci1):
     name = "blanchetteHumanMouse"
