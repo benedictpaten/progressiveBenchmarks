@@ -2,14 +2,13 @@
 	<alignment>
 		<iterations>
 			<iteration 
-				maxFlowerGroupSize="10000"
+				maxFlowerGroupSize="10000000"
 				minFlowerSize="5000"
 				type="blast"
 			>
 				<blast 
-					blastString="lastz --format=cigar --nogapped --hspthresh=3000 SEQ_FILE_1[multiple][nameparse=darkspace] SEQ_FILE_2[nameparse=darkspace] &gt; CIGARS_FILE" 
 					chunkSize="10000000" 
-					selfBlastString="lastz --format=cigar --nogapped --hspthresh=3000 SEQ_FILE[multiple][nameparse=darkspace] SEQ_FILE[nameparse=darkspace] --notrivial &gt; CIGARS_FILE" 
+					lastzArguments="--nogapped --hspthresh=3000 --ambiguous=iupac"
 					chunksPerJob="1" 
 					compressFiles="1" 
 					overlapSize="10000" 
@@ -34,14 +33,13 @@
 				/>
 			</iteration>
 			<iteration 
-				maxFlowerGroupSize="10000"
+				maxFlowerGroupSize="1000000"
 				minFlowerSize="5000"
 				type="blast"
 			>
 				<blast 
-					blastString="lastz --format=cigar --hspthresh=1800 SEQ_FILE_1[multiple][nameparse=darkspace] SEQ_FILE_2[nameparse=darkspace] &gt; CIGARS_FILE" 
 					chunkSize="1000000" 
-					selfBlastString="lastz --format=cigar --hspthresh=1800 SEQ_FILE[multiple][nameparse=darkspace] SEQ_FILE[nameparse=darkspace] --notrivial &gt; CIGARS_FILE" 
+					lastzArguments="--hspthresh=1800 --ambiguous=iupac"
 					chunksPerJob="1" 
 					compressFiles="1" 
 					overlapSize="10000" 
@@ -66,10 +64,11 @@
 				/>
 			</iteration>
 			<iteration 
-				maxFlowerGroupSize="10000"
+				maxFlowerGroupSize="1000000"
 				type="base" 
 			>
 				<base
+					maxFlowerGroupSize="40000"
 					numThreads="5" 
 					spanningTrees="10" 
 					gapGamma="0.2" 
@@ -91,6 +90,7 @@
 		</iterations>
 	</alignment>
 	<normal 
+		maxFlowerGroupSize="1000000"
 		iterations="0"
 	/>
 	<phylogeny
@@ -98,7 +98,8 @@
 	<faces
 	/>
 	<reference 
-		matching_algorithm="blossom5" 
+		maxFlowerGroupSize="10000000"
+		matchingAlgorithm="blossom5" 
 		reference="reference" 
 		useSimulatedAnnealing="1" 
 		theta="0.000001" 
@@ -106,6 +107,7 @@
 		permutations="10"
 	/>
 	<check 
+		maxFlowerGroupSize="10000000"
 		runCheck="1"
 	/>
 	<preprocessor 
