@@ -60,6 +60,13 @@ def getRootPathString():
     i = os.path.abspath(progressiveBenchmarks.src.pipeline.__file__)
     return os.path.split(os.path.split(i)[0])[0] #os.path.split(os.path.split(os.path.split(i)[0])[0])[0]
 
+def getCactusWorkflowPathString():
+    """
+    function for finding external location of cactus workflow
+    """
+    import cactus.pipeline.cactus_workflow
+    return os.path.split(os.path.abspath(cactus.pipeline.cactus_workflow.__file__))[0]
+    
 def getCactusDiskString(alignmentFile):
     return "<st_kv_database_conf type=\"tokyo_cabinet\"><tokyo_cabinet database_dir=\"%s\"/></st_kv_database_conf>" % alignmentFile
 
@@ -208,7 +215,7 @@ class MakeAlignment(Target):
             os.mkdir(self.outputDir)
 
         if not os.path.exists(os.path.join(self.outputDir, "cactusAlignmentVanilla")):
-            xmlTree = ET.parse(os.path.join(getRootPathString(), "lib", "cactus_workflow_config.xml"))
+            xmlTree = ET.parse(os.path.join(getCactusWorkflowPathString(), "cactus_workflow_config.xml"))
             
             #Set the parameters
             tempLocalDir = os.path.join(self.outputDir, "tempVanillaCactusAlignment")
@@ -216,7 +223,7 @@ class MakeAlignment(Target):
             os.mkdir(tempLocalDir)
             
             #Set the config parameters
-            self.params.applyToXml(xmlTree)
+            #self.params.applyToXml(xmlTree)
             config = xmlTree.getroot()
             assert config is not None
         
@@ -244,8 +251,7 @@ class MakeAlignment(Target):
                                                  #singleCopySpecies=self.singleCopySpecies,
                                                  databaseName="cactusAlignmentVanilla",
                                                  outputDir=tempLocalDir,
-                                                 configFile=tempConfigFile,
-                                                 logFile=jobTreeLogFile)
+                                                 configFile=tempConfigFile)
             tempExperimentDir2 = os.path.join(tempLocalDir, "cactusAlignmentVanilla")
             cactusWorkflowExperiment.writeExperimentFile(tempExperimentFile2)
            
@@ -262,7 +268,8 @@ class MakeAlignment(Target):
                               buildReference=True,
                               #Passing options
                               maxThreads=int(self.options.cpus),
-                              maxJobs=int(self.options.cpus))
+                              maxJobs=int(self.options.cpus),
+                              logFile=jobTreeLogFile)
             
             runJobTreeStatusAndFailIfNotComplete(tempJobTreeDir2)
             logger.info("Checked the job tree dir for the vanilla run")
@@ -521,17 +528,17 @@ class MakeAllAlignments(Target):
         #pg = BasicProgressive()
         #pg = AllProgressive()
         #pg = EverythingButSelf()
-        #pg = SingleCase()
-        pg = KyotoTycoon()
+        pg = SingleCase()
+        #pg = KyotoTycoon()
         #pg = LastzTuning()
         for params in pg.generate():
             self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
-            self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
-            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
-            self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
-            self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
-            self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
-            self.addChildTarget(MakeEvolverMammalsLociMedium(self.options, params))
+            #self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
+            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLociMedium(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesMedium(self.options, params))
             #self.addChildTarget(MakeEvolverHumanMouseLarge(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLarge(self.options, params))
