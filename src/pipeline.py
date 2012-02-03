@@ -60,6 +60,13 @@ def getRootPathString():
     i = os.path.abspath(progressiveBenchmarks.src.pipeline.__file__)
     return os.path.split(os.path.split(i)[0])[0] #os.path.split(os.path.split(os.path.split(i)[0])[0])[0]
 
+def getCactusWorkflowPathString():
+    """
+    function for finding external location of cactus workflow
+    """
+    import cactus.pipeline.cactus_workflow
+    return os.path.split(os.path.abspath(cactus.pipeline.cactus_workflow.__file__))[0]
+    
 def getCactusDiskString(alignmentFile):
     return "<st_kv_database_conf type=\"tokyo_cabinet\"><tokyo_cabinet database_dir=\"%s\"/></st_kv_database_conf>" % alignmentFile
 
@@ -208,7 +215,7 @@ class MakeAlignment(Target):
             os.mkdir(self.outputDir)
 
         if not os.path.exists(os.path.join(self.outputDir, "cactusAlignmentVanilla")):
-            xmlTree = ET.parse(os.path.join(getRootPathString(), "lib", "cactus_workflow_config.xml"))
+            xmlTree = ET.parse(os.path.join(getCactusWorkflowPathString(), "cactus_workflow_config.xml"))
             
             #Set the parameters
             tempLocalDir = os.path.join(self.outputDir, "tempVanillaCactusAlignment")
@@ -216,7 +223,7 @@ class MakeAlignment(Target):
             os.mkdir(tempLocalDir)
             
             #Set the config parameters
-            self.params.applyToXml(xmlTree)
+            #self.params.applyToXml(xmlTree)
             config = xmlTree.getroot()
             assert config is not None
         
@@ -386,23 +393,23 @@ class MakeEvolverHumanMouseLarge(MakeEvolverPrimatesLoci1):
     name = "evolverHumanMouseLarge"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "large")
-        sequences, newickTreeString = getInputs(simDir, ("simHuman.masked.fa", "simMouse.masked.fa"))
+        sequences, newickTreeString = getInputs(simDir, ("simHuman.trf.repmask.fa", "simMouse.trf.repmask.fa"))
         newickTreeString = "(simHuman:0.144018,simMouse:0.356483);"
 
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
-        self.setupStats(outputDir, os.path.join(simDir, "all.burnin.maf"), self.params)
+        self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
 
 class MakeEvolverMammalsLarge(MakeEvolverPrimatesLoci1):
     name = "evolverMammalsLarge"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "large")
-        sequences, newickTreeString = getInputs(simDir, ("simHuman.masked.fa", "simMouse.masked.fa", "simRat.masked.fa", "simCow.masked.fa", "simDog.masked.fa"))
+        sequences, newickTreeString = getInputs(simDir, ("simCow.trf.repmask.fa", "simDog.trf.repmask.fa", "simHuman.trf.repmask.fa", "simMouse.trf.repmask.fa", "simRat.trf.repmask.fa"))
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
-        self.setupStats(outputDir, os.path.join(simDir, "all.burnin.maf"), self.params)
+        self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
         
 class MakeBlanchetteHumanMouse(MakeEvolverPrimatesLoci1):
     name = "blanchetteHumanMouse"
@@ -521,13 +528,13 @@ class MakeAllAlignments(Target):
         #pg = BasicProgressive()
         #pg = AllProgressive()
         #pg = EverythingButSelf()
-        #pg = SingleCase()
-        pg = KyotoTycoon()
+        pg = SingleCase()
+        #pg = KyotoTycoon()
         #pg = LastzTuning()
         for params in pg.generate():
             self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
-            self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
-            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            #self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
+            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
