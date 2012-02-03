@@ -244,8 +244,7 @@ class MakeAlignment(Target):
                                                  #singleCopySpecies=self.singleCopySpecies,
                                                  databaseName="cactusAlignmentVanilla",
                                                  outputDir=tempLocalDir,
-                                                 configFile=tempConfigFile,
-                                                 logFile=jobTreeLogFile)
+                                                 configFile=tempConfigFile)
             tempExperimentDir2 = os.path.join(tempLocalDir, "cactusAlignmentVanilla")
             cactusWorkflowExperiment.writeExperimentFile(tempExperimentFile2)
            
@@ -262,7 +261,8 @@ class MakeAlignment(Target):
                               buildReference=True,
                               #Passing options
                               maxThreads=int(self.options.cpus),
-                              maxJobs=int(self.options.cpus))
+                              maxJobs=int(self.options.cpus),
+                              logFile=jobTreeLogFile)
             
             runJobTreeStatusAndFailIfNotComplete(tempJobTreeDir2)
             logger.info("Checked the job tree dir for the vanilla run")
