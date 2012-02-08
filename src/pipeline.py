@@ -329,12 +329,11 @@ class MakeBlanchetteStats(Target):
             treeFile = os.path.join(blanchettePath, "tree.newick")
             system("mfaToMaf --mfaFile %s --outputFile %s --treeFile %s" % (trueAlignmentMFA, trueAlignmentMAF, treeFile))
             
-            
-            trueRenamedMAF = trueAlignmentMAF + ".renamed"
-            expPath = os.path.join(self.outputDir, str(i), "experiment.xml")
-            applyNamingToMaf(expPath, trueAlignmentMAF, trueRenamedMAF)
-            trueAlignmentMAF = trueRenamedMAF
-            if self.params.vanilla == False:            
+            if self.params.vanilla == False:
+                trueRenamedMAF = trueAlignmentMAF + ".renamed"
+                expPath = os.path.join(self.outputDir, str(i), "experiment.xml")
+                applyNamingToMaf(expPath, trueAlignmentMAF, trueRenamedMAF)
+                trueAlignmentMAF = trueRenamedMAF            
                 predictedAlignmentMaf = os.path.join(self.outputDir, str(i), "progressiveCactusAlignment", "Anc0", "Anc0.maf")
             else:
                 predictedAlignmentMaf = os.path.join(self.outputDir, str(i), "cactusVanilla.maf")
