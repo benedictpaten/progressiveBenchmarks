@@ -48,7 +48,7 @@ from progressiveBenchmarks.src.paramsGenerator import BasicProgressive
 from progressiveBenchmarks.src.paramsGenerator import SmallProgressive
 from progressiveBenchmarks.src.paramsGenerator import SingleCase
 from progressiveBenchmarks.src.paramsGenerator import KyotoTycoon
-from progressiveBenchmarks.src.paramsGenerator import LastzTuning
+from progressiveBenchmarks.src.paramsGenerator import LastzTuning, RepeatMasking
 from progressiveBenchmarks.src.applyNamingToMaf import applyNamingToMaf
 from progressiveBenchmarks.src.summary import Summary
 
@@ -177,7 +177,8 @@ class MakeAlignment(Target):
                                  maxThreads=int(self.options.cpus),
                                  maxJobs=int(self.options.cpus),
                                  logLevel="CRITICAL",
-                                 logFile = jobTreeLogFile)
+                                 logFile = jobTreeLogFile,
+                                 event="Anc0")
             logger.info("Ran the progressive workflow")
             
             #Check if the jobtree completed sucessively.
@@ -422,18 +423,6 @@ class MakeBlanchetteHumanMouse(MakeEvolverPrimatesLoci1):
                                           self.params))
         self.setupStats(outputDir, os.path.join(simDir, "true.maf"), self.params)
         
-class MakeBlanchetteHumanMouseDog(MakeEvolverPrimatesLoci1):
-    name = "blanchetteHumanMouseDog"
-    def run(self):
-        simDir = os.path.join(TestStatus.getPathToDataSets(), "blanchettesSimulation", "00.job")
-        sequences = os.path.join(simDir, "HUMAN"), os.path.join(simDir, "MOUSE"), os.path.join(simDir, "DOG")
-        #, newickTreeString = getInputs(simDir, ("HUMAN", "MOUSE"))
-        newickTreeString = "((HUMAN:0.144018,MOUSE:0.356483):0.0238,DOG:0.197);"
-        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
-        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
-                                          self.params))
-        self.setupStats(outputDir, os.path.join(simDir, "true.maf"), self.params)
-        
 class MakeEvolverMammalsLociMedium(MakeEvolverPrimatesLoci1):
     name = "evolverMammalsLociMedium"
     def run(self):
@@ -453,6 +442,57 @@ class MakeEvolverPrimatesMedium(MakeEvolverPrimatesLoci1):
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
         self.setupStats(outputDir, os.path.join(simDir, "all.maf"), self.params)
+        
+#########################
+#####Tests added to for establishing correct repeat masking
+#########################
+
+class MakeBlanchetteHumanMouseDog(MakeEvolverPrimatesLoci1):
+    name = "blanchetteHumanMouseDog"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "blanchettesSimulation", "00.job")
+        sequences = os.path.join(simDir, "HUMAN"), os.path.join(simDir, "MOUSE"), os.path.join(simDir, "DOG")
+        #, newickTreeString = getInputs(simDir, ("HUMAN", "MOUSE"))
+        newickTreeString = "((HUMAN:0.144018,MOUSE:0.356483)Anc0:0.0238,DOG:0.197)MRCA;"
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        self.setupStats(outputDir, os.path.join(simDir, "true.maf"), self.params)
+
+class MakeEvolverMammalsLoci1HumanMouseDog(MakeEvolverPrimatesLoci1):
+    name = "evolverMammalsLoci1HumanMouseDog"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "loci1")
+        sequences, newickTreeString = getInputs(simDir, ("simHuman.chr6", "simMouse.chr6", "simDog.chr6"))
+        newickTreeString = "((HUMAN:0.144018,MOUSE:0.356483)Anc0:0.0238,DOG:0.197)MRCA;" #Over-ride the full phylogeny
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        self.setupStats(outputDir, os.path.join(simDir, "all.burnin.maf"), self.params)
+
+class MakeEvolverMammalsLociMediumHumanMouseDog(MakeEvolverPrimatesLoci1):
+    name = "evolverMammalsLociMediumHumanMouseDog"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "medium")
+        sequences, newickTreeString = getInputs(simDir, ("simHuman.fa", "simMouse.fa", "simDog.fa"))
+        newickTreeString = "((HUMAN:0.144018,MOUSE:0.356483)Anc0:0.0238,DOG:0.197)MRCA;" #Over-ride the full phylogeny
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        self.setupStats(outputDir, os.path.join(simDir, "burnin.maf"), self.params)
+
+class MakeEvolverMammalsLargeHumanMouseDog(MakeEvolverPrimatesLoci1):
+    name = "evolverMammalsLargeHumanMouseDog"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "large")
+        sequences, newickTreeString = getInputs(simDir, ("simHuman.trf.repmask.fa", "simMouse.trf.repmask.fa", "simDog.trf.repmask.fa"))
+        newickTreeString = "((HUMAN:0.144018,MOUSE:0.356483)Anc0:0.0238,DOG:0.197)MRCA;" #Over-ride the full phylogeny
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)    
+
+############End repeat masking tests
         
 class MakeStats(Target):
     def __init__(self, options, trueMaf, predictedMaf, outputFile, params):
@@ -497,7 +537,9 @@ class MakeSummary(Target):
     def run(self):
         for testCategory in [MakeBlanchetteHumanMouse, MakeBlanchetteHumanMouseDog, MakeBlanchetteAlignments, 
                              MakeEvolverPrimatesLoci1, MakeEvolverMammalsLoci1HumanMouse, MakeEvolverMammalsLoci1,
-                             MakeEvolverMammalsLociMedium, MakeEvolverPrimatesMedium, MakeEvolverHumanMouseLarge]:
+                             MakeEvolverMammalsLociMedium, MakeEvolverPrimatesMedium, MakeEvolverHumanMouseLarge,
+                             MakeEvolverMammalsLoci1HumanMouseDog, MakeEvolverMammalsLociMediumHumanMouseDog,
+                             MakeEvolverMammalsLargeHumanMouseDog]:
             for name, i in self.getBaseNames(testCategory):
                 summary = Summary()
                 for params in self.paramsGenerator.generate():
@@ -527,12 +569,12 @@ class MakeAllAlignments(Target):
         #pg = BasicProgressive()
         #pg = AllProgressive()
         #pg = EverythingButSelf()
-        pg = SingleCase()
+        #pg = SingleCase()
         #pg = KyotoTycoon()
+        pg = RepeatMasking()
         #pg = LastzTuning()
         for params in pg.generate():
-            self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
-            #self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
+            #self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
             #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
@@ -541,6 +583,12 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeEvolverPrimatesMedium(self.options, params))
             #self.addChildTarget(MakeEvolverHumanMouseLarge(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLarge(self.options, params))
+            
+            ###Repeat masking problems
+            #self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
+            self.addChildTarget(MakeEvolverMammalsLoci1HumanMouseDog(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLociMediumHumanMouseDog(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLargeHumanMouseDog(self.options, params))
         
         self.setFollowOnTarget(MakeSummary(self.options, pg))
 

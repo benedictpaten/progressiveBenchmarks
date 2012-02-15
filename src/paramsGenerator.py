@@ -133,6 +133,16 @@ class KyotoTycoon(ParamsGenerator):
         self.vanilla = [False]
         self.repeatMask = [10]
         
+class RepeatMasking(ParamsGenerator):
+    def __init__(self):
+        ParamsGenerator.__init__(self)
+        self.kyotoTycoon = [ "inMemoryNoSnapshot" ] #[True, "inMemory", "inMemoryNoSnapshot"]
+        self.outgroupStrategy = ['greedy' ]
+        self.outgroupThreshold = [0]
+        self.selfAlignment = [False]
+        self.vanilla = [False]
+        self.repeatMask = [3, 5, 10, 20]
+        
 class LastzTuning(ParamsGenerator):
     def lastzPath(self, x):
         return os.path.join(getRootPathString(), "lib", "lastz_tuning", 

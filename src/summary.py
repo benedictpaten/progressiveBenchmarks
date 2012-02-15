@@ -22,12 +22,14 @@ from cactus.progressive.experimentWrapper import ExperimentWrapper
 
 class Summary:
     Header = Params.Header + \
-    ["Run_Time", "Clock_Time", "Base_tot_run", "Base_tot_clock", \
-     "Core_tot_run", "Core_tot_clock", "RefCoord_tot_run", 
-     "RefCoord_tot_clock", "SelfBlast_tot_run", "SelfBlast_tot_clock",\
-     "Blast_tot_run", "Blast_tot_clcok",\
-     "Sensitivity", "Specificity", "Bal. Accuracy", \
-     "Root Growth", "Avg Growth", "BBL_Min", "BBL_Max", "BBL_Avg", "TGS_Min", \
+    ["Run_Time", "Clock_Time", 
+     "Base_tot_run", "Base_tot_clock", "Base_max_clock", 
+     "Core1_tot_run", "Core1_tot_clock", "Core1_max_clock", 
+     "Core2_tot_run", "Core2_tot_clock", "Core2_max_clock",
+     "SelfBlast_tot_run", "SelfBlast_tot_clock", "SelfBlast_max_clock",
+     "Blast_tot_run", "Blast_tot_clock", "Blast_max_clock",
+     "Sensitivity", "Specificity", "Bal. Accuracy", 
+     "Root Growth", "Avg Growth", "BBL_Min", "BBL_Max", "BBL_Avg", "TGS_Min", 
      "TGS_Max", "TGS_Avg"]
     SensIdx = len(Header)
     SpecIdx = SensIdx + 1 
@@ -132,14 +134,19 @@ class Summary:
         ttElem = xmlRoot.find("target_types")
         jtRow.append(self.__getElemAtt(ttElem, "CactusBaseLevelAlignerWrapper", "total_time"))
         jtRow.append(self.__getElemAtt(ttElem, "CactusBaseLevelAlignerWrapper", "total_clock"))
-        jtRow.append(self.__getElemAtt(ttElem, "CactusCoreWrapper", "total_time"))
-        jtRow.append(self.__getElemAtt(ttElem, "CactusCoreWrapper", "total_clock"))
-        jtRow.append(self.__getElemAtt(ttElem, "CactusSetReferenceCoordinates", "total_time"))
-        jtRow.append(self.__getElemAtt(ttElem, "CactusSetReferenceCoordinates", "total_clock"))
+        jtRow.append(self.__getElemAtt(ttElem, "CactusBaseLevelAlignerWrapper", "max_clock"))
+        jtRow.append(self.__getElemAtt(ttElem, "CactusCoreWrapper1", "total_time"))
+        jtRow.append(self.__getElemAtt(ttElem, "CactusCoreWrapper1", "total_clock"))
+        jtRow.append(self.__getElemAtt(ttElem, "CactusCoreWrapper1", "max_clock"))
+        jtRow.append(self.__getElemAtt(ttElem, "CactusCoreWrapper2", "total_time"))
+        jtRow.append(self.__getElemAtt(ttElem, "CactusCoreWrapper2", "total_clock"))
+        jtRow.append(self.__getElemAtt(ttElem, "CactusCoreWrapper2", "max_clock"))
         jtRow.append(self.__getElemAtt(ttElem, "RunSelfBlast", "total_time"))
         jtRow.append(self.__getElemAtt(ttElem, "RunSelfBlast", "total_clock"))
+        jtRow.append(self.__getElemAtt(ttElem, "RunSelfBlast", "max_clock"))
         jtRow.append(self.__getElemAtt(ttElem, "RunBlast", "total_time"))
         jtRow.append(self.__getElemAtt(ttElem, "RunBlast", "total_clock"))
+        jtRow.append(self.__getElemAtt(ttElem, "RunBlast", "max_clock"))
         return jtRow
     
     # give some stats on how the reference geneomes grow:
@@ -150,7 +157,7 @@ class Summary:
             return ["", ""]
         results = []
         tree = project.mcTree
-        rootName = tree.getRootName()
+        rootName = "Anc0" #tree.getRootName()
         rootExpPath = project.expMap[rootName]
         rootExp = ExperimentWrapper(ET.parse(rootExpPath).getroot())
         rootPath = rootExp.getReferencePath()
@@ -168,12 +175,13 @@ class Summary:
         for expName, expPath in project.expMap.items():
             exp = ExperimentWrapper(ET.parse(expPath).getroot())
             rootPath = exp.getReferencePath()
-            rootSize = float(os.path.getsize(rootPath))
-            for leafName, leafPath in exp.seqMap.items():
-                leafSize = float(os.path.getsize(leafPath))
-                ratio = rootSize / leafSize
-                ratioSum += ratio
-                ratioCount += 1
+            if os.path.exists(rootPath):
+                rootSize = float(os.path.getsize(rootPath))
+                for leafName, leafPath in exp.seqMap.items():
+                    leafSize = float(os.path.getsize(leafPath))
+                    ratio = rootSize / leafSize
+                    ratioSum += ratio
+                    ratioCount += 1
         avgRatio = ratioSum / ratioCount
         results.append(avgRatio)
         return results
