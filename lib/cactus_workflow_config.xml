@@ -108,7 +108,7 @@
 	/>
 	<check 
 		maxFlowerGroupSize="10000000"
-		runCheck="1"
+		runCheck="0"
 	/>
 	<preprocessor 
 	 	chunkSize="100000000" 
