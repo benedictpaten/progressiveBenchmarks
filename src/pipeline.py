@@ -569,13 +569,13 @@ class MakeAllAlignments(Target):
         #pg = BasicProgressive()
         #pg = AllProgressive()
         #pg = EverythingButSelf()
-        #pg = SingleCase()
+        pg = SingleCase()
         #pg = KyotoTycoon()
-        pg = RepeatMasking()
+        #pg = RepeatMasking()
         #pg = LastzTuning()
         for params in pg.generate():
-            #self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
-            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
+            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
@@ -586,7 +586,7 @@ class MakeAllAlignments(Target):
             
             ###Repeat masking problems
             #self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
-            self.addChildTarget(MakeEvolverMammalsLoci1HumanMouseDog(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouseDog(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLociMediumHumanMouseDog(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLargeHumanMouseDog(self.options, params))
         
