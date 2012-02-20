@@ -111,6 +111,7 @@
 		runCheck="0"
 	/>
 	<maf
+		maxFlowerGroupSize="10000000"
 		buildMaf="1"
 		showOnlySubstitutionsWithRespectToReference="0"
 	/>

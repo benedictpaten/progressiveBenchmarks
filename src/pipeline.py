@@ -491,6 +491,17 @@ class MakeEvolverMammalsLargeHumanMouseDog(MakeEvolverPrimatesLoci1):
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
         self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)    
+        
+class Make3Worms(MakeEvolverPrimatesLoci1):
+    name = "threeWorms"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "worms")
+        sequences, newickTreeString = getInputs(simDir, ("cb4.fa", "caeRem4.fa", "caePb3.fa"))
+        newickTreeString = "((cb4:0.462053,caeRem4:0.40839)Anc0:0.001,caePb3:0.5266235)MRCA;" # "((HUMAN:0.144018,MOUSE:0.356483)Anc0:0.0238,DOG:0.197)MRCA;" #Over-ride the full phylogeny
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        #self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)  
 
 ############End repeat masking tests
         
@@ -569,13 +580,13 @@ class MakeAllAlignments(Target):
         #pg = BasicProgressive()
         #pg = AllProgressive()
         #pg = EverythingButSelf()
-        pg = SingleCase()
-        #pg = KyotoTycoon()
+        #pg = SingleCase()
+        pg = KyotoTycoon()
         #pg = RepeatMasking()
         #pg = LastzTuning()
         for params in pg.generate():
             self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
-            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
@@ -589,6 +600,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouseDog(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLociMediumHumanMouseDog(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLargeHumanMouseDog(self.options, params))
+            #self.addChildTarget(Make3Worms(self.options, params))
         
         self.setFollowOnTarget(MakeSummary(self.options, pg))
 
