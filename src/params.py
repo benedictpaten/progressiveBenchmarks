@@ -72,7 +72,8 @@ class Params:
         setAtt(barElem, "numThreads", self.numThreads)
         
         if self.repeatMask is not None:
-            prep = "<preprocessor chunkSize=\"100000000\" chunksPerJob=\"1\" compressFiles=\"True\" overlapSize=\"1000\" preprocessorString=\"cactus_lastzRepeatMask.py --minPeriod=%d --lastzOpts=\'--step=20 --notransition --ambiguous=iupac --nogapped\' QUERY_FILE TARGET_FILE OUT_FILE\"/>" % int(self.repeatMask)
+            #prep = "<preprocessor chunkSize=\"100000000\" chunksPerJob=\"1\" compressFiles=\"True\" overlapSize=\"1000\" preprocessorString=\"cactus_lastzRepeatMask.py --minPeriod=%d --lastzOpts=\'--step=20 --notransition --ambiguous=iupac --nogapped\' QUERY_FILE TARGET_FILE OUT_FILE\"/>" % int(self.repeatMask)
+            prep = "<preprocessor chunkSize=\"10000000\" chunksPerJob=\"1\" compressFiles=\"True\" overlapSize=\"1000\" preprocessorString=\"cactus_lastzRepeatMask.py --minPeriod=%d --lastzOpts=\'--ambiguous=iupac --nogapped\' QUERY_FILE TARGET_FILE OUT_FILE\"/>" % int(self.repeatMask)
             prepElem = ET.fromstring(prep)
             config.append(prepElem)
             
