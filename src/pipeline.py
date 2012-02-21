@@ -496,7 +496,7 @@ class Make3Worms(MakeEvolverPrimatesLoci1):
     name = "threeWorms"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "worms")
-        sequences, newickTreeString = getInputs(simDir, ("cb4.fa", "caeRem4.fa", "caePb3.fa"))
+        sequences, newickTreeString = getInputs(simDir, ("cb4.fa.non", "caeRem4.fa.non", "caePb3.fa.non"))
         newickTreeString = "((cb4:0.462053,caeRem4:0.40839)Anc0:0.001,caePb3:0.5266235)MRCA;" # "((HUMAN:0.144018,MOUSE:0.356483)Anc0:0.0238,DOG:0.197)MRCA;" #Over-ride the full phylogeny
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
