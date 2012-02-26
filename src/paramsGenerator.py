@@ -141,7 +141,7 @@ class RepeatMasking(ParamsGenerator):
         self.outgroupThreshold = [0]
         self.selfAlignment = [False]
         self.vanilla = [False]
-        self.repeatMask = [3 ] #, 5, 10 ]
+        self.repeatMask = [ 3, 5, 10 ]
         
 class LastzTuning(ParamsGenerator):
     def lastzPath(self, x):
