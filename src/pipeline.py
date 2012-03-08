@@ -341,7 +341,7 @@ class MakeBlanchetteStats(Target):
                 predictedAlignmentMaf = os.path.join(self.outputDir, str(i), "cactusVanilla.maf")
             
             outputFile = os.path.join(self.getLocalTempDir(), "temp%i" % i)
-            system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s" % (trueAlignmentMAF, predictedAlignmentMaf, outputFile))
+            system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s --sampleNumber 100000000 " % (trueAlignmentMAF, predictedAlignmentMaf, outputFile))
             system("cp %s %s" % (outputFile, os.path.join(self.outputDir, str(i), "mafComparison.xml")))
             if previousOutputFile != None:
                 system("mergeMafComparatorResults.py --results1 %s --results2 %s --outputFile %s" % (outputFile, previousOutputFile, outputFile))
@@ -524,7 +524,7 @@ class MakeStats(Target):
             expPath = os.path.join(outputDir, "experiment.xml")
             applyNamingToMaf(expPath, self.trueMaf, trueRenamedMAF)
             self.trueMaf = trueRenamedMAF
-            system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s" % (self.trueMaf, self.predictedMaf, outputFile))
+            system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s --sampleNumber 100000000" % (self.trueMaf, self.predictedMaf, outputFile))
             system("mv %s %s" % (outputFile, self.outputFile))
 
 class MakeSummary(Target):
