@@ -252,7 +252,8 @@ class MakeAlignment(Target):
                                                  #singleCopySpecies=self.singleCopySpecies,
                                                  databaseName="cactusAlignmentVanilla",
                                                  outputDir=tempLocalDir,
-                                                 configFile=tempConfigFile)
+                                                 configFile=tempConfigFile,
+                                                 mafFile=os.path.join(self.outputDir, "cactusVanilla.maf"),)
             tempExperimentDir2 = os.path.join(tempLocalDir, "cactusAlignmentVanilla")
             cactusWorkflowExperiment.writeExperimentFile(tempExperimentFile2)
            
@@ -275,7 +276,7 @@ class MakeAlignment(Target):
             runJobTreeStatusAndFailIfNotComplete(tempJobTreeDir2)
             logger.info("Checked the job tree dir for the vanilla run")
             
-            runCactusMAFGenerator(os.path.join(self.outputDir, "cactusVanilla.maf"), getCactusDiskString(tempExperimentDir2))
+            #runCactusMAFGenerator(os.path.join(self.outputDir, "cactusVanilla.maf"), getCactusDiskString(tempExperimentDir2))
             
             #Run the cactus tree stats
             treeStatsFile = os.path.join(self.outputDir, "treeStats.xml")
