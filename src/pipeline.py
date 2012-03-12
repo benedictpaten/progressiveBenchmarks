@@ -443,6 +443,16 @@ class MakeEvolverPrimatesMedium(MakeEvolverPrimatesLoci1):
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
         self.setupStats(outputDir, os.path.join(simDir, "all.maf"), self.params)
+   
+class MakeEvolverPrimatesLarge(MakeEvolverPrimatesLoci1):
+    name = "evolverPrimatesLarge"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "primates", "large")
+        sequences, newickTreeString = getInputs(simDir, ("simGorilla.fa", "simHuman.fa", "simChimp.fa", "simOrang.fa"))
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        self.setupStats(outputDir, os.path.join(simDir, "simPrimates.ancestor.maf"), self.params)
         
 #########################
 #####Tests added to for establishing correct repeat masking
@@ -594,6 +604,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeEvolverMammalsLociMedium(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesMedium(self.options, params))
             #self.addChildTarget(MakeEvolverHumanMouseLarge(self.options, params))
+            #self.addChildTarget(MakeEvolverPrimatesLarge(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLarge(self.options, params))
             
             ###Repeat masking problems
