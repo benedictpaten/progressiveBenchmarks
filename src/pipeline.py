@@ -166,6 +166,11 @@ class MakeAlignment(Target):
             
             #Make the logfile for jobTree
             jobTreeLogFile = os.path.join(self.outputDir, "log.txt")
+
+            #hack to get the 20flys going
+            event = "Anc0"
+            if len(self.sequences) > 10:
+                event = "Anc00"
             
             runCactusProgressive(os.path.join(tempExperimentDir, "progressiveCactusAlignment_project.xml"), 
                                  tempJobTreeDir, 
@@ -178,7 +183,7 @@ class MakeAlignment(Target):
                                  maxJobs=int(self.options.cpus),
                                  logLevel="CRITICAL",
                                  logFile = jobTreeLogFile,
-                                 event="Anc0")
+                                 event=event)
             logger.info("Ran the progressive workflow")
             
             #Check if the jobtree completed sucessively.
@@ -453,7 +458,18 @@ class MakeEvolverPrimatesLarge(MakeEvolverPrimatesLoci1):
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
         self.setupStats(outputDir, os.path.join(simDir, "simPrimates.ancestor.maf"), self.params)
-        
+
+
+class Make20Flys(MakeEvolverPrimatesLoci1):
+    name = "20Flys"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "flys", "20")
+        sequences, newickTreeString = getInputs(simDir, ("droGri2.fa", "droVir3.fa", "droMoj3.fa", "droBip.fa", "droAna3.fa", "droKik.fa", "droFic.fa", "dm3.fa", "droSim1.fa", "droSec1.fa", "droYak2.fa", "droEre2.fa", "droEug.fa", "droBia.fa", "droTak.fa", "droEle.fa", "droRho.fa", "droPer1.fa", "dp4.fa", "droWil1.fa"))
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        #self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
+
 #########################
 #####Tests added to for establishing correct repeat masking
 #########################
@@ -512,9 +528,10 @@ class Make3Worms(MakeEvolverPrimatesLoci1):
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
-        #self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)  
+        #self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
 
 ############End repeat masking tests
+        
         
 class MakeStats(Target):
     def __init__(self, options, trueMaf, predictedMaf, outputFile, params):
@@ -596,7 +613,7 @@ class MakeAllAlignments(Target):
         #pg = RepeatMasking()
         #pg = LastzTuning()
         for params in pg.generate():
-            self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
+            #self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
             #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
@@ -606,6 +623,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeEvolverHumanMouseLarge(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesLarge(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLarge(self.options, params))
+            self.addChildTarget(Make20Flys(self.options, params))
             
             ###Repeat masking problems
             #self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
