@@ -184,7 +184,8 @@ class MakeAlignment(Target):
                                  logLevel="CRITICAL",
                                  logFile = jobTreeLogFile,
                                  event=event,
-                                 batchSystem=self.options.batchSystemForAlignments)
+                                 batchSystem=self.options.batchSystemForAlignments,
+                                 extraJobTreeArgumentsString=("--parasolCommand %s" % self.options.parasolCommandForAlignment))
             logger.info("Ran the progressive workflow")
             
             #Check if the jobtree completed sucessively.
@@ -645,6 +646,7 @@ def main():
     parser.add_option("--cpus", dest="cpus")
     parser.add_option("--batchSystemForAlignments", default="singleMachine")
     parser.add_option("--databaseHost", default="localhost")
+    parser.add_option("--parasolCommandForAlignment", default="parasol")
     
     Stack.addJobTreeOptions(parser)
     
