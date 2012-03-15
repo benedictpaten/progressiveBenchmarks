@@ -133,11 +133,11 @@ class MakeAlignment(Target):
             if self.params.kyotoTycoon != False and self.params.kyotoTycoon != None:
                 dbConfElem = ET.Element("st_kv_database_conf", type="kyoto_tycoon")
                 if self.params.kyotoTycoon == True or str(self.params.kyotoTycoon).lower() == "true":
-                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host=self.options.databaseHost, port="1978", database_dir="dummy")
+                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host=self.options.databaseHost, port="1978", database_dir=self.options.databaseDir)
                 elif self.params.kyotoTycoon == "inMemory":
-                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host=self.options.databaseHost, port="1978", database_dir="dummy", in_memory="true")
+                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host=self.options.databaseHost, port="1978", database_dir=self.options.databaseDir, in_memory="true")
                 elif self.params.kyotoTycoon == "inMemoryNoSnapshot":
-                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host=self.options.databaseHost, port="1978", database_dir="dummy", in_memory="true", snapshot="false")                
+                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host=self.options.databaseHost, port="1978", database_dir=self.options.databaseDir, in_memory="true", snapshot="false")                
             else:
                 dbConfElem = None
             
@@ -185,7 +185,7 @@ class MakeAlignment(Target):
                                  logFile = jobTreeLogFile,
                                  event=event,
                                  batchSystem=self.options.batchSystemForAlignments,
-                                 extraJobTreeArgumentsString=("--parasolCommand %s" % self.options.parasolCommandForAlignment))
+                                 extraJobTreeArgumentsString=("--parasolCommand '%s'" % self.options.parasolCommandForAlignment))
             logger.info("Ran the progressive workflow")
             
             #Check if the jobtree completed sucessively.
@@ -646,6 +646,7 @@ def main():
     parser.add_option("--cpus", dest="cpus")
     parser.add_option("--batchSystemForAlignments", default="singleMachine")
     parser.add_option("--databaseHost", default="localhost")
+    parser.add_option("--databaseDir", default="dummy")
     parser.add_option("--parasolCommandForAlignment", default="parasol")
     
     Stack.addJobTreeOptions(parser)
