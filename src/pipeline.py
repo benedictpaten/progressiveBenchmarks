@@ -133,11 +133,11 @@ class MakeAlignment(Target):
             if self.params.kyotoTycoon != False and self.params.kyotoTycoon != None:
                 dbConfElem = ET.Element("st_kv_database_conf", type="kyoto_tycoon")
                 if self.params.kyotoTycoon == True or str(self.params.kyotoTycoon).lower() == "true":
-                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host="localhost", port="1978", database_dir="dummy")
+                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host=self.options.databaseHost, port="1978", database_dir="dummy")
                 elif self.params.kyotoTycoon == "inMemory":
-                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host="localhost", port="1978", database_dir="dummy", in_memory="true")
+                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host=self.options.databaseHost, port="1978", database_dir="dummy", in_memory="true")
                 elif self.params.kyotoTycoon == "inMemoryNoSnapshot":
-                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host="localhost", port="1978", database_dir="dummy", in_memory="true", snapshot="false")                
+                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host=self.options.databaseHost, port="1978", database_dir="dummy", in_memory="true", snapshot="false")                
             else:
                 dbConfElem = None
             
@@ -183,7 +183,8 @@ class MakeAlignment(Target):
                                  maxJobs=int(self.options.cpus),
                                  logLevel="CRITICAL",
                                  logFile = jobTreeLogFile,
-                                 event=event)
+                                 event=event,
+                                 batchSystem=self.options.batchSystemForAlignments)
             logger.info("Ran the progressive workflow")
             
             #Check if the jobtree completed sucessively.
@@ -613,7 +614,7 @@ class MakeAllAlignments(Target):
         #pg = RepeatMasking()
         #pg = LastzTuning()
         for params in pg.generate():
-            #self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
+            self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
             #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
@@ -623,7 +624,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeEvolverHumanMouseLarge(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesLarge(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLarge(self.options, params))
-            self.addChildTarget(Make20Flys(self.options, params))
+            #self.addChildTarget(Make20Flys(self.options, params))
             
             ###Repeat masking problems
             #self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
@@ -642,6 +643,8 @@ def main():
     parser = OptionParser()
     parser.add_option("--outputDir", dest="outputDir")
     parser.add_option("--cpus", dest="cpus")
+    parser.add_option("--batchSystemForAlignments", default="singleMachine")
+    parser.add_option("--databaseHost", default="localhost")
     
     Stack.addJobTreeOptions(parser)
     
