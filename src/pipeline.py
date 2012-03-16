@@ -201,7 +201,7 @@ class MakeAlignment(Target):
                                  logFile = jobTreeLogFile,
                                  event=event,
                                  batchSystem=self.options.batchSystemForAlignments,
-                                 extraJobTreeArgumentsString=("--parasolCommand '%s'" % self.options.parasolCommandForAlignment))
+                                 extraJobTreeArgumentsString="--parasolCommand '%s'" % self.options.parasolCommandForAlignment)
             logger.info("Ran the progressive workflow")
             
             #Check if the jobtree completed sucessively.
