@@ -100,12 +100,18 @@ class MakeAlignment(Target):
         self.options = options
         #self.heldOutSequence = heldOutSequence
         self.params = params
+        
+    def getName(self):
+        tok1, tok2 = os.path.split(self.outputDir)
+        while '_' not in tok2:
+            tok1, tok2 = os.path.split(tok1)
+        return tok2
     
     def runProgressive(self):
         logger.debug("Going to put the alignment in %s" % self.outputDir)
         if not os.path.isdir(self.outputDir):
             os.mkdir(self.outputDir)
-
+        
         if not os.path.exists(os.path.join(self.outputDir, "progressiveCactusAlignment")):
             xmlTree = ET.parse(os.path.join(getRootPathString(), "lib", "cactus_workflow_config.xml"))
             
@@ -130,14 +136,24 @@ class MakeAlignment(Target):
             #Make the experiment file
             tempExperimentFile = os.path.join(tempLocalDir, "experiment.xml")
             
+            if self.options.databaseDir is not None and self.options.databaseDir != "":
+                dbDir = self.options.databaseDir
+                dbName = "temp_%s" % self.getName()
+                system("rm -rf %s" % os.path.join(dbDir, dbName))
+                if not os.path.isdir(dbDir):
+                    os.mkdir(dbDir)
+            else:
+                dbDir = tempLocalDir
+                dbName = "progressiveCactusAlignment"
+                            
             if self.params.kyotoTycoon != False and self.params.kyotoTycoon != None:
                 dbConfElem = ET.Element("st_kv_database_conf", type="kyoto_tycoon")
                 if self.params.kyotoTycoon == True or str(self.params.kyotoTycoon).lower() == "true":
-                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host=self.options.databaseHost, port="1978", database_dir=self.options.databaseDir)
+                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host=self.options.databaseHost, port="1978", database_dir=dbDir)
                 elif self.params.kyotoTycoon == "inMemory":
-                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host=self.options.databaseHost, port="1978", database_dir=self.options.databaseDir, in_memory="true")
+                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host=self.options.databaseHost, port="1978", database_dir=dbDir, in_memory="true")
                 elif self.params.kyotoTycoon == "inMemoryNoSnapshot":
-                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host=self.options.databaseHost, port="1978", database_dir=self.options.databaseDir, in_memory="true", snapshot="false")                
+                    ktElem = ET.SubElement(dbConfElem, "kyoto_tycoon", host=self.options.databaseHost, port="1978", database_dir=dbDir, in_memory="true", snapshot="false")                
             else:
                 dbConfElem = None
             
@@ -146,7 +162,7 @@ class MakeAlignment(Target):
                                                  newickTreeString=self.newickTree, 
                                                  #requiredSpecies=self.requiredSpecies,
                                                  #singleCopySpecies=self.singleCopySpecies,
-                                                 databaseName="cactusAlignment",
+                                                 databaseName=dbName,
                                                  outputDir=tempLocalDir,
                                                  configFile=tempConfigFile,
                                                  databaseConf = dbConfElem)
@@ -210,12 +226,18 @@ class MakeAlignment(Target):
             system("mv %s %s" % (tempExperimentDir, self.outputDir))
             system("jobTreeStats --jobTree %s --outputFile %s/jobTreeStats.xml" % (tempJobTreeDir, self.outputDir))
             system("mv %s %s/config.xml" % (tempConfigFile, self.outputDir))
-            
+                
             #But keep a link to the multicactus project in its original path so we can navigate
             # the paths in the xml...
             actualResultsDir = os.path.join(os.path.abspath(self.outputDir), "progressiveCactusAlignment")
             tempResultsDir = os.path.join(self.outputDir, "tempProgressiveCactusAlignment")
             system("ln -s %s %s" % (actualResultsDir, tempResultsDir))
+            
+            #database dir given, so we erase it and overwrite with temp
+            if self.options.databaseDir is not None and self.options.databaseDir != "":
+                system("rm -rf %s && mv %s %s" % (os.path.join(dbDir, self.getName()),
+                                                  os.path.join(dbDir, dbName),
+                                                  os.path.join(dbDir, self.getName())))
                 
     def runVanilla(self):
         logger.debug("Going to put the alignment in %s" % self.outputDir)
@@ -646,7 +668,7 @@ def main():
     parser.add_option("--cpus", dest="cpus")
     parser.add_option("--batchSystemForAlignments", default="singleMachine")
     parser.add_option("--databaseHost", default="localhost")
-    parser.add_option("--databaseDir", default="dummy")
+    parser.add_option("--databaseDir", default="")
     parser.add_option("--parasolCommandForAlignment", default="parasol")
     
     Stack.addJobTreeOptions(parser)

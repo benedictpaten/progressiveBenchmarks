@@ -4,7 +4,7 @@ maxCpusPerAlignment=3
 jobTreeParameters = --logDebug --maxThreads=${maxCpus} --maxJobs=${maxCpus}
 batchSystemForAlignments = singleMachine singleMachine 1000000
 databaseHost = localhost
-databaseDir = dummy
+databaseDir = ""
 parasolCommandForAlignment = parasol
 
 all :
