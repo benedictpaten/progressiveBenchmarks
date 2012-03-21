@@ -191,7 +191,7 @@ class MakeAlignment(Target):
             runCactusProgressive(os.path.join(tempExperimentDir, "progressiveCactusAlignment_project.xml"), 
                                  tempJobTreeDir, 
                                  #batchSystem=batchSystem, 
-                                 buildMaf=True,
+                                 buildHal=True,
                                  joinMaf=True,
                                  #buildTrees=buildTrees, buildFaces=buildFaces, buildReference=buildReference,
                                  jobTreeStats=True,
@@ -282,7 +282,7 @@ class MakeAlignment(Target):
                                                  databaseName="cactusAlignmentVanilla",
                                                  outputDir=tempLocalDir,
                                                  configFile=tempConfigFile,
-                                                 mafFile=os.path.join(self.outputDir, "cactusVanilla.maf"),)
+                                                 halFile=os.path.join(self.outputDir, "cactusVanilla.maf"),)
             tempExperimentDir2 = os.path.join(tempLocalDir, "cactusAlignmentVanilla")
             cactusWorkflowExperiment.writeExperimentFile(tempExperimentFile2)
            
