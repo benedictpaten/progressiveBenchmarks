@@ -38,6 +38,7 @@ from cactus.shared.test import getInputs
 
 from sonLib.bioio import TestStatus
 from cactus.progressive.experimentWrapper import ExperimentWrapper
+from cactus.progressive.configWrapper import ConfigWrapper
 from cactus.progressive.cactus_createMultiCactusProject import cleanEventTree
 from cactus.progressive.ktserverLauncher import KtserverLauncher
 from progressiveBenchmarks.src.params import Params
@@ -188,11 +189,14 @@ class MakeAlignment(Target):
             if len(self.sequences) > 10:
                 event = "Anc00"
             
+            configWrapper = ConfigWrapper(config)
+            joinMaf = configWrapper.getJoinMaf()
+            
             runCactusProgressive(os.path.join(tempExperimentDir, "progressiveCactusAlignment_project.xml"), 
                                  tempJobTreeDir, 
                                  #batchSystem=batchSystem, 
                                  buildHal=True,
-                                 joinMaf=True,
+                                 joinMaf=joinMaf,
                                  #buildTrees=buildTrees, buildFaces=buildFaces, buildReference=buildReference,
                                  jobTreeStats=True,
                                  maxThreads=int(self.options.cpus),
@@ -369,14 +373,16 @@ class MakeBlanchetteStats(Target):
             else:
                 predictedAlignmentMaf = os.path.join(self.outputDir, str(i), "cactusVanilla.maf")
             
-            outputFile = os.path.join(self.getLocalTempDir(), "temp%i" % i)
-            system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s --sampleNumber 100000000 " % (trueAlignmentMAF, predictedAlignmentMaf, outputFile))
-            system("cp %s %s" % (outputFile, os.path.join(self.outputDir, str(i), "mafComparison.xml")))
-            if previousOutputFile != None:
-                system("mergeMafComparatorResults.py --results1 %s --results2 %s --outputFile %s" % (outputFile, previousOutputFile, outputFile))
-            previousOutputFile = outputFile
-            
-        system("mv %s %s" % (previousOutputFile, os.path.join(self.outputDir, "mafComparison.xml")))   
+            if os.path.exists(predictedAlignmentMaf):
+                outputFile = os.path.join(self.getLocalTempDir(), "temp%i" % i)
+                system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s --sampleNumber 100000000 " % (trueAlignmentMAF, predictedAlignmentMaf, outputFile))
+                system("cp %s %s" % (outputFile, os.path.join(self.outputDir, str(i), "mafComparison.xml")))
+                if previousOutputFile != None:
+                    system("mergeMafComparatorResults.py --results1 %s --results2 %s --outputFile %s" % (outputFile, previousOutputFile, outputFile))
+                previousOutputFile = outputFile
+        
+        if previousOutputFile is not None and os.path.exists(previousOutputFile):    
+            system("mv %s %s" % (previousOutputFile, os.path.join(self.outputDir, "mafComparison.xml")))   
         
 class MakeEvolverPrimatesLoci1(MakeBlanchetteAlignments):
     name = "evolverPrimatesLoci1"
@@ -575,8 +581,9 @@ class MakeStats(Target):
             expPath = os.path.join(outputDir, "experiment.xml")
             applyNamingToMaf(expPath, self.trueMaf, trueRenamedMAF)
             self.trueMaf = trueRenamedMAF
-            system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s --sampleNumber 100000000" % (self.trueMaf, self.predictedMaf, outputFile))
-            system("mv %s %s" % (outputFile, self.outputFile))
+            if os.path.exists(self.predictedMaf):
+                system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s --sampleNumber 100000000" % (self.trueMaf, self.predictedMaf, outputFile))
+                system("mv %s %s" % (outputFile, self.outputFile))
 
 class MakeSummary(Target):
     def __init__(self, options, paramsGenerator):
@@ -616,8 +623,9 @@ class MakeSummary(Target):
                                                 "progressiveCactusAlignment_project.xml")
                     else:
                         projPath = None                    
-                    summary.addRow(rowName, params, jobTreeStatsPath, mafCompPath, 
-                                   treeStatsPath, projPath)
+                    if os.path.exists(mafCompPath):
+                        summary.addRow(rowName, params, jobTreeStatsPath, mafCompPath, 
+                                       treeStatsPath, projPath)
                 summary.write(os.path.join(self.options.outputDir, "%s_summary.csv" % name))
                    
 class MakeAllAlignments(Target):

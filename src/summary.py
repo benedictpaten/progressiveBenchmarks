@@ -179,7 +179,10 @@ class Summary:
                 rootSize = float(os.path.getsize(rootPath))
                 for leafName, leafPath in exp.seqMap.items():
                     leafSize = float(os.path.getsize(leafPath))
-                    ratio = rootSize / leafSize
+                    if leafSize != 0:
+                        ratio = rootSize / leafSize
+                    else:
+                        ratio = sys.maxint
                     ratioSum += ratio
                     ratioCount += 1
         avgRatio = ratioSum / ratioCount
