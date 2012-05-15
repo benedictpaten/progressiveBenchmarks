@@ -105,7 +105,7 @@
 		useSimulatedAnnealing="1" 
 		theta="0.000001" 
 		maxNumberOfChainsBeforeSwitchingToFast="1000" 
-		permutations="10"
+		permutations="5"
 	/>
 	<check 
 		maxFlowerGroupSize="10000000"
