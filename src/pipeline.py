@@ -204,7 +204,7 @@ class MakeAlignment(Target):
                                  logLevel="CRITICAL",
                                  logFile = jobTreeLogFile,
                                  event=event,
-                                 retryCount=3,
+                                 retryCount=0,
                                  batchSystem=self.options.batchSystemForAlignments,
                                  extraJobTreeArgumentsString="--parasolCommand '%s'" % self.options.parasolCommandForAlignment)
             logger.info("Ran the progressive workflow")
