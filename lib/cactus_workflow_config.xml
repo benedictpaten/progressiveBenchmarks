@@ -2,6 +2,7 @@
 	<alignment>
 		<iterations>
 			<iteration 
+				overlargeMemory="4294967296"
 				maxFlowerGroupSize="10000000"
 				minFlowerSize="5000"
 				type="blast"
@@ -34,6 +35,7 @@
 				/>
 			</iteration>
 			<iteration 
+				overlargeMemory="4294967296"
 				maxFlowerGroupSize="1000000"
 				minFlowerSize="5000"
 				type="blast"
@@ -70,6 +72,7 @@
 				type="base" 
 			>
 				<base
+					overlargeMemory="4294967296"
 					maxFlowerGroupSize="40000"
 					numThreads="5" 
 					spanningTrees="10" 
@@ -91,6 +94,7 @@
 		</iterations>
 	</alignment>
 	<normal 
+		overlargeMemory="4294967296"
 		maxFlowerGroupSize="1000000"
 		iterations="0"
 	/>
@@ -99,6 +103,7 @@
 	<faces
 	/>
 	<reference 
+		overlargeMemory="4294967296"
 		maxFlowerGroupSize="10000000"
 		matchingAlgorithm="blossom5" 
 		reference="reference" 
@@ -108,10 +113,12 @@
 		permutations="5"
 	/>
 	<check 
+		overlargeMemory="4294967296"
 		maxFlowerGroupSize="10000000"
 		runCheck="0"
 	/>
 	<hal
+		overlargeMemory="4294967296"
 		maxFlowerGroupSize="10000000"
 		buildHal="1"
 		showOnlySubstitutionsWithRespectToReference="0"
