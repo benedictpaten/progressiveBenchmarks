@@ -1,123 +1,94 @@
 <cactusWorkflowConfig>
-	<alignment>
-		<iterations>
-			<iteration 
-				overlargeMemory="4294967296"
-				maxFlowerGroupSize="10000000"
-				minFlowerSize="5000"
-				type="blast"
-			>
-				<blast 
-					chunkSize="10000000" 
-					lastzArguments="--nogapped --hspthresh=3000 --ambiguous=iupac"
-					chunksPerJob="1" 
-					compressFiles="1" 
-					overlapSize="10000" 
-					filterByIdentity="0" 
-					identityRatio="6" 
-					minimumDistance="0.01" 
-					minimumSequenceLengthForBlast="100"
-				/>
-				<core 
-					alignRepeatsAtRound="0" 
-					annealingRounds="2 4 16 128" 
-					deannealingRounds="1 2 3 4 8 16 32 64" 
-					blockTrim="0" 
-					minimumTreeCoverage="0.0" 
-					trim="5 5 5 5 5 5 5 5 5 5 5 5 0 0 0 0 0 0 0 0 0" 
-					minimumBlockDegree="2"
-					requiredIngroupFraction="0.0"
-					requiredOutgroupFraction="0.0"
-					requiredAllFraction="1.0"
-					singleCopyIngroup="0"
-					singleCopyOutgroup="1"
-					maxAdjacencyComponentSizeRatio="10"
-				/>
-			</iteration>
-			<iteration 
-				overlargeMemory="4294967296"
-				maxFlowerGroupSize="1000000"
-				minFlowerSize="5000"
-				type="blast"
-			>
-				<blast 
-					chunkSize="1000000" 
-					lastzArguments="--hspthresh=1800 --ambiguous=iupac"
-					chunksPerJob="1" 
-					compressFiles="1" 
-					overlapSize="10000" 
-					filterByIdentity="0" 
-					identityRatio="6" 
-					minimumDistance="0.01" 
-					minimumSequenceLengthForBlast="100"
-				/>
-				<core 
-					alignRepeatsAtRound="0" 
-					annealingRounds="2 4 16 128" 
-					deannealingRounds="1 2 3 4 8 16 32 64" 
-					blockTrim="0" 
-					minimumTreeCoverage="0.0" 
-					trim="5 5 5 5 5 5 5 5 5 5 5 5 0 0 0 0 0 0 0 0 0" 
-					minimumBlockDegree="2"
-					requiredIngroupFraction="1.0"
-					requiredOutgroupFraction="0.0"
-					requiredAllFraction="0.0"
-					singleCopyIngroup="0"
-					singleCopyOutgroup="1" 
-					maxAdjacencyComponentSizeRatio="10"
-				/>
-			</iteration>
-			<iteration 
-				overlargeMemory="4294967296"
-				maxFlowerGroupSize="1000000"
-				type="base" 
-			>
-				<base
-					overlargeMemory="4294967296"
-					maxFlowerGroupSize="40000"
-					numThreads="5" 
-					spanningTrees="10" 
-					gapGamma="0.2" 
-					useBanding="1" 
-					bandingLimit="100000" 
-					splitMatrixBiggerThanThis="3000" 
-                    anchorMatrixBiggerThanThis="500"
-                    repeatMaskMatrixBiggerThanThis="500"
-					diagonalExpansion="20"
-					constraintDiagonalTrim="14" 
-					minimumBlockDegree="2" 
-					alignAmbiguityCharacters="1"
-					requiredIngroupFraction="0.0"
-					requiredOutgroupFraction="0.0"
-					requiredAllFraction="0.67" 
-				/>
-			</iteration>
-		</iterations>
-	</alignment>
+	<preprocessor 
+	 	chunkSize="100000000" 
+	 	preprocessorString='cactus_addFastaHeaderDots.py TARGET_FILE OUT_FILE --event EVENT_STRING'
+	 />
+	<setup>
+		<CactusSetupPhase/>
+		<CactusSetupWrapper/>
+	</setup>
+	<caf
+		minFlowerSize="5000"
+		chunkSize="10000000" 
+		lastzArguments="--nogapped --hspthresh=3000 --ambiguous=iupac"
+		chunksPerJob="1" 
+		compressFiles="1" 
+		overlapSize="10000" 
+		filterByIdentity="0" 
+		identityRatio="6" 
+		minimumDistance="0.01" 
+		minimumSequenceLengthForBlast="100"
+		alignRepeatsAtRound="0" 
+		annealingRounds="2 4 16 128" 
+		deannealingRounds="1 2 3 4 8 16 32 64" 
+		blockTrim="0" 
+		minimumTreeCoverage="0.0" 
+		trim="5 5 5 5 5 5 5 5 5 5 5 5 0 0 0 0 0 0 0 0 0" 
+		minimumBlockDegree="2"
+		requiredIngroupFraction="0.0"
+		requiredOutgroupFraction="0.0"
+		requiredAllFraction="1.0"
+		singleCopyIngroup="0"
+		singleCopyOutgroup="1"
+		maxAdjacencyComponentSizeRatio="10" 
+	>
+		<CactusCafPhase memory="" maxFlowerGroupSize=""/>
+		<CactusCafRecursion memory="" maxFlowerGroupSize=""/>
+		<CactusCafWrapper memory="" maxFlowerGroupSize=""/>
+		<CactusCafWrapperLarge memory=""/>
+		<CactusCafWrapperLargeFollowOn memory=""/>
+	</caf>
+	<bar>
+		spanningTrees="10" 
+		gapGamma="0.2"  
+		useBanding="1" 
+		bandingLimit="100000" 
+		splitMatrixBiggerThanThis="3000" 
+        anchorMatrixBiggerThanThis="500"
+        repeatMaskMatrixBiggerThanThis="500"
+		diagonalExpansion="20"
+		constraintDiagonalTrim="14" 
+		minimumBlockDegree="2" 
+		alignAmbiguityCharacters="1"
+		requiredIngroupFraction="0.0"
+		requiredOutgroupFraction="0.0"
+		requiredAllFraction="0.67" 
+	>
+		<CactusBarDown memory="" maxFlowerGroupSize="100000000"/>
+		<CactusBarWrapper memory="" cpu="" overlargeMemory="" overlargeCpu="" maxFlowerGroupSize="40000"/>
+	</bar>
 	<normal 
-		overlargeMemory="4294967296"
 		maxFlowerGroupSize="1000000"
 		iterations="0"
-	/>
+	>
+		<CactusNormalDown memory="" maxFlowerGroupSize="100000000"/>
+		<CactusNormalWrapper memory="" cpu="" overlargeMemory="" overlargeCpu="" maxFlowerGroupSize="40000"/>
+	</normal>
 	<phylogeny
 	/>
 	<faces
 	/>
 	<reference 
-		overlargeMemory="4294967296"
-		maxFlowerGroupSize="10000000"
 		matchingAlgorithm="blossom5" 
 		reference="reference" 
 		useSimulatedAnnealing="1" 
 		theta="0.000001" 
 		maxNumberOfChainsBeforeSwitchingToFast="1000" 
 		permutations="5"
-	/>
+	>
+		<CactusReferenceDown memory="" maxFlowerGroupSize="10000000"/>
+		<CactusReferenceWrapper memory="" overlargeMemory="" maxFlowerGroupSize="10000000"/>
+		<CactusSetReferenceCoordinatesUpWrapper memory="" />
+		<CactusSetReferenceCoordinatesDown maxFlowerGroupSize="10000000" memory="" overlargeMemory=""/>
+		<CactusSetReferenceCoordinatesDownWrapper memory="" overlargeMemory=""/>
+	</reference>
 	<check 
-		overlargeMemory="4294967296"
 		maxFlowerGroupSize="10000000"
 		runCheck="0"
-	/>
+	>
+		<CactusCheckDown maxFlowerGroupSize="10000000" memory="" overlargeMemory=""/>
+		<CactusCheckWrapper maxFlowerGroupSize="10000000" memory="" overlargeMemory=""/>
+	</check>
 	<hal
 		overlargeMemory="4294967296"
 		maxFlowerGroupSize="10000000"
@@ -125,11 +96,10 @@
 		showOnlySubstitutionsWithRespectToReference="0"
 		makeMaf="1"
 		joinMaf="1"
-	/>
-	<preprocessor 
-	 	chunkSize="100000000" 
-	 	preprocessorString='cactus_addFastaHeaderDots.py TARGET_FILE OUT_FILE --event EVENT_STRING'
-	 />
+	>
+		<CactusHalGeneratorDown/>
+		<CactusHalGeneratorWrapper/>
+	</hal>
   	<multi_cactus>
 		<outgroup 
 			strategy="greedy" 
