@@ -197,7 +197,7 @@ class MakeAlignment(Target):
                                  #batchSystem=batchSystem, 
                                  buildHal=True,
                                  joinMaf=joinMaf,
-                                 #buildTrees=buildTrees, buildFaces=buildFaces, buildReference=buildReference,
+                                 #buildTrees=buildTrees, buildReference=buildReference,
                                  jobTreeStats=True,
                                  maxThreads=int(self.options.cpus),
                                  maxJobs=int(self.options.cpus),
