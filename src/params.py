@@ -53,21 +53,14 @@ class Params:
         setAtt(decompElem, "self_alignment", self.selfAlignment)
         setAtt(decompElem, "subtree_size", self.subtreeSize)
     
-        iterationsElem = config.find("alignment").find("iterations")
-        iterations = iterationsElem.findall("iteration")
-        cafElem = iterations[0]
-        assert cafElem.attrib["type"] == "blast"
-        #assert cafElem.attrib["number"] == "0"
-        coreElem = cafElem.find("core")
+        cafElem = config.find("caf")
         if self.annealingRounds is not None:
-            setAtt(coreElem, "annealingRounds", self.annealingRounds)
-            trim = coreElem.attrib["trim"].split()[0]
+            setAtt(cafElem, "annealingRounds", self.annealingRounds)
+            trim = cafElem.attrib["trim"].split()[0]
             trimList = [trim] * len(self.annealingRounds.split())
-            setAtt(coreElem, "trim", " ".join(trimList))
+            setAtt(cafElem, "trim", " ".join(trimList))
                
-        barElem = iterations[-1]
-        assert barElem.attrib["type"] == "base"
-        barElem = barElem.find("base")
+        barElem = config.find("bar") 
         setAtt(barElem, "minimumBlockDegree", self.minBlockDegree)
         setAtt(barElem, "numThreads", self.numThreads)
         
