@@ -196,7 +196,6 @@ class MakeAlignment(Target):
                                  tempJobTreeDir, 
                                  #batchSystem=batchSystem, 
                                  buildHal=True,
-                                 joinMaf=joinMaf,
                                  #buildTrees=buildTrees, buildReference=buildReference,
                                  jobTreeStats=True,
                                  maxThreads=int(self.options.cpus),
