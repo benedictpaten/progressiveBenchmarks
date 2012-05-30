@@ -200,6 +200,7 @@ class MakeAlignment(Target):
                                  jobTreeStats=True,
                                  maxThreads=int(self.options.cpus),
                                  maxJobs=int(self.options.cpus),
+                                 defaultMemory=int(self.options.defaultMemory),
                                  logLevel="CRITICAL",
                                  logFile = jobTreeLogFile,
                                  event=event,
