@@ -27,9 +27,10 @@
 		singleCopyIngroup="0"
 		singleCopyOutgroup="1"
 		maxAdjacencyComponentSizeRatio="10"
+		lastzMemory="2147483648"
 	>
 		<CactusCafRecursion maxFlowerGroupSize="100000000"/>
-		<CactusCafWrapper minFlowerSize="5000" maxFlowerGroupSize="10000000"/>
+		<CactusCafWrapper minFlowerSize="5000" maxFlowerGroupSize="10000000" memory="2147483648"/>
 	</caf>
 	<caf
 		chunkSize="1000000" 
@@ -55,7 +56,7 @@
 		maxAdjacencyComponentSizeRatio="10"
 	>
 		<CactusCafRecursion maxFlowerGroupSize="100000000"/>
-		<CactusCafWrapper minFlowerSize="5000" maxFlowerGroupSize="10000000"/>
+		<CactusCafWrapper minFlowerSize="5000" maxFlowerGroupSize="1000000" memory="2147483648"/>
 	</caf>
 	<bar
 		runBar="1"
@@ -76,7 +77,7 @@
 		requiredAllFraction="0.67"
 	>
 		<CactusBarRecursion maxFlowerGroupSize="100000000"/>
-		<CactusBarWrapper maxFlowerGroupSize="40000"/>
+		<CactusBarWrapper maxFlowerGroupSize="40000" memory="2147483648"/>
 	</bar>
 	<normal 
 		iterations="0"
@@ -100,10 +101,10 @@
 		permutations="5"
 	>
 		<CactusReferenceRecursion maxFlowerGroupSize="100000000" maxFlowerWrapperGroupSize="10000000"/>
-	 	<CactusReferenceWrapper/>
-	 	<CactusSetReferenceCoordinatesUpWrapper />
+	 	<CactusReferenceWrapper memory="2147483648"/>
+	 	<CactusSetReferenceCoordinatesUpWrapper memory="2147483648" />
 	 	<CactusSetReferenceCoordinatesDownRecursion maxFlowerGroupSize="100000000" maxFlowerWrapperGroupSize="10000000"/>
-	 	<CactusSetReferenceCoordinatesDownWrapper/>
+	 	<CactusSetReferenceCoordinatesDownWrapper memory="2147483648"/>
 	</reference>
 	<check 
 		runCheck="0"
