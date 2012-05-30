@@ -299,7 +299,6 @@ class MakeAlignment(Target):
             tempJobTreeDir2 = os.path.join(tempLocalDir, "jobTreeVanilla")
             runCactusWorkflow(tempExperimentFile2, tempJobTreeDir2,
                               jobTreeStats=True,
-                              setupAndBuildAlignments=True,
                               buildReference=True,
                               #Passing options
                               maxThreads=int(self.options.cpus),
