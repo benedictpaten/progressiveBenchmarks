@@ -102,7 +102,7 @@
 	>
 		<CactusReferenceRecursion maxFlowerGroupSize="100000000" maxFlowerWrapperGroupSize="10000000"/>
 	 	<CactusReferenceWrapper memory="2147483648"/>
-	 	<CactusSetReferenceCoordinatesUpWrapper memory="2147483648" />
+	 	<CactusSetReferenceCoordinatesUpWrapper memory="2147483648"/>
 	 	<CactusSetReferenceCoordinatesDownRecursion maxFlowerGroupSize="100000000" maxFlowerWrapperGroupSize="10000000"/>
 	 	<CactusSetReferenceCoordinatesDownWrapper memory="2147483648"/>
 	</reference>
