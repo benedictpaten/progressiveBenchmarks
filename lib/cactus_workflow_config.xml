@@ -1,6 +1,6 @@
 <cactusWorkflowConfig>
 	<preprocessor 
-	 	chunkSize="100000000" 
+	 	chunkSize="10000000" 
 	 	preprocessorString='cactus_addFastaHeaderDots.py TARGET_FILE OUT_FILE --event EVENT_STRING'
 	 />
 	<setup>
