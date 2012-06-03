@@ -76,8 +76,8 @@
 		requiredOutgroupFraction="0.0"
 		requiredAllFraction="0.67"
 	>
-		<CactusBarRecursion maxFlowerGroupSize="100000000"/>
-		<CactusBarWrapper maxFlowerGroupSize="40000" memory="2147483648"/>
+		<CactusBarRecursion maxFlowerGroupSize="20000000"/>
+		<CactusBarWrapper maxFlowerGroupSize="400000" memory="2147483648"/>
 	</bar>
 	<normal 
 		iterations="0"
