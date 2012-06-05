@@ -1,5 +1,4 @@
 outputDir = output
-maxCpus=3 
 maxCpusPerAlignment=3
 batchSystemForAlignments = singleMachine
 databaseHost = localhost
@@ -14,14 +13,14 @@ parasolCommandForAlignment = parasol
 #databaseDir = /hive/users/benedict/progressiveBenchmarks/databases
 #parasolCommandForAlignment = /cluster/home/markd/pub/parasol -host=swarm-10
 
-jobTreeParameters = --logDebug --maxThreads=${maxCpus} --maxJobs=${maxCpus}
+jobTreeParameters = --logDebug
 
 all :
 	#Nothing currently
 
 run : 
 	rm -rf jobTree
-	python src/pipeline.py --parasolCommandForAlignment "${parasolCommandForAlignment}" --defaultMemory 4294967296 --databaseDir ${databaseDir} --batchSystemForAlignments "${batchSystemForAlignments}" --databaseHost ${databaseHost} --outputDir ${outputDir} --jobTree jobTree ${jobTreeParameters} --cpus=${maxCpusPerAlignment}
+	python src/pipeline.py --parasolCommandForAlignment "${parasolCommandForAlignment}" --databaseDir ${databaseDir} --batchSystemForAlignments "${batchSystemForAlignments}" --databaseHost ${databaseHost} --outputDir ${outputDir} --jobTree jobTree ${jobTreeParameters} --cpus=${maxCpusPerAlignment}
 	rm -rf jobTree
 
 clean :

@@ -84,7 +84,7 @@ class MakeAlignment(Target):
                  #referenceAlgorithm, minimumBlockDegree, 
                  #blastAlignmentString, baseLevel, maxNumberOfChains, permutations,
                  #theta, useSimulatedAnnealing, heldOutSequence):
-        Target.__init__(self, cpu=int(options.cpus), memory=4000000000)
+        Target.__init__(self)
         self.sequences = sequences
         self.newickTree = newickTree
         #self.requiredSpecies = requiredSpecies
