@@ -5,8 +5,6 @@ databaseHost = localhost
 databaseDir = ""
 parasolCommandForAlignment = parasol
 
-#outputDir = output
-#maxCpus=25 
 #maxCpusPerAlignment=25
 #batchSystemForAlignments = parasol singleMachine 2147483648 10000
 #databaseHost = kolossus-10
@@ -20,7 +18,7 @@ all :
 
 run : 
 	rm -rf jobTree
-	python src/pipeline.py --parasolCommandForAlignment "${parasolCommandForAlignment}" --databaseDir ${databaseDir} --batchSystemForAlignments "${batchSystemForAlignments}" --databaseHost ${databaseHost} --outputDir ${outputDir} --jobTree jobTree ${jobTreeParameters} --cpus=${maxCpusPerAlignment}
+	python src/pipeline.py --parasolCommandForAlignment "${parasolCommandForAlignment}" --defaultMemory 4294967296 --databaseDir ${databaseDir} --batchSystemForAlignments "${batchSystemForAlignments}" --databaseHost ${databaseHost} --outputDir ${outputDir} --jobTree jobTree ${jobTreeParameters} --cpus=${maxCpusPerAlignment}
 	rm -rf jobTree
 
 clean :
