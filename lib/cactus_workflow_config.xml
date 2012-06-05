@@ -82,13 +82,13 @@
 	<normal 
 		iterations="0"
 	>
-		<CactusNormalRecursion maxFlowerGroupSize="100000000" maxFlowerWrapperGroupSize="10000000"/>
+		<CactusNormalRecursion maxFlowerGroupSize="50000000" maxFlowerWrapperGroupSize="10000000"/>
 		<CactusNormalWrapper/>
 	</normal>
 	<avg
 		buildAvgs="0"
 	>
-		<CactusAVGRecursion maxFlowerGroupSize="100000000" maxFlowerWrapperGroupSize="10000000"/>
+		<CactusAVGRecursion maxFlowerGroupSize="50000000" maxFlowerWrapperGroupSize="10000000"/>
 		<CactusAVGWrapper/>
 	</avg>
 	<reference 
@@ -100,7 +100,7 @@
 		maxNumberOfChainsBeforeSwitchingToFast="1000" 
 		permutations="5"
 	>
-		<CactusReferenceRecursion maxFlowerGroupSize="100000000" maxFlowerWrapperGroupSize="10000000"/>
+		<CactusReferenceRecursion maxFlowerGroupSize="50000000" maxFlowerWrapperGroupSize="10000000"/>
 	 	<CactusReferenceWrapper memory="2147483648"/>
 	 	<CactusSetReferenceCoordinatesUpWrapper memory="2147483648"/>
 	 	<CactusSetReferenceCoordinatesDownRecursion maxFlowerGroupSize="100000000" maxFlowerWrapperGroupSize="10000000"/>
@@ -109,7 +109,7 @@
 	<check 
 		runCheck="0"
 	>
-		<CactusCheckRecursion maxFlowerGroupSize="100000000" maxFlowerWrapperGroupSize="10000000"/>
+		<CactusCheckRecursion maxFlowerGroupSize="50000000" maxFlowerWrapperGroupSize="10000000"/>
 		<CactusCheckWrapper/>
 	</check>
 	<hal

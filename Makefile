@@ -1,4 +1,5 @@
 outputDir = output
+
 maxCpusPerAlignment=3
 batchSystemForAlignments = singleMachine
 databaseHost = localhost
@@ -18,7 +19,7 @@ all :
 
 run : 
 	rm -rf jobTree
-	python src/pipeline.py --parasolCommandForAlignment "${parasolCommandForAlignment}" --defaultMemory 4294967296 --databaseDir ${databaseDir} --batchSystemForAlignments "${batchSystemForAlignments}" --databaseHost ${databaseHost} --outputDir ${outputDir} --jobTree jobTree ${jobTreeParameters} --cpus=${maxCpusPerAlignment}
+	python src/pipeline.py --parasolCommandForAlignment "${parasolCommandForAlignment}" --defaultMemory 8589934593 --noCheckPoints --maxThreads 1 --databaseDir ${databaseDir} --batchSystemForAlignments "${batchSystemForAlignments}" --databaseHost ${databaseHost} --outputDir ${outputDir} --jobTree jobTree ${jobTreeParameters} --cpus=${maxCpusPerAlignment}
 	rm -rf jobTree
 
 clean :

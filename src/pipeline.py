@@ -206,6 +206,7 @@ class MakeAlignment(Target):
                                  event=event,
                                  retryCount=0,
                                  batchSystem=self.options.batchSystemForAlignments,
+                                 noCheckPoints=self.options.noCheckPoints,
                                  extraJobTreeArgumentsString="--parasolCommand '%s'" % self.options.parasolCommandForAlignment)
             logger.info("Ran the progressive workflow")
             
