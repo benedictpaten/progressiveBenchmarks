@@ -207,7 +207,8 @@ class MakeAlignment(Target):
                                  retryCount=0,
                                  batchSystem=self.options.batchSystemForAlignments,
                                  noCheckPoints=self.options.noCheckPoints,
-                                 extraJobTreeArgumentsString="--parasolCommand '%s'" % self.options.parasolCommandForAlignment)
+                                 extraJobTreeArgumentsString="--parasolCommand '%s'" % self.options.parasolCommandForAlignment,
+                                 profileFile=os.path.join(self.outputDir, "profileFile"))
             logger.info("Ran the progressive workflow")
             
             #Check if the jobtree completed sucessively.
