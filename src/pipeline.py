@@ -289,7 +289,8 @@ class MakeAlignment(Target):
                                                  databaseName="cactusAlignmentVanilla",
                                                  outputDir=tempLocalDir,
                                                  configFile=tempConfigFile,
-                                                 halFile=os.path.join(self.outputDir, "cactusVanilla.maf"),)
+                                                 mafFile=os.path.join(self.outputDir, "cactusVanilla.maf"),
+                                                 halFile=os.path.join(self.outputDir, "cactusVanilla.hal"))
             tempExperimentDir2 = os.path.join(tempLocalDir, "cactusAlignmentVanilla")
             cactusWorkflowExperiment.writeExperimentFile(tempExperimentFile2)
            
@@ -303,6 +304,8 @@ class MakeAlignment(Target):
             runCactusWorkflow(tempExperimentFile2, tempJobTreeDir2,
                               jobTreeStats=True,
                               buildReference=True,
+                              buildHal=True,
+                              buildMaf=True,
                               #Passing options
                               maxThreads=int(self.options.cpus),
                               maxJobs=int(self.options.cpus),
