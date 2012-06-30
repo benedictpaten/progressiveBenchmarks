@@ -115,6 +115,7 @@
 	<hal
 		buildHal="1"
 		buildMaf="1"
+		buildFasta="1"
 		showOnlySubstitutionsWithRespectToReference="0"
 		joinMaf="1"
 	>
