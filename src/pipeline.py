@@ -444,6 +444,17 @@ class MakeEvolverHumanMouseLarge(MakeEvolverPrimatesLoci1):
                                           self.params))
         self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
 
+class MakeHumanMouseWholeGenomes(MakeEvolverPrimatesLoci1):
+    name = "humanMouseWholeGenomes"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "realMammals")
+        sequences, newickTreeString = getInputs(simDir, ("hg19", "mm10"))
+        newickTreeString = "(simHuman:0.144018,simMouse:0.356483);"
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
+
 class MakeEvolverMammalsLarge(MakeEvolverPrimatesLoci1):
     name = "evolverMammalsLarge"
     def run(self):
@@ -663,6 +674,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeEvolverPrimatesLarge(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLarge(self.options, params))
             #self.addChildTarget(Make20Flys(self.options, params))
+            #self.addChildTarget(MakeHumanMouseWholeGenomes(self.options, params))
             
             ###Repeat masking problems
             #self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
