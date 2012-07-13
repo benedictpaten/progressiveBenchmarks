@@ -469,7 +469,7 @@ class MakeBlanchetteHumanMouse(MakeEvolverPrimatesLoci1):
     name = "blanchetteHumanMouse"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "blanchettesSimulation", "00.job")
-        sequences = os.path.join(simDir, "HUMAN"), os.path.join(simDir, "MOUSE")
+        sequences = os.path.join(simDir, "HUMANDIR"), os.path.join(simDir, "MOUSEDIR")
         #, newickTreeString = getInputs(simDir, ("HUMAN", "MOUSE"))
         newickTreeString = "(HUMAN:0.144018,MOUSE:0.356483);"
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
