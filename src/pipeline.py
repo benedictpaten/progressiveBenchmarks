@@ -448,7 +448,7 @@ class MakeHumanMouseWholeGenomes(MakeEvolverPrimatesLoci1):
     name = "humanMouseWholeGenomes"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "realMammals")
-        sequences, newickTreeString = getInputs(simDir, ("hg19.fa", "mm10.fa"))
+        sequences, newickTreeString = getInputs(simDir, ("hg19.fa.filterNs", "mm10.fa.filterNs"))
         newickTreeString = "(simHuman:0.144018,simMouse:0.356483);"
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
