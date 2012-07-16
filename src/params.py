@@ -33,13 +33,13 @@ class Params:
         self.templatePath = None
         self.numThreads = None
     
+    def setAtt(self, elem, atName, val):
+        if val is not None:
+            elem.attrib[atName] = str(val)
+
     # only write non-None attributes, idea being
     # that defaults are already in the config.        
-    def applyToXml(self, xmlTree):
-        def setAtt(elem, atName, val):
-            if val is not None:
-                elem.attrib[atName] = str(val)
-        
+    def applyToXml(self, xmlTree):        
         if self.templatePath != None:
             xmlTree._setroot(ET.parse(self.templatePath).getroot())
            
@@ -47,29 +47,45 @@ class Params:
                 
         mcElem = config.find("multi_cactus")
         ogElem = mcElem.find("outgroup")
-        setAtt(ogElem, "strategy", self.outgroupStrategy)
-        setAtt(ogElem, "threshold", self.outgroupThreshold)
+        self.setAtt(ogElem, "strategy", self.outgroupStrategy)
+        self.setAtt(ogElem, "threshold", self.outgroupThreshold)
         decompElem = mcElem.find("decomposition")
-        setAtt(decompElem, "self_alignment", self.selfAlignment)
-        setAtt(decompElem, "subtree_size", self.subtreeSize)
+        self.setAtt(decompElem, "self_alignment", self.selfAlignment)
+        self.setAtt(decompElem, "subtree_size", self.subtreeSize)
     
         cafElem = config.find("caf")
         if self.annealingRounds is not None:
-            setAtt(cafElem, "annealingRounds", self.annealingRounds)
+            self.setAtt(cafElem, "annealingRounds", self.annealingRounds)
             trim = cafElem.attrib["trim"].split()[0]
             trimList = [trim] * len(self.annealingRounds.split())
-            setAtt(cafElem, "trim", " ".join(trimList))
+            self.setAtt(cafElem, "trim", " ".join(trimList))
                
         barElem = config.find("bar") 
-        setAtt(barElem, "minimumBlockDegree", self.minBlockDegree)
-        setAtt(barElem, "numThreads", self.numThreads)
+        self.setAtt(barElem, "minimumBlockDegree", self.minBlockDegree)
+        self.setAtt(barElem, "numThreads", self.numThreads)
         
+        self.updateRepeatMask(config)
+
+    def updateRepeatMask(self, config):
         if self.repeatMask is not None:
-            prep = "<preprocessor scope=\"all\" chunkSize=\"100000000\" chunksPerJob=\"1\" compressFiles=\"True\" overlapSize=\"1000\" preprocessorString=\"cactus_lastzRepeatMask.py --minPeriod=%d --lastzOpts=\'--step=20 --notransition --ambiguous=iupac --nogapped\' QUERY_FILE TARGET_FILE OUT_FILE\"/>" % int(self.repeatMask)
-            #prep = "<preprocessor chunkSize=\"10000000\" chunksPerJob=\"1\" compressFiles=\"True\" overlapSize=\"1000\" preprocessorString=\"cactus_lastzRepeatMask.py --minPeriod=%d --lastzOpts=\'--ambiguous=iupac --nogapped\' QUERY_FILE TARGET_FILE OUT_FILE\"/>" % int(self.repeatMask)
-            prepElem = ET.fromstring(prep)
-            config.append(prepElem)
-            
+            prepElems = config.findall("preprocessor")
+            if len(prepElems) == 0:
+                prep = "<preprocessor scope=\"all\" chunkSize=\"100000000\" chunksPerJob=\"1\" compressFiles=\"True\" overlapSize=\"1000\" preprocessorString=\"cactus_lastzRepeatMask.py --minPeriod=%d --lastzOpts=\'--step=20 --notransition --ambiguous=iupac --nogapped\' QUERY_FILE TARGET_FILE OUT_FILE\"/>" % int(self.repeatMask)
+                #prep = "<preprocessor chunkSize=\"10000000\" chunksPerJob=\"1\" compressFiles=\"True\" overlapSize=\"1000\" preprocessorString=\"cactus_lastzRepeatMask.py --minPeriod=%d --lastzOpts=\'--ambiguous=iupac --nogapped\' QUERY_FILE TARGET_FILE OUT_FILE\"/>" % int(self.repeatMask)
+                prepElem = ET.fromstring(prep)
+                config.append(prepElem)
+            else:
+                assert len(prepElems) == 1
+                prepElem = prepElems[0]
+                assert "preprocessorString" in prepElem.attrib
+                prep = prepElem.attrib["preprocessorString"]
+                self.setAtt(prepElem, "scope", "all")
+                if "overlapSize" not in prepElem.attrib:
+                    self.setAtt(prepElem, "overlapSize", "1000")
+                prep = prep.replace("TARGET_FILE", "TEMP_FILE")
+                prep = "cactus_lastzRepeatMask.py --minPeriod=%d --lastzOpts=\'--step=20 --notransition --ambiguous=iupac --nogapped\' QUERY_FILE TARGET_FILE TEMP_FILE ; " % int(self.repeatMask) + prep
+                self.setAtt(prepElem, "preprocessorString", prep)
+
     def check(self):
         if self.vanilla == True:
             assert self.outgroupStrategy is None
