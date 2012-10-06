@@ -1,6 +1,6 @@
 outputDir = output
 
-maxCpusPerAlignment=3
+maxCpusPerAlignment=30
 batchSystemForAlignments = singleMachine
 databaseHost = localhost
 databaseDir = ""
@@ -10,7 +10,7 @@ parasolCommandForAlignment = parasol
 #batchSystemForAlignments = parasol singleMachine 2147483648 10000
 #databaseHost = kolossus-10
 #databaseDir = /hive/users/benedict/progressiveBenchmarks/databases
-#parasolCommandForAlignment = /cluster/home/markd/pub/parasol -host=swarm-10
+#parasolCommandForAlignment = /hive/users/benedict/parasol -host=swarm-10
 
 jobTreeParameters = --logDebug
 
