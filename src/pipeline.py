@@ -454,6 +454,17 @@ class MakeHumanMouseWholeGenomes(MakeEvolverPrimatesLoci1):
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
         self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
+        
+class MakeHumanMouseDogWholeGenomes(MakeEvolverPrimatesLoci1):
+    name = "humanMouseDogWholeGenomes"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "realMammals")
+        sequences, newickTreeString = getInputs(simDir, ("hg19.fa.filterNs", "mm10.fa.filterNs", "canFam3.fa.filterNs"))
+        newickTreeString = "((HUMAN:0.144018,MOUSE:0.356483)Anc0:0.0238,DOG:0.197)MRCA;"
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
 
 class MakeEvolverMammalsLarge(MakeEvolverPrimatesLoci1):
     name = "evolverMammalsLarge"
@@ -664,7 +675,7 @@ class MakeAllAlignments(Target):
         #pg = LastzTuning()
         for params in pg.generate():
             self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
-            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
@@ -675,6 +686,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeEvolverMammalsLarge(self.options, params))
             #self.addChildTarget(Make20Flys(self.options, params))
             #self.addChildTarget(MakeHumanMouseWholeGenomes(self.options, params))
+            #self.addChildTarget(MakeHumanMouseDogWholeGenomes(self.options, params))
             
             ###Repeat masking problems
             #self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
