@@ -204,7 +204,7 @@ class MakeAlignment(Target):
                                  logLevel="CRITICAL",
                                  logFile = jobTreeLogFile,
                                  event=event,
-                                 retryCount=0,
+                                 retryCount=2,
                                  batchSystem=self.options.batchSystemForAlignments,
                                  noCheckPoints=self.options.noCheckPoints,
                                  extraJobTreeArgumentsString="--parasolCommand '%s'" % self.options.parasolCommandForAlignment,
