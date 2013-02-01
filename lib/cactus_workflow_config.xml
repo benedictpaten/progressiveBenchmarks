@@ -62,7 +62,7 @@
 	<bar
 		runBar="1"
 		numThreads="5" 
-		spanningTrees="10" 
+		spanningTrees="1" 
 		gapGamma="0.2" 
 		useBanding="1" 
 		bandingLimit="100000" 
@@ -78,7 +78,7 @@
 		requiredAllFraction="0.67"
 	>
 		<CactusBarRecursion maxFlowerGroupSize="20000000"/>
-		<CactusBarWrapper maxFlowerGroupSize="400000" memory="2147483648"/>
+		<CactusBarWrapper maxFlowerGroupSize="300000" memory="4147483648"/>
 	</bar>
 	<normal 
 		iterations="0"
