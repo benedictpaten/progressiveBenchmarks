@@ -30,7 +30,7 @@ from sonLib.nxtree import NXTree
 
 from cactus.shared.test import getCactusInputs_blanchette
 
-from jobTree.test.jobTree.jobTreeTest import runJobTreeStatusAndFailIfNotComplete
+from jobTree.src.common import runJobTreeStatusAndFailIfNotComplete
 
 from cactus.shared.common import runCactusProgressive
 from cactus.shared.common import runCactusCreateMultiCactusProject
