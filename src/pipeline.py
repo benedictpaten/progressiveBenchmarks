@@ -206,7 +206,6 @@ class MakeAlignment(Target):
                                  event=event,
                                  retryCount=2,
                                  batchSystem=self.options.batchSystemForAlignments,
-                                 noCheckPoints=self.options.noCheckPoints,
                                  extraJobTreeArgumentsString="--parasolCommand '%s'" % self.options.parasolCommandForAlignment,
                                  profileFile=os.path.join(self.outputDir, "profileFile"))
             logger.info("Ran the progressive workflow")
@@ -675,7 +674,7 @@ class MakeAllAlignments(Target):
         #pg = LastzTuning()
         for params in pg.generate():
             self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
-            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
