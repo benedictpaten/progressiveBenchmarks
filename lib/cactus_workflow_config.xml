@@ -7,7 +7,7 @@
 	<setup>
 	</setup>
 	<caf
-		chunkSize="10000000" 
+		chunkSize="25000000" 
 		lastzArguments="--nogapped --hspthresh=3000 --ambiguous=iupac"
 		chunksPerJob="1" 
 		compressFiles="1" 
@@ -34,7 +34,7 @@
 		<CactusCafWrapper minFlowerSize="5000" maxFlowerGroupSize="10000000" memory="2147483648"/>
 	</caf>
 	<caf
-		chunkSize="1000000" 
+		chunkSize="2500000" 
 		lastzArguments="--hspthresh=1800 --ambiguous=iupac"
 		chunksPerJob="1" 
 		compressFiles="1" 
