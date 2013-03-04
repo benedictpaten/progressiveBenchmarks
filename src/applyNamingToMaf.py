@@ -80,6 +80,22 @@ def applyNamingToMaf(experimentPath, inputPath, outputPath):
     
     inFile.close()
     outFile.close()
+
+def applyNamingToTrueBlanchetteMaf(inputPath, outputPath):
+    inFile = open(inputPath, "r")
+    outFile = open(outputPath, "w")
+    
+    for line in inFile:
+        tokens = line.split()
+        if len(tokens) >= 2 and tokens[0] == 's':
+            name = tokens[1]
+            outFile.write(line.replace(name, "%s.%s" % (name, name), 1))
+        else:
+            outFile.write(line)
+    
+    inFile.close()
+    outFile.close()
+
     
 def main():
     usage = "usage: %prog <experiment> <input maf> <output maf>"

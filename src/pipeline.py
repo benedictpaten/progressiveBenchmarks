@@ -9,7 +9,7 @@ import xml
 import sys
 import re
 from optparse import OptionParser
-
+from threading import Thread
 from jobTree.scriptTree.target import Target 
 from jobTree.scriptTree.stack import Stack
 
@@ -40,7 +40,9 @@ from sonLib.bioio import TestStatus
 from cactus.progressive.experimentWrapper import ExperimentWrapper
 from cactus.progressive.configWrapper import ConfigWrapper
 from cactus.progressive.cactus_createMultiCactusProject import cleanEventTree
-from cactus.progressive.ktserverLauncher import KtserverLauncher
+from cactus.pipeline.ktserverControl import runKtserver
+from cactus.pipeline.ktserverControl import killKtServer
+from cactus.pipeline.ktserverControl import blockUntilKtserverIsRunnning
 from progressiveBenchmarks.src.params import Params
 from progressiveBenchmarks.src.paramsGenerator import ParamsGenerator
 from progressiveBenchmarks.src.paramsGenerator import EverythingButSelf
@@ -51,6 +53,7 @@ from progressiveBenchmarks.src.paramsGenerator import SingleCase
 from progressiveBenchmarks.src.paramsGenerator import KyotoTycoon
 from progressiveBenchmarks.src.paramsGenerator import LastzTuning, RepeatMasking
 from progressiveBenchmarks.src.applyNamingToMaf import applyNamingToMaf
+from progressiveBenchmarks.src.applyNamingToMaf import applyNamingToTrueBlanchetteMaf
 from progressiveBenchmarks.src.summary import Summary
 
 def getRootPathString():
@@ -71,6 +74,15 @@ def getCactusWorkflowPathString():
 def getCactusDiskString(alignmentFile):
     return "<st_kv_database_conf type=\"tokyo_cabinet\"><tokyo_cabinet database_dir=\"%s\"/></st_kv_database_conf>" % alignmentFile
 
+class RunKtserverAsThread(Thread):
+    def __init__(self, dbElem, killSwitchPath):
+        Thread.__init__(self)
+        self.dbElem = dbElem
+        self.path = killSwitchPath
+    def run(self):
+        runKtserver(self.dbElem, self.path)
+        
+        
 class MakeAlignment(Target):
     """Target runs the alignment.
     """
@@ -131,6 +143,12 @@ class MakeAlignment(Target):
             fileHandle = open(tempConfigFile, 'w')
             assert fileHandle is not None
             tree = ET.ElementTree(config)
+            configWrapper = ConfigWrapper(tree)
+            joinMaf = configWrapper.getJoinMaf()
+            buildMaf = configWrapper.getBuildMaf()
+            #we don't actually want cactus to build a maf anymore
+            configWrapper.setBuildMaf(False)
+            configWrapper.setJoinMaf(False)
             tree.write(fileHandle)
             fileHandle.close()
          
@@ -178,7 +196,7 @@ class MakeAlignment(Target):
       
             #The temporary experiment 
             runCactusCreateMultiCactusProject(tempExperimentFile, 
-                                              tempExperimentDir)
+                                              tempExperimentDir, fixNames=False)
             logger.info("Setup the cactus progressive experiment")
             
             #Make the logfile for jobTree
@@ -189,13 +207,11 @@ class MakeAlignment(Target):
             if len(self.sequences) > 10:
                 event = "Anc00"
             
-            configWrapper = ConfigWrapper(config)
-            joinMaf = configWrapper.getJoinMaf()
-            
             runCactusProgressive(os.path.join(tempExperimentDir, "progressiveCactusAlignment_project.xml"), 
                                  tempJobTreeDir, 
                                  #batchSystem=batchSystem, 
                                  buildHal=True,
+                                 buildMaf=buildMaf,
                                  #buildTrees=buildTrees, buildReference=buildReference,
                                  jobTreeStats=True,
                                  maxThreads=int(self.options.cpus),
@@ -208,6 +224,10 @@ class MakeAlignment(Target):
                                  batchSystem=self.options.batchSystemForAlignments,
                                  extraJobTreeArgumentsString="--parasolCommand '%s'" % self.options.parasolCommandForAlignment,
                                  profileFile=os.path.join(self.outputDir, "profileFile"))
+            if buildMaf:
+                baseDirname = os.path.join(os.path.dirname(tempExperimentDir), "progressiveCactusAlignment")
+                system("mv %s %s" % (os.path.join(baseDirname, "out.maf"),
+                                     os.path.join(baseDirname, event, "%s.maf" % event)))
             logger.info("Ran the progressive workflow")
             
             #Check if the jobtree completed sucessively.
@@ -219,13 +239,16 @@ class MakeAlignment(Target):
                 expPath = os.path.join(tempExperimentDir, "Anc0", "Anc0_experiment.xml")
                 exp = ExperimentWrapper(ET.parse(expPath).getroot())
                 if exp.getDbType() == "kyoto_tycoon":
-                    ktserver = KtserverLauncher()
-                    ktserver.spawnServer(exp) 
+                    killSwitchPath = getTempFile(suffix="_kill.txt",
+                                                 rootDir=self.getGlobalTempDir())
+                    ktrunner = RunKtserverAsThread(exp, killSwitchPath)
+                    ktrunner.start()
+                    blockUntilKtserverIsRunnning(exp, killSwitchPath)
                 treeStatsFile = os.path.join(self.outputDir, "treeStats.xml")
                 system("cactus_treeStats --cactusDisk \'%s\' --flowerName 0 --outputFile %s" %(exp.getDiskDatabaseString(),
                                                                                                treeStatsFile))
                 if exp.getDbType() == "kyoto_tycoon":
-                    ktserver.killServer(exp)
+                    killKtServer(exp, killSwitchPath)
                 
             #Now copy the true assembly back to the output
             system("mv %s %s/experiment.xml" % (tempExperimentFile, self.outputDir))
@@ -371,10 +394,10 @@ class MakeBlanchetteStats(Target):
             system("mfaToMaf --mfaFile %s --outputFile %s --treeFile %s" % (trueAlignmentMFA, trueAlignmentMAF, treeFile))
             
             if self.params.vanilla == False:
-                trueRenamedMAF = trueAlignmentMAF + ".renamed"
-                expPath = os.path.join(self.outputDir, str(i), "experiment.xml")
-                applyNamingToMaf(expPath, trueAlignmentMAF, trueRenamedMAF)
-                trueAlignmentMAF = trueRenamedMAF            
+                if outputDir.lower().find("blanchette") >= 0 or outputDir.lower().find("loci1"):
+                    trueRenamedMAF = trueAlignmentMAF + ".renamed"
+                    applyNamingToTrueBlanchetteMaf(trueAlignmentMAF, trueRenamedMAF)
+                    trueAlignmentMAF = trueRenamedMAF
                 predictedAlignmentMaf = os.path.join(self.outputDir, str(i), "progressiveCactusAlignment", "Anc0", "Anc0.maf")
             else:
                 predictedAlignmentMaf = os.path.join(self.outputDir, str(i), "cactusVanilla.maf")
@@ -425,7 +448,7 @@ class MakeEvolverMammalsLoci1HumanMouse(MakeEvolverPrimatesLoci1):
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "loci1")
         sequences, newickTreeString = getInputs(simDir, ("simHuman.chr6", "simMouse.chr6"))
-        newickTreeString = "(simHuman:0.144018,simMouse:0.356483);"
+        newickTreeString = "(simHuman.chr6:0.144018,simMouse.chr6:0.356483);"
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
@@ -603,12 +626,10 @@ class MakeStats(Target):
     def run(self):
         if not os.path.exists(self.outputFile):
             outputFile = os.path.join(self.getLocalTempDir(), "temp.xml")
-           
-            trueRenamedMAF = os.path.join(self.getLocalTempDir(), "true_renamed.maf") 
-            outputDir = os.path.split(self.outputFile)[0]
-            expPath = os.path.join(outputDir, "experiment.xml")
-            applyNamingToMaf(expPath, self.trueMaf, trueRenamedMAF)
-            self.trueMaf = trueRenamedMAF
+            if self.trueMaf.lower().find("blanchette") >= 0 or self.trueMaf.lower().find("loci1"):
+                trueRenamedMAF = os.path.join(self.getLocalTempDir(), "true_renamed.maf") 
+                applyNamingToTrueBlanchetteMaf(self.trueMaf, trueRenamedMAF)
+                self.trueMaf = trueRenamedMAF
             if os.path.exists(self.predictedMaf):
                 system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s --sampleNumber 100000000" % (self.trueMaf, self.predictedMaf, outputFile))
                 system("mv %s %s" % (outputFile, self.outputFile))
