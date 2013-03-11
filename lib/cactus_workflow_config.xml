@@ -115,7 +115,7 @@
 	</check>
 	<hal
 		buildHal="1"
-		buildMaf="0"
+		buildMaf="1"
 		buildFasta="1"
 		showOnlySubstitutionsWithRespectToReference="0"
 		joinMaf="0"

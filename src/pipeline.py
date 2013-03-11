@@ -355,7 +355,7 @@ class MakeAlignment(Target):
            self.runVanilla()
         else:
             self.runProgressive()
-
+            
 class MakeBlanchetteAlignments(Target):
     name = "blanchette"
     def __init__(self, options, params):
@@ -370,6 +370,7 @@ class MakeBlanchetteAlignments(Target):
     
         for i in xrange(self.options.blanchetteRepeats):
             sequences, newickTreeString = getCactusInputs_blanchette(i)
+            #newickTreeString = "(HUMAN,CHIMP,BABOON,MOUSE,RAT,DOG,CAT,PIG,COW);"
             self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, os.path.join(outputDir, str(i)), 
                                         self.params))
         self.setFollowOnTarget(MakeBlanchetteStats(self.options, outputDir, self.params))
@@ -394,7 +395,7 @@ class MakeBlanchetteStats(Target):
             system("mfaToMaf --mfaFile %s --outputFile %s --treeFile %s" % (trueAlignmentMFA, trueAlignmentMAF, treeFile))
             
             if self.params.vanilla == False:
-                if outputDir.lower().find("blanchette") >= 0 or outputDir.lower().find("loci1"):
+                if self.outputDir.lower().find("blanchette") >= 0 or self.outputDir.lower().find("loci1"):
                     trueRenamedMAF = trueAlignmentMAF + ".renamed"
                     applyNamingToTrueBlanchetteMaf(trueAlignmentMAF, trueRenamedMAF)
                     trueAlignmentMAF = trueRenamedMAF
@@ -694,8 +695,8 @@ class MakeAllAlignments(Target):
         #pg = RepeatMasking()
         #pg = LastzTuning()
         for params in pg.generate():
-            self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
-            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            #self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
+            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
