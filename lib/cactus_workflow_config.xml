@@ -8,7 +8,7 @@
 	</setup>
 	<caf
 		chunkSize="25000000" 
-		lastzArguments="--nogapped --hspthresh=3000 --ambiguous=iupac"
+		lastzArguments="--nogapped --masking=20 --hspthresh=3000 --ambiguous=iupac"
 		chunksPerJob="1" 
 		compressFiles="1" 
 		overlapSize="10000" 
@@ -35,7 +35,7 @@
 	</caf>
 	<caf
 		chunkSize="1000000" 
-		lastzArguments="--hspthresh=1800 --ambiguous=iupac"
+		lastzArguments="--masking=20 --hspthresh=1800 --ambiguous=iupac"
 		chunksPerJob="1" 
 		compressFiles="1" 
 		overlapSize="10000" 
