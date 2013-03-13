@@ -397,8 +397,6 @@ class MakeBlanchetteStats(Target):
             if self.params.vanilla == False:
                 if self.outputDir.lower().find("blanchette") >= 0 or self.outputDir.lower().find("loci1"):
                     trueRenamedMAF = trueAlignmentMAF + ".renamed"
-                    applyNamingToTrueBlanchetteMaf(trueAlignmentMAF, trueRenamedMAF)
-                    trueAlignmentMAF = trueRenamedMAF
                 predictedAlignmentMaf = os.path.join(self.outputDir, str(i), "progressiveCactusAlignment", "Anc0", "Anc0.maf")
             else:
                 predictedAlignmentMaf = os.path.join(self.outputDir, str(i), "cactusVanilla.maf")
@@ -629,8 +627,6 @@ class MakeStats(Target):
             outputFile = os.path.join(self.getLocalTempDir(), "temp.xml")
             if self.trueMaf.lower().find("blanchette") >= 0 or self.trueMaf.lower().find("loci1"):
                 trueRenamedMAF = os.path.join(self.getLocalTempDir(), "true_renamed.maf") 
-                applyNamingToTrueBlanchetteMaf(self.trueMaf, trueRenamedMAF)
-                self.trueMaf = trueRenamedMAF
             if os.path.exists(self.predictedMaf):
                 system("mafComparator --mafFile1 %s --mafFile2 %s --outputFile %s --sampleNumber 100000000" % (self.trueMaf, self.predictedMaf, outputFile))
                 system("mv %s %s" % (outputFile, self.outputFile))
