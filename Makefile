@@ -1,6 +1,6 @@
 outputDir = output
 
-maxCpusPerAlignment=30
+maxCpusPerAlignment=15
 batchSystemForAlignments = singleMachine
 databaseHost = localhost
 databaseDir = ""

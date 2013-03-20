@@ -370,7 +370,7 @@ class MakeBlanchetteAlignments(Target):
     
         for i in xrange(self.options.blanchetteRepeats):
             sequences, newickTreeString = getCactusInputs_blanchette(i)
-            #newickTreeString = "(HUMAN,CHIMP,BABOON,MOUSE,RAT,DOG,CAT,PIG,COW);"
+            #newickTreeString = "(HUMAN:0.1,CHIMP:0.1,BABOON:0.1,MOUSE:0.1,RAT:0.1,DOG:0.1,CAT:0.1,PIG:0.1,COW:0.1);"
             self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, os.path.join(outputDir, str(i)), 
                                         self.params))
         self.setFollowOnTarget(MakeBlanchetteStats(self.options, outputDir, self.params))
