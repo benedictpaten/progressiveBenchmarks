@@ -7,7 +7,7 @@ databaseDir = ""
 parasolCommandForAlignment = parasol
 
 #maxCpusPerAlignment=25
-#batchSystemForAlignments = parasol singleMachine 2147483648 10000
+#batchSystemForAlignments = parasol singleMachine 2147483648 10000000
 #databaseHost = kolossus-10
 #databaseDir = /hive/users/benedict/progressiveBenchmarks/databases
 #parasolCommandForAlignment = /hive/users/benedict/parasol -host=swarm-10
