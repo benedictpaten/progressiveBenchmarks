@@ -235,6 +235,7 @@ class MakeAlignment(Target):
             logger.info("Checked the job tree dir for the progressive run")
             
             #Run the cactus tree stats
+            """
             if self.params.kyotoTycoon != "inMemoryNoSnapshot":
                 expPath = os.path.join(tempExperimentDir, "Anc0", "Anc0_experiment.xml")
                 exp = ExperimentWrapper(ET.parse(expPath).getroot())
@@ -248,7 +249,8 @@ class MakeAlignment(Target):
                 system("cactus_treeStats --cactusDisk \'%s\' --flowerName 0 --outputFile %s" %(exp.getDiskDatabaseString(),
                                                                                                treeStatsFile))
                 if exp.getDbType() == "kyoto_tycoon":
-                    killKtServer(exp, killSwitchPath)
+                    killKtServer(exp, killSwitchPath)    
+            """
                 
             #Now copy the true assembly back to the output
             system("mv %s %s/experiment.xml" % (tempExperimentFile, self.outputDir))
