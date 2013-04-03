@@ -614,7 +614,6 @@ class Make3Worms(MakeEvolverPrimatesLoci1):
 
 ############End repeat masking tests
         
-        
 class MakeStats(Target):
     def __init__(self, options, trueMaf, predictedMaf, outputFile, params):
         Target.__init__(self)
