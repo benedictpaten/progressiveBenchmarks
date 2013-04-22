@@ -123,7 +123,7 @@
 	</hal>
   	<multi_cactus>
 		<outgroup 
-			strategy="greedy" 
+			strategy="greedyLeaves" 
 			threshold="0"
 			ancestor_quality_fraction="0.75"
 		/>
@@ -131,7 +131,7 @@
 	 		subtree_size="2" 
 	 		self_alignment="false" 
 	 		default_internal_node_prefix="Anc"
-			max_parallel_subtrees="1"
+			max_parallel_subtrees="5"
 	 	/>
   	</multi_cactus>
 </cactusWorkflowConfig>
