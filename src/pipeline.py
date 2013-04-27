@@ -499,6 +499,16 @@ class MakeTenWholeGenomes(MakeEvolverPrimatesLoci1):
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,self.params))
         self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
 
+class MakeHumanChimpRhesusGenomes(MakeEvolverPrimatesLoci1):
+    name = "humanChimpRhesus"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "realMammals")
+        sequences, newickTreeString = getInputs(simDir, ("hg19.fa.filterNs", "panTro3.fa.filterNs", "rheMac3.fa.filterNs"))
+        newickTreeString = "((HUMAN:0.006969, CHIMP:0.009727):0.025291, RHESUS:0.044568);"
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,self.params))
+        self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
+
 class MakeEvolverMammalsLarge(MakeEvolverPrimatesLoci1):
     name = "evolverMammalsLarge"
     def run(self):
@@ -716,6 +726,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeHumanMouseWholeGenomes(self.options, params))
             #self.addChildTarget(MakeHumanMouseDogWholeGenomes(self.options, params))
             #self.addChildTarget(MakeTenWholeGenomes(self.options, params))
+            #self.addChildTarget(MakeHumanChimpRhesusGenomes(self.options, params))
             
             ###Repeat masking problems
             #self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
