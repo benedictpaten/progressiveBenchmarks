@@ -127,7 +127,7 @@ class KyotoTycoon(ParamsGenerator):
     def __init__(self):
         ParamsGenerator.__init__(self)
         self.kyotoTycoon = [ "inMemory" ] #[True, "inMemory", "inMemoryNoSnapshot"]
-        self.outgroupStrategy = ['greedy' ]
+        self.outgroupStrategy = ['greedyLeaves' ]
         self.outgroupThreshold = [0]
         self.selfAlignment = [False]
         self.vanilla = [False]
@@ -137,7 +137,7 @@ class RepeatMasking(ParamsGenerator):
     def __init__(self):
         ParamsGenerator.__init__(self)
         self.kyotoTycoon = [ "inMemoryNoSnapshot" ] #[True, "inMemory", "inMemoryNoSnapshot"]
-        self.outgroupStrategy = ['greedy' ]
+        self.outgroupStrategy = ['greedyLeaves' ]
         self.outgroupThreshold = [0]
         self.selfAlignment = [False]
         self.vanilla = [False]
