@@ -270,6 +270,10 @@ class MakeAlignment(Target):
                                                   os.path.join(dbDir, dbName),
                                                   os.path.join(dbDir, self.getName())))
                 
+            #Make the assembly hub
+            system("hal2assemblyHub.py %s/progressiveCactusAlignment/out.hal %s/progressiveCactusAlignment/outBrowser --lod --shortLabel='%s' --longLabel='%s'" % \
+               (self.outputDir, self.outputDir, self.outputDir, self.outputDir))
+                
     def runVanilla(self):
         logger.debug("Going to put the alignment in %s" % self.outputDir)
         if not os.path.isdir(self.outputDir):
@@ -471,7 +475,7 @@ class MakeHumanMouseWholeGenomes(MakeEvolverPrimatesLoci1):
     name = "humanMouseWholeGenomes"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "realMammals")
-        sequences, newickTreeString = getInputs(simDir, ("hg19.fa.filterNs", "mm10.fa.filterNs"))
+        sequences, newickTreeString = getInputs(simDir, ("hg19.fa", "mm10.fa"))
         newickTreeString = "(simHuman:0.144018,simMouse:0.356483);"
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
@@ -482,7 +486,7 @@ class MakeHumanMouseDogWholeGenomes(MakeEvolverPrimatesLoci1):
     name = "humanMouseDogWholeGenomes"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "realMammals")
-        sequences, newickTreeString = getInputs(simDir, ("hg19.fa.filterNs", "mm10.fa.filterNs", "canFam3.fa.filterNs"))
+        sequences, newickTreeString = getInputs(simDir, ("hg19.fa", "mm10.fa", "canFam3.fa"))
         newickTreeString = "((HUMAN:0.144018,MOUSE:0.356483)Anc0:0.0238,DOG:0.197)MRCA;"
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
@@ -493,7 +497,7 @@ class MakeTenWholeGenomes(MakeEvolverPrimatesLoci1):
     name = "tenWayGenomes"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "realMammals")
-        sequences, newickTreeString = getInputs(simDir, ("hg19.fa.filterNs", "panTro3.fa.filterNs", "rheMac3.fa.filterNs", "mm10.fa.filterNs", "rn5.fa.filterNs", "canFam3.fa.filterNs", "felCat5.fa.filterNs", "susScr3.fa.filterNs", "bosTau7.fa.filterNs", "equCab2.fa.filterNs"))
+        sequences, newickTreeString = getInputs(simDir, ("hg19.fa", "panTro3.fa", "rheMac3.fa", "mm10.fa", "rn5.fa", "canFam3.fa", "felCat5.fa", "susScr3.fa", "bosTau7.fa", "equCab2.fa"))
         newickTreeString = "((((HUMAN:0.006969, CHIMP:0.009727):0.025291, RHESUS:0.044568):0.11,(MOUSE:0.072818, RAT:0.081244):0.260342):0.023260,((DOG:0.07, CAT:0.07):0.087381,((PIG:0.06, COW:0.06):0.104728,HORSE:0.05):0.05):0.04);"
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,self.params))
@@ -503,7 +507,7 @@ class MakeHumanChimpGorillaRhesusGenomes(MakeEvolverPrimatesLoci1):
     name = "humanChimpGorillaRhesus"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "realMammals")
-        sequences, newickTreeString = getInputs(simDir, ("hg19.fa.filterNs", "panTro3.fa.filterNs", "gorGor3.fa.filterNs", "rheMac3.fa.filterNs"))
+        sequences, newickTreeString = getInputs(simDir, ("hg19.fa", "panTro3.fa", "gorGor3.fa", "rheMac3.fa"))
         newickTreeString = "((HUMAN:0.006969, CHIMP:0.009727, GORILLA:0.02):0.025291, RHESUS:0.044568);"
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,self.params))
@@ -716,7 +720,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
-            self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLociMedium(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesMedium(self.options, params))
             #self.addChildTarget(MakeEvolverHumanMouseLarge(self.options, params))
