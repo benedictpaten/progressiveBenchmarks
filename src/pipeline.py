@@ -270,9 +270,15 @@ class MakeAlignment(Target):
                                                   os.path.join(dbDir, dbName),
                                                   os.path.join(dbDir, self.getName())))
                 
-            #Make the assembly hub
-            system("hal2assemblyHub.py %s/progressiveCactusAlignment/out.hal %s/progressiveCactusAlignment/outBrowser --lod --shortLabel='%s' --longLabel='%s'" % \
-               (self.outputDir, self.outputDir, self.outputDir, self.outputDir))
+            #Make the assembly hub if faToTwoBit is installed
+            makeAssemblyHub = True
+            try:
+                system("which faToTwoBit")
+            except RuntimeError:
+                makeAssemblyHub = False
+            if makeAssemblyHub:
+                system("hal2assemblyHub.py %s/progressiveCactusAlignment/out.hal %s/progressiveCactusAlignment/outBrowser --lod --shortLabel='%s' --longLabel='%s'" % \
+                       (self.outputDir, self.outputDir, self.outputDir, self.outputDir))
                 
     def runVanilla(self):
         logger.debug("Going to put the alignment in %s" % self.outputDir)
