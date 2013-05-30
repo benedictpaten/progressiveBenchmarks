@@ -2,7 +2,7 @@
   <preprocessor chunkSize="100000000" memory="2147483648" overlapSize="1000" preprocessorString="cactus_lastzRepeatMask.py --minPeriod=10 --lastzOpts='--step=20 --notransition --ambiguous=iupac --nogapped' QUERY_FILE TARGET_FILE OUT_FILE" scope="all" />
 	<setup>
 	</setup>
-	<caf
+	<caf 
 		chunkSize="25000000" 
 		lastzArguments="--step=5 --nogapped --masking=20 --hspthresh=3000 --ambiguous=iupac"
 		compressFiles="1" 
@@ -30,7 +30,7 @@
 		<CactusCafRecursion maxFlowerGroupSize="100000000"/>
 		<CactusCafWrapper minFlowerSize="5000" maxFlowerGroupSize="10000000" memory="2147483648"/>
 	</caf>
-	<caf
+	<caf minDivergence="0.1"
 		chunkSize="1000000" 
 		lastzArguments="--step=1 --masking=20 --nogapped --hspthresh=1800 --ambiguous=iupac"
 		compressFiles="1" 
