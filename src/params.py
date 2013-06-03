@@ -64,28 +64,6 @@ class Params:
         self.setAtt(barElem, "minimumBlockDegree", self.minBlockDegree)
         self.setAtt(barElem, "numThreads", self.numThreads)
         
-        self.updateRepeatMask(config)
-
-    def updateRepeatMask(self, config):
-        if self.repeatMask is not None:
-            prepElems = config.findall("preprocessor")
-            if len(prepElems) == 0:
-                prep = "<preprocessor scope=\"all\" chunkSize=\"100000000\" chunksPerJob=\"1\" compressFiles=\"True\" overlapSize=\"1000\" preprocessorString=\"cactus_lastzRepeatMask.py --minPeriod=%d --lastzOpts=\'--step=20 --notransition --ambiguous=iupac --nogapped\' QUERY_FILE TARGET_FILE OUT_FILE\"/>" % int(self.repeatMask)
-                #prep = "<preprocessor chunkSize=\"10000000\" chunksPerJob=\"1\" compressFiles=\"True\" overlapSize=\"1000\" preprocessorString=\"cactus_lastzRepeatMask.py --minPeriod=%d --lastzOpts=\'--ambiguous=iupac --nogapped\' QUERY_FILE TARGET_FILE OUT_FILE\"/>" % int(self.repeatMask)
-                prepElem = ET.fromstring(prep)
-                config.append(prepElem)
-            else:
-                assert len(prepElems) == 1
-                prepElem = prepElems[0]
-                assert "preprocessorString" in prepElem.attrib
-                prep = prepElem.attrib["preprocessorString"]
-                self.setAtt(prepElem, "scope", "all")
-                if "overlapSize" not in prepElem.attrib:
-                    self.setAtt(prepElem, "overlapSize", "1000")
-                prep = prep.replace("TARGET_FILE", "TEMP_FILE")
-                prep = "cactus_lastzRepeatMask.py --minPeriod=%d --lastzOpts=\'--step=20 --notransition --ambiguous=iupac --nogapped\' QUERY_FILE TARGET_FILE TEMP_FILE ; " % int(self.repeatMask) + prep
-                self.setAtt(prepElem, "preprocessorString", prep)
-
     def check(self):
         if self.vanilla == True:
             assert self.outgroupStrategy is None
