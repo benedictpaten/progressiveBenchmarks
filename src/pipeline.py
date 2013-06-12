@@ -386,6 +386,25 @@ class MakeBlanchetteAlignments(Target):
             self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, os.path.join(outputDir, str(i)), 
                                         self.params))
         self.setFollowOnTarget(MakeBlanchetteStats(self.options, outputDir, self.params))
+
+class MakeBlanchetteAlignmentsStarTree(Target):
+    name = "blanchette"
+    def __init__(self, options, params):
+        Target.__init__(self)
+        self.options = options
+        self.params = params
+        
+    def run(self):
+        outputDir = os.path.join(self.options.outputDir, "%s%s_starTree" % (self.name, self.params))
+        if not os.path.isdir(outputDir):
+            os.mkdir(outputDir)
+    
+        for i in xrange(self.options.blanchetteRepeats):
+            sequences, newickTreeString = getCactusInputs_blanchette(i)
+            newickTreeString = "(HUMAN:0.1,CHIMP:0.1,BABOON:0.1,MOUSE:0.1,RAT:0.1,DOG:0.1,CAT:0.1,PIG:0.1,COW:0.1);"
+            self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, os.path.join(outputDir, str(i)), 
+                                        self.params))
+        self.setFollowOnTarget(MakeBlanchetteStats(self.options, outputDir, self.params))
         
 class MakeBlanchetteStats(Target):
     """Builds basic stats and the maf alignment.
@@ -453,7 +472,18 @@ class MakeEvolverMammalsLoci1(MakeEvolverPrimatesLoci1):
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
         self.setupStats(outputDir, os.path.join(simDir, "all.burnin.maf"), self.params)
-        
+
+class MakeEvolverMammalsLoci1StarTree(MakeEvolverPrimatesLoci1):
+    name = "evolverMammalsLoci1StarTree"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "evolver", "mammals", "loci1")
+        sequences, newickTreeString = getInputs(simDir, ("simHuman.chr6", "simMouse.chr6", "simRat.chr6", "simCow.chr6", "simDog.chr6"))
+        newickTreeString = "(simHuman.chr6:0.1,simMouse.chr6:0.1,simRat.chr6:0.1,simCow.chr6:0.1,simDog.chr6:0.1);"
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        self.setupStats(outputDir, os.path.join(simDir, "all.burnin.maf"), self.params)      
+  
 class MakeEvolverMammalsLoci1HumanMouse(MakeEvolverPrimatesLoci1):
     name = "evolverMammalsHumanMouseLoci1"
     def run(self):
@@ -723,10 +753,12 @@ class MakeAllAlignments(Target):
         #pg = LastzTuning()
         for params in pg.generate():
             #self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
-            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
-            #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
+            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            #self.addChildTarget(MakeBlanchetteAlignmentsStarTree(self.options, params))
+            self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
             self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLoci1StarTree(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLociMedium(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesMedium(self.options, params))
             #self.addChildTarget(MakeEvolverHumanMouseLarge(self.options, params))

@@ -1,30 +1,29 @@
 <cactusWorkflowConfig>
-  <preprocessor memory="2147483648" preprocessorString="cactus_makeAlphaNumericHeaders.py IN_FILE OUT_FILE" scope="leaves" />
   <preprocessor check="1" memory="2147483648" preprocessorString="cactus_checkUniqueHeaders.py IN_FILE" scope="leaves" />
   <preprocessor chunkSize="100000000" memory="2147483648" preprocessorString="cactus_lastzRepeatMask.py --minPeriod=10 --lastzOpts='--step=20 --notransition --ambiguous=iupac --nogapped' GENOME_FILE IN_FILE OUT_FILE" scope="leaves" />
-  	<setup makeEventHeadersAlphaNumeric="0">
+  	<setup>
 	</setup>
 	<caf 
 		chunkSize="25000000" 
-		lastzArguments="--ambiguous=iupac --masking=20 --step=5"
+		lastzArguments="--step=5 --masking=20 --ambiguous=iupac"
 		compressFiles="1" 
 		overlapSize="10000" 
 		filterByIdentity="0" 
 		identityRatio="6" 
 		minimumDistance="0.01" 
 		minimumSequenceLengthForBlast="30"
-		annealingRounds="2 4 16 64 128 64" 
+		annealingRounds="16 128 64" 
 		deannealingRounds="1 2 3 4 8 16 32 64" 
 		blockTrim="0" 
 		minimumTreeCoverage="0.0" 
-		trim="3 3 3 3 3 3 3 3 3 3 3 3 3 3 3" 
+		trim="3 3 3 3 3 3 3 3 3 3 3 3" 
 		minimumBlockDegree="2"
 		requiredIngroupFraction="0.0"
 		requiredOutgroupFraction="0.0"
 		requiredAllFraction="0.0"
 		singleCopyIngroup="0"
 		singleCopyOutgroup="1"
-		maxAdjacencyComponentSizeRatio="10"
+		maxAdjacencyComponentSizeRatio="50"
 		minLengthForChromosome="1000000"
 		proportionOfUnalignedBasesForNewChromosome="0.8"
 		lastzMemory="2147483648"
