@@ -12,7 +12,7 @@
 		identityRatio="6" 
 		minimumDistance="0.01" 
 		minimumSequenceLengthForBlast="30"
-		annealingRounds="64" 
+		annealingRounds="32" 
 		deannealingRounds="1 2 8" 
 		blockTrim="0" 
 		minimumTreeCoverage="0.0" 
@@ -74,9 +74,9 @@
 		useSimulatedAnnealing="1" 
 		theta="0.0001" 
 		maxWalkForCalculatingZ="100000" 
-		permutations="5"
+		permutations="10"
 		ignoreUnalignedGaps="1"
-		wiggle="0.9"
+		wiggle="0.9999"
 	>
 		<CactusReferenceRecursion maxFlowerGroupSize="500000000" maxFlowerWrapperGroupSize="50000000"/>
 	 	<CactusReferenceWrapper/>
