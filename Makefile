@@ -2,7 +2,7 @@ outputDir = output
 
 maxCpusPerAlignment=15
 batchSystemForAlignments = singleMachine
-extraJobTreeArgs = ""
+extraJobTreeArgs = 
 databaseHost = localhost
 databaseDir = ""
 parasolCommandForAlignment = parasol
