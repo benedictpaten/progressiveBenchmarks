@@ -1,7 +1,11 @@
 <cactusWorkflowConfig>
+  <constants defaultMemory="mediumMemory" defaultOverlargeMemory="mediumMemory" defaultCpu="1" defaultOverlargeCpu="1">
+		<!-- These constants are used to control the amount of memory and cpu the different jobs in a batch are using. -->
+  		<defines littleMemory="2147483648" mediumMemory="8589934592" bigMemory="107374182400"/>
+  </constants>
   <preprocessor check="1" memory="2147483648" preprocessorString="cactus_checkUniqueHeaders.py IN_FILE" scope="leaves" />
-  <preprocessor chunkSize="100000000" memory="2147483648" preprocessorString="cactus_lastzRepeatMask.py --minPeriod=10 --lastzOpts='--step=20 --notransition --ambiguous=iupac --nogapped' GENOME_FILE IN_FILE OUT_FILE" scope="leaves" />
-  	<setup>
+  <preprocessor chunkSize="100000000" memory="littleMemory" preprocessorString="cactus_lastzRepeatMask.py --minPeriod=10 --lastzOpts='--step=20 --notransition --ambiguous=iupac --nogapped' GENOME_FILE IN_FILE OUT_FILE" scope="leaves" />
+  	<setup makeEventHeadersAlphaNumeric="0">
 	</setup>
 	<caf 
 		chunkSize="25000000" 
@@ -13,7 +17,7 @@
 		minimumDistance="0.01" 
 		minimumSequenceLengthForBlast="30"
 		annealingRounds="64" 
-		deannealingRounds="1 2 8" 
+		deannealingRounds="2 8" 
 		blockTrim="0" 
 		minimumTreeCoverage="0.0" 
 		trim="3 3 3 3 3 3 3 3 3 3 3 3" 
@@ -26,10 +30,11 @@
 		maxAdjacencyComponentSizeRatio="50"
 		minLengthForChromosome="1000000"
 		proportionOfUnalignedBasesForNewChromosome="0.8"
-		lastzMemory="2147483648"
+		lastzMemory="littleMemory"
 	>
+		<!-- Change the chunk size to alter the number of blast jobs approximately quadratically -->
 		<CactusCafRecursion maxFlowerGroupSize="100000000"/>
-		<CactusCafWrapper minFlowerSize="5000" maxFlowerGroupSize="10000000" memory="2147483648"/>
+		<CactusCafWrapper minFlowerSize="5000" maxFlowerGroupSize="10000000" memory="mediumMemory" overlargeMemory="bigMemory"/>
 	</caf>
 	<bar
 		runBar="1"
@@ -52,8 +57,8 @@
 		maximumNumberOfSequencesBeforeSwitchingToFast="50"
 	>
 		<CactusBarRecursion maxFlowerGroupSize="100000000"/>
-		<CactusBarWrapper maxFlowerGroupSize="1200000" memory="2147483648"/>
-		<CactusBarEndAlignerWrapper memory="2147483648"/>
+		<CactusBarWrapper maxFlowerGroupSize="1200000" memory="littleMemory"/>
+		<CactusBarEndAlignerWrapper memory="littleMemory"/>
 	</bar>
 	<normal 
 		iterations="0"
