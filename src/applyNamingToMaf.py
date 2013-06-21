@@ -20,8 +20,23 @@ from cactus.progressive.multiCactusProject import MultiCactusProject
 from cactus.progressive.multiCactusTree import MultiCactusTree
 from cactus.progressive.experimentWrapper import ExperimentWrapper
 from cactus.preprocessor.cactus_addFastaHeaderDots import fixHeader
-from cactus.preprocessor.cactus_preprocessor import fileList
 from sonLib.bioio import fastaRead
+
+def fileList(path):
+    """ return a list of files in the directory, or just the
+        directory name if its empty
+    """
+    if os.path.isdir(path):
+        contents = os.listdir(path)
+        files = []
+        for i in contents:
+            if i[0] != '.':
+                fpath = os.path.join(path, i)
+                if os.path.isfile(fpath):
+                    files.append(fpath)
+        if len(files) > 0:
+            return files
+    return [path]
 
 class NamingMap:
     def __init__(self):
