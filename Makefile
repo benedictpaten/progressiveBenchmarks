@@ -21,7 +21,7 @@ all :
 
 run : 
 	rm -rf jobTree
-	python src/pipeline.py --parasolCommandForAlignment "${parasolCommandForAlignment}" ${extraJobTreeArgs} --defaultMemory 8589934593 --maxThreads 1 --databaseDir ${databaseDir} --batchSystemForAlignments "${batchSystemForAlignments}" --databaseHost ${databaseHost} --outputDir ${outputDir} --jobTree jobTree ${jobTreeParameters} --cpus=${maxCpusPerAlignment}
+	python src/pipeline.py --parasolCommandForAlignment "${parasolCommandForAlignment}" --extraJobTreeArgs '${extraJobTreeArgs}' --defaultMemory 8589934593 --maxThreads 1 --databaseDir ${databaseDir} --batchSystemForAlignments "${batchSystemForAlignments}" --databaseHost ${databaseHost} --outputDir ${outputDir} --jobTree jobTree ${jobTreeParameters} --cpus=${maxCpusPerAlignment}
 	rm -rf jobTree
 
 clean :

@@ -222,7 +222,7 @@ class MakeAlignment(Target):
                                  event=event,
                                  retryCount=2,
                                  batchSystem=self.options.batchSystemForAlignments,
-                                 extraJobTreeArgumentsString="--parasolCommand '%s'" % self.options.parasolCommandForAlignment,
+                                 extraJobTreeArgumentsString="--parasolCommand '%s' %s" % (self.options.parasolCommandForAlignment, self.options.extraJobTreeArgs),
                                  profileFile=os.path.join(self.outputDir, "profileFile"))
             if buildMaf:
                 baseDirname = os.path.join(os.path.dirname(tempExperimentDir), "progressiveCactusAlignment")
@@ -791,6 +791,7 @@ def main():
     parser.add_option("--databaseHost", default="localhost")
     parser.add_option("--databaseDir", default="")
     parser.add_option("--parasolCommandForAlignment", default="parasol")
+    parser.add_option("--extraJobTreeArgs", default=None)
     
     Stack.addJobTreeOptions(parser)
     
