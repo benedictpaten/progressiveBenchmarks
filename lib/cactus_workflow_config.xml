@@ -34,7 +34,7 @@
 	>
 		<!-- Change the chunk size to alter the number of blast jobs approximately quadratically -->
 		<CactusCafRecursion maxFlowerGroupSize="100000000"/>
-		<CactusCafWrapper minFlowerSize="5000" maxFlowerGroupSize="2500"/>
+		<CactusCafWrapper minFlowerSize="5000" maxFlowerGroupSize="25000000"/>
 		<CactusCafWrapperLarge2 overlargeMemory="bigMemory"/>
 	</caf>
 	<bar
