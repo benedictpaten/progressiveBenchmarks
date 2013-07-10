@@ -538,6 +538,16 @@ class MakeTenWholeGenomes(MakeEvolverPrimatesLoci1):
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,self.params))
         self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
+        
+class MakeCrocWholeGenomes(MakeEvolverPrimatesLoci1):
+    name = "crocGenomes"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "realReptiles")
+        sequences, newickTreeString = getInputs(simDir, ("aMiss_AKHW01000000_sub1.fa", "croc_sub2.assembly.fasta", "ggan_v0.2.fa", "galGal4.fa"))
+        newickTreeString = "((alligator:0.1,(gharial:0.1,saltwater_croc:0.1):0.1):0.1,chicken:0.1);"
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,self.params))
+        self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
 
 class MakeHumanChimpGorillaRhesusGenomes(MakeEvolverPrimatesLoci1):
     name = "humanChimpGorillaRhesus"
@@ -671,6 +681,7 @@ class Make3Worms(MakeEvolverPrimatesLoci1):
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
         #self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
+        
 
 ############End repeat masking tests
         
@@ -769,6 +780,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeHumanMouseDogWholeGenomes(self.options, params))
             #self.addChildTarget(MakeTenWholeGenomes(self.options, params))
             #self.addChildTarget(MakeHumanChimpGorillaRhesusGenomes(self.options, params))
+            #self.addChildTarget(MakeCrocWholeGenomes(self.options, params))
             
             ###Repeat masking problems
             #self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
