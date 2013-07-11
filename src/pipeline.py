@@ -543,7 +543,7 @@ class MakeCrocWholeGenomes(MakeEvolverPrimatesLoci1):
     name = "crocGenomes"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "realReptiles")
-        sequences, newickTreeString = getInputs(simDir, ("aMiss_AKHW01000000_sub1.fa", "croc_sub2.assembly.fasta", "ggan_v0.2.fa", "galGal4.fa"))
+        sequences, newickTreeString = getInputs(simDir, ("allMis2.masked.fa", "croPor2.masked.fa", "ghaGan1.masked.fa", "galGal4.fa"))
         newickTreeString = "((alligator:0.1,(gharial:0.1,saltwater_croc:0.1):0.1):0.1,chicken:0.1);"
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,self.params))
