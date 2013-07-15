@@ -544,7 +544,7 @@ class MakeCrocWholeGenomes(MakeEvolverPrimatesLoci1):
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "realReptiles")
         sequences, newickTreeString = getInputs(simDir, ("allMis2.masked.fa", "croPor2.masked.fa", "ghaGan1.masked.fa", "galGal4.fa"))
-        newickTreeString = "((alligator:0.1,(gharial:0.1,saltwater_croc:0.1):0.1):0.1,chicken:0.1);"
+        newickTreeString = "((alligator:0.1,(gharial:0.1,saltwaterCroc:0.1):0.1):0.1,chicken:0.1);"
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,self.params))
         self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
@@ -764,7 +764,7 @@ class MakeAllAlignments(Target):
         #pg = LastzTuning()
         for params in pg.generate():
             #self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
-            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeBlanchetteAlignmentsStarTree(self.options, params))
             self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
