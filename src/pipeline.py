@@ -271,7 +271,7 @@ class MakeAlignment(Target):
                                                   os.path.join(dbDir, self.getName())))
                 
             #Make the assembly hub if faToTwoBit is installed
-            makeAssemblyHub = True
+            makeAssemblyHub = False #True
             try:
                 system("which faToTwoBit")
             except RuntimeError:
@@ -543,8 +543,8 @@ class MakeCrocWholeGenomes(MakeEvolverPrimatesLoci1):
     name = "crocGenomes"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "realReptiles")
-        sequences, newickTreeString = getInputs(simDir, ("allMis2.masked.fa", "croPor2.masked.fa", "ghaGan1.masked.fa", "galGal4.fa"))
-        newickTreeString = "((alligator:0.1,(gharial:0.1,saltwaterCroc:0.1):0.1):0.1,chicken:0.1);"
+        sequences, newickTreeString = getInputs(simDir, ("allMis2.masked.fa", "croPor2.masked.fa", "ghaGan1.masked.fa", "galGal4.fa", "taeGut1.fa", "anoCar2.fa", "chrPic1.fa"))
+        newickTreeString = "((((alligator:0.1,(gharial:0.1,saltwaterCroc:0.1):0.1):0.1,(chicken:0.1,taeGut1:0.1):0.1):0.1,anoCar2:0.1):0.1,chrPic1:0.1);"
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,self.params))
         self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
