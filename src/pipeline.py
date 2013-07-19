@@ -764,7 +764,7 @@ class MakeAllAlignments(Target):
         #pg = LastzTuning()
         for params in pg.generate():
             #self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
-            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeBlanchetteAlignmentsStarTree(self.options, params))
             self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))

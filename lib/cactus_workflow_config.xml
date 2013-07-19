@@ -9,7 +9,7 @@
 	</setup>
 	<caf 
 		chunkSize="25000000" 
-		lastzArguments="--step=5 --ambiguous=iupac"
+		lastzArguments="--step=5 --ambiguous=iupac,31 --ydrop=4000"
 		compressFiles="1" 
 		overlapSize="10000" 
 		filterByIdentity="0" 
