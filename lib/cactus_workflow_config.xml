@@ -16,7 +16,7 @@
 		identityRatio="6" 
 		minimumDistance="0.01" 
 		minimumSequenceLengthForBlast="30"
-		annealingRounds="64" 
+		annealingRounds="100" 
 		deannealingRounds="2 8" 
 		blockTrim="5" 
 		minimumTreeCoverage="0.0" 
@@ -55,7 +55,7 @@
 		requiredAllFraction="0.0"
 		largeEndSize="100000"
 		veryLargeEndSize="1000000"
-		maximumNumberOfSequencesBeforeSwitchingToFast="50"
+		maximumNumberOfSequencesBeforeSwitchingToFast="10"
 		pruneOutStubAlignments="1"
 	>
 		<CactusBarRecursion maxFlowerGroupSize="maxFlowerGroupSizeRecursion"/>
