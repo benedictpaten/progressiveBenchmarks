@@ -271,13 +271,13 @@ class MakeAlignment(Target):
                                                   os.path.join(dbDir, self.getName())))
                 
             #Make the assembly hub if faToTwoBit is installed
-            makeAssemblyHub = False #True
+            makeAssemblyHub = True
             try:
                 system("which faToTwoBit")
             except RuntimeError:
                 makeAssemblyHub = False
             if makeAssemblyHub:
-                system("hal2assemblyHub.py %s/progressiveCactusAlignment/out.hal %s/progressiveCactusAlignment/outBrowser --lod --shortLabel='%s' --longLabel='%s'" % \
+                system("hal2assemblyHub.py %s/progressiveCactusAlignment/out.hal %s/progressiveCactusAlignment/outBrowser --lod --shortLabel='%s' --longLabel='%s' --jobTree ./jobTreeAssemblyHub" % \
                        (self.outputDir, self.outputDir, self.outputDir, self.outputDir))
                 
     def runVanilla(self):
@@ -766,7 +766,7 @@ class MakeAllAlignments(Target):
         #pg = LastzTuning()
         for params in pg.generate():
             #self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
-            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             self.addChildTarget(MakeBlanchetteAlignmentsStarTree(self.options, params))
             self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))

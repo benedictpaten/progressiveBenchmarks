@@ -16,7 +16,7 @@
 		identityRatio="6" 
 		minimumDistance="0.01" 
 		minimumSequenceLengthForBlast="30"
-		annealingRounds="100" 
+		annealingRounds="128" 
 		deannealingRounds="2 8" 
 		blockTrim="5" 
 		minimumTreeCoverage="0.0" 
@@ -53,13 +53,14 @@
 		requiredIngroupFraction="0.0"
 		requiredOutgroupFraction="0.0"
 		requiredAllFraction="0.0"
-		largeEndSize="100000"
+		largeEndSize="5000"
 		veryLargeEndSize="1000000"
 		maximumNumberOfSequencesBeforeSwitchingToFast="10"
 		pruneOutStubAlignments="1"
 	>
 		<CactusBarRecursion maxFlowerGroupSize="maxFlowerGroupSizeRecursion"/>
 		<CactusBarWrapper maxFlowerGroupSize="1000000" memory="littleMemory"/>
+		<CactusBarWrapperLarge maxFlowerGroupSize="1000000"/>
 		<CactusBarEndAlignerWrapper memory="littleMemory"/>
 	</bar>
 	<normal 
