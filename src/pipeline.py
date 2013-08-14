@@ -260,9 +260,9 @@ class MakeAlignment(Target):
                 
             #But keep a link to the multicactus project in its original path so we can navigate
             # the paths in the xml...
-            actualResultsDir = os.path.join(os.path.abspath(self.outputDir), "progressiveCactusAlignment")
-            tempResultsDir = os.path.join(self.outputDir, "tempProgressiveCactusAlignment")
-            system("ln -s %s %s" % (actualResultsDir, tempResultsDir))
+            #actualResultsDir = os.path.join(os.path.abspath(self.outputDir), "progressiveCactusAlignment")
+            #tempResultsDir = os.path.join(self.outputDir, "tempProgressiveCactusAlignment")
+            #system("ln -s %s %s" % (actualResultsDir, tempResultsDir))
             
             #database dir given, so we erase it and overwrite with temp
             if self.options.databaseDir is not None and self.options.databaseDir != "":
@@ -277,8 +277,9 @@ class MakeAlignment(Target):
             except RuntimeError:
                 makeAssemblyHub = False
             if makeAssemblyHub:
-                system("hal2assemblyHub.py %s/progressiveCactusAlignment/out.hal %s/progressiveCactusAlignment/outBrowser --lod --shortLabel='%s' --longLabel='%s' --jobTree ./jobTreeAssemblyHub" % \
-                       (self.outputDir, self.outputDir, self.outputDir, self.outputDir))
+                command = "hal2assemblyHub.py %s/progressiveCactusAlignment/out.hal %s/progressiveCactusAlignment/outBrowser --lod --shortLabel='%s' --longLabel='%s' --jobTree %s/jobTreeAssemblyHub" % \
+                       (self.outputDir, self.outputDir, self.outputDir, self.outputDir, self.outputDir)
+                system(command)
                 
     def runVanilla(self):
         logger.debug("Going to put the alignment in %s" % self.outputDir)
