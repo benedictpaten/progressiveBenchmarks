@@ -277,7 +277,7 @@ class MakeAlignment(Target):
             except RuntimeError:
                 makeAssemblyHub = False
             if makeAssemblyHub:
-                command = "hal2assemblyHub.py %s/progressiveCactusAlignment/out.hal %s/progressiveCactusAlignment/outBrowser --lod --shortLabel='%s' --longLabel='%s' --jobTree %s/jobTreeAssemblyHub" % \
+                command = "hal2assemblyHub.py %s/progressiveCactusAlignment/out.hal %s/progressiveCactusAlignment/outBrowser --cpHalFileToOut --lod --shortLabel='%s' --longLabel='%s' --jobTree %s/jobTreeAssemblyHub" % \
                        (self.outputDir, self.outputDir, self.outputDir, self.outputDir, self.outputDir)
                 system(command)
                 
