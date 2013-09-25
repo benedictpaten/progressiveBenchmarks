@@ -685,6 +685,16 @@ class Make3Worms(MakeEvolverPrimatesLoci1):
                                           self.params))
         #self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
         
+class Make3Turtles(MakeEvolverPrimatesLoci1):
+    name = "threeTurtles"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "realReptiles")
+        sequences, newickTreeString = getInputs(simDir, ("cb4.fa", "caeRem4.fa", "caePb3.fa"))
+        newickTreeString = "((cheMyd1:0.1,chrPic1:0.1)Anc0:1.0,pelSin1:0.1)MRCA;" # "((HUMAN:0.144018,MOUSE:0.356483)Anc0:0.0238,DOG:0.197)MRCA;" #Over-ride the full phylogeny
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        #self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
 
 ############End repeat masking tests
         
@@ -791,6 +801,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeEvolverMammalsLociMediumHumanMouseDog(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLargeHumanMouseDog(self.options, params))
             #self.addChildTarget(Make3Worms(self.options, params))
+            #self.addChildTarget(Make3Turtles(self.options, params))
         
         self.setFollowOnTarget(MakeSummary(self.options, pg))
 
