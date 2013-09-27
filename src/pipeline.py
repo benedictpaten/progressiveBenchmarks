@@ -789,9 +789,9 @@ class MakeAllAlignments(Target):
         #pg = LastzTuning()
         for params in pg.generate():
             #self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
-            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeBlanchetteAlignmentsStarTree(self.options, params))
-            self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
             self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1StarTree(self.options, params))
@@ -814,6 +814,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeEvolverMammalsLargeHumanMouseDog(self.options, params))
             #self.addChildTarget(Make3Worms(self.options, params))
             #self.addChildTarget(Make3Turtles(self.options, params))
+            #self.addChildTarget(Make5Mice(self.options, params))
         
         self.setFollowOnTarget(MakeSummary(self.options, pg))
 
