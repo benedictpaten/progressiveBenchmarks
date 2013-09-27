@@ -695,6 +695,18 @@ class Make3Turtles(MakeEvolverPrimatesLoci1):
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
         #self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
+        
+class Make5Mice(MakeEvolverPrimatesLoci1):
+    name = "fiveMice"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "realMice")
+        sequences, newickTreeString = getInputs(simDir, ("C3HHeJ.chr19.fa", "BALBcJ.chr19.fa", "C57BL6NJ.chr19.fa", "CASTEij.chr19.fa", "Spretus.chr19.fa"))
+        newickTreeString = "((((C3HHeJ:0.1,BALBcJ:0.1):0.1,C57BL6NJ:0.1):0.1,CASTEij:0.1):0.1,Spretus:0.1);"
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        #self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
+
 
 ############End repeat masking tests
         
