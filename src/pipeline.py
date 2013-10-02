@@ -16,7 +16,6 @@ from jobTree.scriptTree.stack import Stack
 from sonLib.bioio import logger
 from sonLib.bioio import setLoggingFromOptions
 
-from cactus.shared.config import CactusWorkflowExperiment
 from cactus.shared.common import runCactusWorkflow
 
 from cactusTools.shared.common import runCactusTreeStats
@@ -37,8 +36,8 @@ from cactus.shared.common import runCactusCreateMultiCactusProject
 from cactus.shared.test import getInputs
 
 from sonLib.bioio import TestStatus
-from cactus.progressive.experimentWrapper import ExperimentWrapper
-from cactus.progressive.configWrapper import ConfigWrapper
+from cactus.shared.experimentWrapper import ExperimentWrapper
+from cactus.shared.configWrapper import ConfigWrapper
 from cactus.progressive.cactus_createMultiCactusProject import cleanEventTree
 from cactus.pipeline.ktserverControl import runKtserver
 from cactus.pipeline.ktserverControl import killKtServer
@@ -120,13 +119,14 @@ class MakeAlignment(Target):
             tok1, tok2 = os.path.split(tok1)
         return tok2
     
-    def runProgressive(self):
+    def run(self):
         logger.debug("Going to put the alignment in %s" % self.outputDir)
         if not os.path.isdir(self.outputDir):
             os.mkdir(self.outputDir)
         
         if not os.path.exists(os.path.join(self.outputDir, "progressiveCactusAlignment")):
-            xmlTree = ET.parse(os.path.join(getRootPathString(), "lib", "cactus_workflow_config.xml"))
+            configFile = os.path.join(getRootPathString(), "lib", "cactus_workflow_config.xml")
+            xmlTree = ET.parse(configFile)
             
             #Set the parameters
             tempLocalDir = os.path.join(self.outputDir, "tempProgressiveCactusAlignment")
@@ -143,12 +143,6 @@ class MakeAlignment(Target):
             fileHandle = open(tempConfigFile, 'w')
             assert fileHandle is not None
             tree = ET.ElementTree(config)
-            configWrapper = ConfigWrapper(tree)
-            joinMaf = configWrapper.getJoinMaf()
-            buildMaf = configWrapper.getBuildMaf()
-            #we don't actually want cactus to build a maf anymore
-            configWrapper.setBuildMaf(False)
-            configWrapper.setJoinMaf(False)
             tree.write(fileHandle)
             fileHandle.close()
          
@@ -176,16 +170,16 @@ class MakeAlignment(Target):
             else:
                 dbConfElem = None
             
-            cactusWorkflowExperiment = CactusWorkflowExperiment(
+            cactusWorkflowExperiment = ExperimentWrapper.createExperimentWrapper(
                                                  sequences=self.sequences, 
                                                  newickTreeString=self.newickTree, 
                                                  #requiredSpecies=self.requiredSpecies,
                                                  #singleCopySpecies=self.singleCopySpecies,
-                                                 databaseName=dbName,
                                                  outputDir=tempLocalDir,
                                                  configFile=tempConfigFile,
                                                  databaseConf = dbConfElem)
-            cactusWorkflowExperiment.writeExperimentFile(tempExperimentFile)
+            cactusWorkflowExperiment.setDbName(dbName)
+            cactusWorkflowExperiment.writeXML(tempExperimentFile)
             
             #The jobtree
             tempJobTreeDir = os.path.join(tempLocalDir, "jobTree")
@@ -211,7 +205,6 @@ class MakeAlignment(Target):
                                  tempJobTreeDir, 
                                  #batchSystem=batchSystem, 
                                  buildHal=True,
-                                 buildMaf=buildMaf,
                                  #buildTrees=buildTrees, buildReference=buildReference,
                                  jobTreeStats=True,
                                  #maxThreads=int(self.options.cpus),
@@ -224,10 +217,13 @@ class MakeAlignment(Target):
                                  batchSystem=self.options.batchSystemForAlignments,
                                  extraJobTreeArgumentsString="--parasolCommand '%s' %s" % (self.options.parasolCommandForAlignment, self.options.extraJobTreeArgs),
                                  profileFile=os.path.join(self.outputDir, "profileFile"))
-            if buildMaf:
-                baseDirname = os.path.join(os.path.dirname(tempExperimentDir), "progressiveCactusAlignment")
-                system("mv %s %s" % (os.path.join(baseDirname, "out.maf"),
-                                     os.path.join(baseDirname, event, "%s.maf" % event)))
+   
+            halExportCmd = "cactus2hal.py %s %s --inMemory" % (os.path.join(tempExperimentDir, "progressiveCactusAlignment_project.xml"), os.path.join(tempExperimentDir, 'out.hal'))
+            system(halExportCmd)
+            mafExportCmd = "hal2maf %s %s --maxRefGap 1000000 --inMemory" % (os.path.join(tempExperimentDir, 'out.hal'),
+                                                             os.path.join(tempExperimentDir, 'out.maf'))
+            system(mafExportCmd)    
+            
             logger.info("Ran the progressive workflow")
             
             #Check if the jobtree completed sucessively.
@@ -253,11 +249,13 @@ class MakeAlignment(Target):
             """
                 
             #Now copy the true assembly back to the output
-            system("mv %s %s/experiment.xml" % (tempExperimentFile, self.outputDir))
-            system("mv %s %s" % (tempExperimentDir, self.outputDir))
             system("jobTreeStats --jobTree %s --outputFile %s/jobTreeStats.xml" % (tempJobTreeDir, self.outputDir))
-            system("mv %s %s/config.xml" % (tempConfigFile, self.outputDir))
-                
+            system("mv %s/* %s" % (tempLocalDir, self.outputDir))
+            #system("mv %s %s/experiment.xml" % (tempExperimentFile, self.outputDir))
+            #system("mv %s %s" % (tempExperimentDir, self.outputDir))
+            
+            #system("mv %s %s/config.xml" % (tempConfigFile, self.outputDir))
+               
             #But keep a link to the multicactus project in its original path so we can navigate
             # the paths in the xml...
             #actualResultsDir = os.path.join(os.path.abspath(self.outputDir), "progressiveCactusAlignment")
@@ -280,94 +278,6 @@ class MakeAlignment(Target):
                 command = "hal2assemblyHub.py %s/progressiveCactusAlignment/out.hal %s/progressiveCactusAlignment/outBrowser --cpHalFileToOut --lod --shortLabel='%s' --longLabel='%s' --jobTree %s/jobTreeAssemblyHub" % \
                        (self.outputDir, self.outputDir, self.outputDir, self.outputDir, self.outputDir)
                 system(command)
-                
-    def runVanilla(self):
-        logger.debug("Going to put the alignment in %s" % self.outputDir)
-        if not os.path.isdir(self.outputDir):
-            os.mkdir(self.outputDir)
-
-        if not os.path.exists(os.path.join(self.outputDir, "cactusAlignmentVanilla")):
-            xmlTree = ET.parse(os.path.join(getCactusWorkflowPathString(), "cactus_workflow_config.xml"))
-            
-            #Set the parameters
-            tempLocalDir = os.path.join(self.outputDir, "tempVanillaCactusAlignment")
-            system("rm -rf %s" % tempLocalDir)
-            os.mkdir(tempLocalDir)
-            
-            #Set the config parameters
-            #self.params.applyToXml(xmlTree)
-            config = xmlTree.getroot()
-            assert config is not None
-        
-            #Write the config file
-            tempConfigFile = os.path.join(tempLocalDir, "config.xml")
-            fileHandle = open(tempConfigFile, 'w')
-            assert fileHandle is not None
-            tree = ET.ElementTree(config)
-            tree.write(fileHandle)
-            fileHandle.close()
-         
-            #Make the experiment file
-            tempExperimentFile = os.path.join(tempLocalDir, "experiment.xml")
-            #Now do standard cactus..
-            #Make the experiment file
-            tempExperimentFile2 = os.path.join(tempLocalDir, "experiment.xml")
-
-            #Make the logfile for jobTree
-            jobTreeLogFile = os.path.join(self.outputDir, "log.txt")
-            
-            cactusWorkflowExperiment = CactusWorkflowExperiment(
-                                                 sequences=self.sequences, 
-                                                 newickTreeString=self.newickTree, 
-                                                 #requiredSpecies=self.requiredSpecies,
-                                                 #singleCopySpecies=self.singleCopySpecies,
-                                                 databaseName="cactusAlignmentVanilla",
-                                                 outputDir=tempLocalDir,
-                                                 configFile=tempConfigFile,
-                                                 mafFile=os.path.join(self.outputDir, "cactusVanilla.maf"),
-                                                 halFile=os.path.join(self.outputDir, "cactusVanilla.hal"),
-                                                 fastaFile=os.path.join(self.outputDir, "cactusVanilla.fa"))
-            tempExperimentDir2 = os.path.join(tempLocalDir, "cactusAlignmentVanilla")
-            cactusWorkflowExperiment.writeExperimentFile(tempExperimentFile2)
-           
-            # apply naming to the event tree to be consistent with progressive
-            exp = ExperimentWrapper(ET.parse(tempExperimentFile2).getroot())
-            cleanEventTree(exp)
-            exp.writeXML(tempExperimentFile2)
-            
-            #We're done with the progressive, now run the vanilla cactus for comparison
-            tempJobTreeDir2 = os.path.join(tempLocalDir, "jobTreeVanilla")
-            runCactusWorkflow(tempExperimentFile2, tempJobTreeDir2,
-                              jobTreeStats=True,
-                              buildReference=True,
-                              buildHal=True,
-                              buildMaf=True,
-                              buildFasta=True,
-                              #Passing options
-                              maxThreads=int(self.options.cpus),
-                              maxJobs=int(self.options.cpus),
-                              logFile=jobTreeLogFile)
-            
-            runJobTreeStatusAndFailIfNotComplete(tempJobTreeDir2)
-            logger.info("Checked the job tree dir for the vanilla run")
-            
-            #runCactusMAFGenerator(os.path.join(self.outputDir, "cactusVanilla.maf"), getCactusDiskString(tempExperimentDir2))
-            
-            #Run the cactus tree stats
-            treeStatsFile = os.path.join(self.outputDir, "treeStats.xml")
-            system("cactus_treeStats --cactusDisk \'%s\' --flowerName 0 --outputFile %s" %(exp.getDiskDatabaseString(),
-                                                                                        treeStatsFile))
-            
-            system("jobTreeStats --jobTree %s --outputFile %s/jobTreeStats.xml" % (tempJobTreeDir2, self.outputDir))
-            system("mv %s %s" % (tempExperimentDir2, self.outputDir))
-            system("mv %s %s/experiment.xml" % (tempExperimentFile2, self.outputDir))
-        
-    
-    def run(self):
-        if self.params.vanilla == True:
-           self.runVanilla()
-        else:
-            self.runProgressive()
             
 class MakeBlanchetteAlignments(Target):
     name = "blanchette"
@@ -426,12 +336,9 @@ class MakeBlanchetteStats(Target):
             treeFile = os.path.join(blanchettePath, "tree.newick")
             system("mfaToMaf --mfaFile %s --outputFile %s --treeFile %s" % (trueAlignmentMFA, trueAlignmentMAF, treeFile))
             
-            if self.params.vanilla == False:
-                if self.outputDir.lower().find("blanchette") >= 0 or self.outputDir.lower().find("loci1"):
-                    trueRenamedMAF = trueAlignmentMAF + ".renamed"
-                predictedAlignmentMaf = os.path.join(self.outputDir, str(i), "progressiveCactusAlignment", "Anc0", "Anc0.maf")
-            else:
-                predictedAlignmentMaf = os.path.join(self.outputDir, str(i), "cactusVanilla.maf")
+            if self.outputDir.lower().find("blanchette") >= 0 or self.outputDir.lower().find("loci1"):
+                trueRenamedMAF = trueAlignmentMAF + ".renamed"
+            predictedAlignmentMaf = os.path.join(self.outputDir, str(i), "progressiveCactusAlignment",  "out.maf")
             
             if os.path.exists(predictedAlignmentMaf):
                 outputFile = os.path.join(self.getLocalTempDir(), "temp%i" % i)
@@ -448,10 +355,7 @@ class MakeEvolverPrimatesLoci1(MakeBlanchetteAlignments):
     name = "evolverPrimatesLoci1"
     def setupStats(self, outputDir, trueMaf, params):
         #Setup the stat computation
-        if self.params.vanilla == False:
-            predictedMaf = os.path.join(outputDir, "progressiveCactusAlignment", "Anc0", "Anc0.maf")
-        else:
-            predictedMaf = os.path.join(outputDir, "cactusVanilla.maf")
+        predictedMaf = os.path.join(outputDir, "progressiveCactusAlignment", "out.maf")
         outputFile = os.path.join(outputDir, "mafComparison.xml")
         self.setFollowOnTarget(MakeStats(self.options, trueMaf, predictedMaf, outputFile, params))
     
@@ -788,12 +692,12 @@ class MakeAllAlignments(Target):
         #pg = RepeatMasking()
         #pg = LastzTuning()
         for params in pg.generate():
-            #self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
+            self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
             #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeBlanchetteAlignmentsStarTree(self.options, params))
-            #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
+            self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
-            self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1StarTree(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLociMedium(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesMedium(self.options, params))
@@ -816,7 +720,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(Make3Turtles(self.options, params))
             #self.addChildTarget(Make5Mice(self.options, params))
         
-        self.setFollowOnTarget(MakeSummary(self.options, pg))
+        #self.setFollowOnTarget(MakeSummary(self.options, pg))
 
 def main():
     ##########################################
