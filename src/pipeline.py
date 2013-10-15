@@ -611,7 +611,6 @@ class Make5Mice(MakeEvolverPrimatesLoci1):
                                           self.params))
         #self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
 
-
 ############End repeat masking tests
         
 class MakeStats(Target):
@@ -695,7 +694,7 @@ class MakeAllAlignments(Target):
             self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
             #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeBlanchetteAlignmentsStarTree(self.options, params))
-            self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1StarTree(self.options, params))
