@@ -696,7 +696,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeBlanchetteAlignmentsStarTree(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
-            #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1StarTree(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLociMedium(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesMedium(self.options, params))
