@@ -37,7 +37,6 @@ from cactus.shared.test import getInputs
 
 from sonLib.bioio import TestStatus
 from cactus.shared.experimentWrapper import ExperimentWrapper
-from cactus.shared.configWrapper import ConfigWrapper
 from cactus.progressive.cactus_createMultiCactusProject import cleanEventTree
 from cactus.pipeline.ktserverControl import runKtserver
 from cactus.pipeline.ktserverControl import killKtServer
@@ -54,14 +53,7 @@ from progressiveBenchmarks.src.paramsGenerator import LastzTuning, RepeatMasking
 from progressiveBenchmarks.src.applyNamingToMaf import applyNamingToMaf
 from progressiveBenchmarks.src.applyNamingToMaf import applyNamingToTrueBlanchetteMaf
 from progressiveBenchmarks.src.summary import Summary
-
-def getRootPathString():
-    """
-    function for finding external location
-    """
-    import progressiveBenchmarks.src.pipeline
-    i = os.path.abspath(progressiveBenchmarks.src.pipeline.__file__)
-    return os.path.split(os.path.split(i)[0])[0] #os.path.split(os.path.split(os.path.split(i)[0])[0])[0]
+from cactus.shared.common import cactusRootPath
 
 def getCactusWorkflowPathString():
     """
@@ -125,7 +117,7 @@ class MakeAlignment(Target):
             os.mkdir(self.outputDir)
         
         if not os.path.exists(os.path.join(self.outputDir, "progressiveCactusAlignment")):
-            configFile = os.path.join(getRootPathString(), "lib", "cactus_workflow_config.xml")
+            configFile = os.path.join(cactusRootPath(), "cactus_progressive_config.xml")
             xmlTree = ET.parse(configFile)
             
             #Set the parameters
