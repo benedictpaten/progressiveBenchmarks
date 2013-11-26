@@ -50,8 +50,6 @@ from progressiveBenchmarks.src.paramsGenerator import SmallProgressive
 from progressiveBenchmarks.src.paramsGenerator import SingleCase
 from progressiveBenchmarks.src.paramsGenerator import KyotoTycoon
 from progressiveBenchmarks.src.paramsGenerator import LastzTuning, RepeatMasking
-from progressiveBenchmarks.src.applyNamingToMaf import applyNamingToMaf
-from progressiveBenchmarks.src.applyNamingToMaf import applyNamingToTrueBlanchetteMaf
 from progressiveBenchmarks.src.summary import Summary
 from cactus.shared.common import cactusRootPath
 
