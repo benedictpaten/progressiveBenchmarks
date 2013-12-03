@@ -1,18 +1,17 @@
 outputDir = output
 
 maxCpusPerAlignment=25
+databaseDir = ""
+parasolCommandForAlignment = /hive/users/benedict/parasol -host=ku.local
+
 batchSystemForAlignments = singleMachine
 extraJobTreeArgs = --maxMemory 746870912000 --maxCpus 25 --maxThreads 25
 databaseHost = localhost
-databaseDir = ""
-parasolCommandForAlignment = parasol
 
-#maxCpusPerAlignment=25
 #batchSystemForAlignments = parasol
 #extraJobTreeArgs = --bigBatchSystem singleMachine --bigMemoryThreshold 8589934592 --bigMaxMemory 746870912000 --bigCpuThreshold 4 --bigMaxCpus 25 --maxThreads 25
 #databaseHost = juggernaut-101
-#databaseDir = ""
-#parasolCommandForAlignment = /hive/users/benedict/parasol -host=ku.local
+
 
 jobTreeParameters = --logDebug
 
