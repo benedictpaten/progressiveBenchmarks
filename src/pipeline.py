@@ -481,9 +481,9 @@ class MakeBlanchetteHumanMouse(MakeEvolverPrimatesLoci1):
         newickTreeString = "(HUMAN:0.144018,MOUSE:0.356483);"
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
-                                          self.params)) #,
-                                          #rootOutgroupPath=os.path.join(simDir, "DOG"), 
-                                          #rootOutgroupDist=1.0))
+                                          self.params),
+                                          rootOutgroupPath=os.path.join(simDir, "DOG"), 
+                                          rootOutgroupDist=1.0)
         self.setupStats(outputDir, os.path.join(simDir, "true.maf"), self.params)
         
 class MakeEvolverMammalsLociMedium(MakeEvolverPrimatesLoci1):
