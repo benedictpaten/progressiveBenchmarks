@@ -79,7 +79,9 @@ class MakeAlignment(Target):
                  sequences, 
                  newickTree,
                  outputDir,
-                 params):
+                 params,
+                 rootOutgroupPath=None, 
+                 rootOutgroupDist=None):
                  #requiredSpecies,
                  #singleCopySpecies,
                  #referenceAlgorithm, minimumBlockDegree, 
@@ -102,6 +104,8 @@ class MakeAlignment(Target):
         self.options = options
         #self.heldOutSequence = heldOutSequence
         self.params = params
+        self.rootOutgroupPath=rootOutgroupPath 
+        self.rootOutgroupDist=rootOutgroupDist
         
     def getName(self):
         tok1, tok2 = os.path.split(self.outputDir)
@@ -180,7 +184,9 @@ class MakeAlignment(Target):
       
             #The temporary experiment 
             runCactusCreateMultiCactusProject(tempExperimentFile, 
-                                              tempExperimentDir, fixNames=False)
+                                              tempExperimentDir, fixNames=False,
+                                              rootOutgroupPath=self.rootOutgroupPath,
+                                              rootOutgroupDist=self.rootOutgroupDist)
             logger.info("Setup the cactus progressive experiment")
             
             #Make the logfile for jobTree
@@ -475,7 +481,9 @@ class MakeBlanchetteHumanMouse(MakeEvolverPrimatesLoci1):
         newickTreeString = "(HUMAN:0.144018,MOUSE:0.356483);"
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
-                                          self.params))
+                                          self.params)) #,
+                                          #rootOutgroupPath=os.path.join(simDir, "DOG"), 
+                                          #rootOutgroupDist=1.0))
         self.setupStats(outputDir, os.path.join(simDir, "true.maf"), self.params)
         
 class MakeEvolverMammalsLociMedium(MakeEvolverPrimatesLoci1):
@@ -601,6 +609,17 @@ class Make5Mice(MakeEvolverPrimatesLoci1):
                                           self.params))
         #self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
 
+class MakeLotsOfFish(MakeEvolverPrimatesLoci1):
+    name = "lotsOfFish"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "realFish")
+        sequences, newickTreeString = getInputs(simDir, ("tetNig2.fa", "fr3.fa", "takFla1.fa", "oreNil2.fa", "neoBri1.fa", "hapBur1.fa", "mayZeb1.fa", "punNye1.fa", "oryLat2.fa", "xipMac1.fa", "gasAcu1.fa", "gadMor1.fa", "danRer7.fa", "astMex1.fa", "lepOcu1.fa"))
+        newickTreeString = "(((((((tetNig2:0.124159,(fr3:0.103847,takFla1:0.1)fishAnc13:0.1)fishAnc12:0.09759,(oreNil2:0.1,(neoBri1:0.05,(hapBur1:0.05,(mayZeb1:0.05,punNye1:0.05)fishAnc11:0.05)fishAnc10:0.05)fishAnc09:0.05)fishAnc08:0.1)fishAnc07:0.09759,(oryLat2:0.28197,xipMac1:0.3)fishAnc06:0.2)fishAnc05:0.03,gasAcu1:0.346413)fishAnc04:0.03,gadMor1:0.35)fishAnc03:0.22564,(danRer7:0.430752,astMex1:0.4)fishAnc02:0.3)fishAnc01:0.143632,lepOcu1:0.4)fishAnc00:0.326688;"
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params, rootOutgroupPath=os.path.join(TestStatus.getPathToDataSets(), "realMammals", "hg19.fa"), rootOutgroupDist=1.0))
+        #self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
+
 ############End repeat masking tests
         
 class MakeStats(Target):
@@ -682,11 +701,11 @@ class MakeAllAlignments(Target):
         #pg = LastzTuning()
         for params in pg.generate():
             self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
-            self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
+            #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeBlanchetteAlignmentsStarTree(self.options, params))
-            self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
-            self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1StarTree(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLociMedium(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesMedium(self.options, params))
