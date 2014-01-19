@@ -718,6 +718,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeTenWholeGenomes(self.options, params))
             #self.addChildTarget(MakeHumanChimpGorillaRhesusGenomes(self.options, params))
             #self.addChildTarget(MakeCrocWholeGenomes(self.options, params))
+            self.addChildTarget(MakeLotsOfFish(self.options, params))
             
             ###Repeat masking problems
             #self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
