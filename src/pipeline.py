@@ -614,7 +614,7 @@ class MakeLotsOfFish(MakeEvolverPrimatesLoci1):
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "realFish")
         sequences, newickTreeString = getInputs(simDir, ("tetNig2.fa", "fr3.fa", "takFla1.fa", "oreNil2.fa", "neoBri1.fa", "hapBur1.fa", "mayZeb1.fa", "punNye1.fa", "oryLat2.fa", "xipMac1.fa", "gasAcu1.fa", "gadMor1.fa", "danRer7.fa", "astMex1.fa", "lepOcu1.fa"))
-        newickTreeString = "(((((((tetNig2:0.124159,(fr3:0.103847,takFla1:0.1)fishAnc13:0.1)fishAnc12:0.09759,(oreNil2:0.1,(neoBri1:0.05,(hapBur1:0.05,(mayZeb1:0.05,punNye1:0.05)fishAnc11:0.05)fishAnc10:0.05)fishAnc09:0.05)fishAnc08:0.1)fishAnc07:0.09759,(oryLat2:0.28197,xipMac1:0.3)fishAnc06:0.2)fishAnc05:0.03,gasAcu1:0.346413)fishAnc04:0.03,gadMor1:0.35)fishAnc03:0.22564,(danRer7:0.430752,astMex1:0.4)fishAnc02:0.3)fishAnc01:0.143632,lepOcu1:0.4);"
+        newickTreeString = "(((((((tetNig2:0.124159,(fr3:0.103847,takFla1:0.1)fishAnc13:0.1)fishAnc12:0.09759,(oreNil2:0.1,(neoBri1:0.05,(hapBur1:0.05,(mayZeb1:0.05,punNye1:0.05)fishAnc11:0.05)fishAnc10:0.05)fishAnc09:0.05)fishAnc08:0.1)fishAnc07:0.09759,(oryLat2:0.28197,xipMac1:0.3)fishAnc06:0.2)fishAnc05:0.03,gasAcu1:0.346413)fishAnc04:0.03,gadMor1:0.35)fishAnc03:0.22564,(danRer7:0.430752,astMex1:0.4)fishAnc02:0.3)fishAnc01:0.143632,lepOcu1:0.4)fishAnc00;"
         outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params, rootOutgroupPath=os.path.join(TestStatus.getPathToDataSets(), "realMammals", "hg19.fa"), rootOutgroupDist=1.0))
