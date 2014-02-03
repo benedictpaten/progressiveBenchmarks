@@ -208,7 +208,7 @@ class MakeAlignment(Target):
                                  defaultMemory=int(self.options.defaultMemory),
                                  logLevel="CRITICAL",
                                  logFile = jobTreeLogFile,
-                                 event=event,
+                                 #event=event,
                                  retryCount=2,
                                  batchSystem=self.options.batchSystemForAlignments,
                                  extraJobTreeArgumentsString="--parasolCommand '%s' %s" % (self.options.parasolCommandForAlignment, self.options.extraJobTreeArgs),
