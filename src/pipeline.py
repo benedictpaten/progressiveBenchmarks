@@ -620,6 +620,38 @@ class MakeLotsOfFish(MakeEvolverPrimatesLoci1):
                                           self.params, rootOutgroupPath=os.path.join(TestStatus.getPathToDataSets(), "realMammals", "hg19.fa"), rootOutgroupDist=1.0))
         #self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
 
+class MakeLotsOfBirdsAndCrocodilia(MakeEvolverPrimatesLoci1):
+    name = "lotsOfCrocoBirds"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "realReptiles")
+        sequences, newickTreeString = getInputs(simDir, ("tetNig2.fa", "fr3.fa", "takFla1.fa", "oreNil2.fa", "neoBri1.fa", "hapBur1.fa", "mayZeb1.fa", "punNye1.fa", "oryLat2.fa", "xipMac1.fa", "gasAcu1.fa", "gadMor1.fa", "danRer7.fa", "astMex1.fa", "lepOcu1.fa"))
+        newickTreeString = "(((((((tetNig2:0.124159,(fr3:0.103847,takFla1:0.1)fishAnc13:0.1)fishAnc12:0.09759,(oreNil2:0.1,(neoBri1:0.05,(hapBur1:0.05,(mayZeb1:0.05,punNye1:0.05)fishAnc11:0.05)fishAnc10:0.05)fishAnc09:0.05)fishAnc08:0.1)fishAnc07:0.09759,(oryLat2:0.28197,xipMac1:0.3)fishAnc06:0.2)fishAnc05:0.03,gasAcu1:0.346413)fishAnc04:0.03,gadMor1:0.35)fishAnc03:0.22564,(danRer7:0.430752,astMex1:0.4)fishAnc02:0.3)fishAnc01:0.143632,lepOcu1:0.4)fishAnc00;"
+((((((((falChe1:0.1,
+            falPer1:0.1):0.03,
+           (((ficAlb2:0.06,
+             ((zonAlb1:0.034457,
+              geoFor1:0.041261):0.015,
+             taeGut2:0.06):0.01):0.052066,
+            pseHum1:0.06):0.025,
+           (melUnd1:0.046985,
+           (amaVit1:0.026,
+           araMac1:0.026):0.02):0.03):0.074703):0.05,
+          colLiv1:.1):0.05,
+         (anaPla1:0.1,
+         ((galGal4:0.0362537,
+          cotJap1:0.04):0.08,
+         melGal1:0.150718):0.036045):0.02):0.05,
+        strCam1:0.04):0.16,
+       ((allMis1:0.1,
+        allSin1:0.1):0.05,
+       (croPor1:0.05,
+       gavGan1:0.05):0.05):0.1):0.045143,
+      ((cheMyd1:0.1,
+       chrPic1:0.1):0.05,
+      (pelSin1:0.1,
+      apaSpi1:0.1):0.05):0.04):0.01,
+     anoCar2:0.447)
+
 ############End repeat masking tests
         
 class MakeStats(Target):
