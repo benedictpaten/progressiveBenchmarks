@@ -624,33 +624,15 @@ class MakeLotsOfBirdsAndCrocodilia(MakeEvolverPrimatesLoci1):
     name = "lotsOfCrocoBirds"
     def run(self):
         simDir = os.path.join(TestStatus.getPathToDataSets(), "realReptiles")
-        sequences, newickTreeString = getInputs(simDir, ("tetNig2.fa", "fr3.fa", "takFla1.fa", "oreNil2.fa", "neoBri1.fa", "hapBur1.fa", "mayZeb1.fa", "punNye1.fa", "oryLat2.fa", "xipMac1.fa", "gasAcu1.fa", "gadMor1.fa", "danRer7.fa", "astMex1.fa", "lepOcu1.fa"))
-        newickTreeString = "(((((((tetNig2:0.124159,(fr3:0.103847,takFla1:0.1)fishAnc13:0.1)fishAnc12:0.09759,(oreNil2:0.1,(neoBri1:0.05,(hapBur1:0.05,(mayZeb1:0.05,punNye1:0.05)fishAnc11:0.05)fishAnc10:0.05)fishAnc09:0.05)fishAnc08:0.1)fishAnc07:0.09759,(oryLat2:0.28197,xipMac1:0.3)fishAnc06:0.2)fishAnc05:0.03,gasAcu1:0.346413)fishAnc04:0.03,gadMor1:0.35)fishAnc03:0.22564,(danRer7:0.430752,astMex1:0.4)fishAnc02:0.3)fishAnc01:0.143632,lepOcu1:0.4)fishAnc00;"
-((((((((falChe1:0.1,
-            falPer1:0.1):0.03,
-           (((ficAlb2:0.06,
-             ((zonAlb1:0.034457,
-              geoFor1:0.041261):0.015,
-             taeGut2:0.06):0.01):0.052066,
-            pseHum1:0.06):0.025,
-           (melUnd1:0.046985,
-           (amaVit1:0.026,
-           araMac1:0.026):0.02):0.03):0.074703):0.05,
-          colLiv1:.1):0.05,
-         (anaPla1:0.1,
-         ((galGal4:0.0362537,
-          cotJap1:0.04):0.08,
-         melGal1:0.150718):0.036045):0.02):0.05,
-        strCam1:0.04):0.16,
-       ((allMis1:0.1,
-        allSin1:0.1):0.05,
-       (croPor1:0.05,
-       gavGan1:0.05):0.05):0.1):0.045143,
-      ((cheMyd1:0.1,
-       chrPic1:0.1):0.05,
-      (pelSin1:0.1,
-      apaSpi1:0.1):0.05):0.04):0.01,
-     anoCar2:0.447)
+        #sequences, newickTreeString = getInputs(simDir, ('falChe1.fa','falPer1.fa','ficAlb2.fa','zonAlb1.fa','geoFor1.fa','taeGut2.fa','pseHum1.fa','melUnd1.fa','amaVit1.fa','araMac1.fa','colLiv1.fa','anaPla1.fa','galGal4.fa','cotJap1.fa','melGal1.fa','strCam0.fa','allMis2.masked.fa','allSin1.fa','croPor2.masked.fa','ghaGan1.masked.fa','cheMyd1.fa','chrPic1.fa','pelSin1.fa','apaSpi1.fa','anoCar2.fa'))
+        #newickTreeString = '((((((((falChe1:0.100000,falPer1:0.100000)birdRepAnc07:0.030000,(((ficAlb2:0.060000,((zonAlb1:0.034457,geoFor1:0.041261)birdRepAnc12:0.015000,taeGut2:0.060000)birdRepAnc11:0.010000)birdRepAnc10:0.052066,pseHum1:0.060000)birdRepAnc09:0.025000,(melUnd1:0.046985,(amaVit1:0.026000,araMac1:0.026000)birdRepAnc14:0.020000)birdRepAnc13:0.030000)birdRepAnc08:0.074703)birdRepAnc06:0.050000,colLiv1:0.100000)birdRepAnc05:0.050000,(anaPla1:0.100000,((galGal4:0.036254,cotJap1:0.040000)birdRepAnc17:0.080000,melGal1:0.150718)birdRepAnc16:0.036045)birdRepAnc15:0.020000)birdRepAnc04:0.050000,strCam0:0.040000)birdRepAnc03:0.160000,((allMis2:0.100000,allSin1:0.100000)birdRepAnc19:0.050000,(croPor2:0.050000,ghaGan1:0.050000)birdRepAnc20:0.050000)birdRepAnc18:0.100000)birdRepAnc02:0.045143,((cheMyd1:0.100000,chrPic1:0.100000)birdRepAnc22:0.050000,(pelSin1:0.100000,apaSpi1:0.100000)birdRepAnc23:0.050000)birdRepAnc21:0.040000)birdRepAnc01:0.010000,anoCar2:0.447000)birdRepAnc00;'
+        #Removing cotJap1
+        sequences, newickTreeString = getInputs(simDir, ('falChe1.fa','falPer1.fa','ficAlb2.fa','zonAlb1.fa','geoFor1.fa','taeGut2.fa','pseHum1.fa','melUnd1.fa','amaVit1.fa','araMac1.fa','colLiv1.fa','anaPla1.fa','galGal4.fa','melGal1.fa','strCam0.fa','allMis2.masked.fa','allSin1.fa','croPor2.masked.fa','ghaGan1.masked.fa','cheMyd1.fa','chrPic1.fa','pelSin1.fa','apaSpi1.fa','anoCar2.fa'))
+        newickTreeString = '((((((((falChe1:0.100000,falPer1:0.100000)birdRepAnc07:0.030000,(((ficAlb2:0.060000,((zonAlb1:0.034457,geoFor1:0.041261)birdRepAnc12:0.015000,taeGut2:0.060000)birdRepAnc11:0.010000)birdRepAnc10:0.052066,pseHum1:0.060000)birdRepAnc09:0.025000,(melUnd1:0.046985,(amaVit1:0.026000,araMac1:0.026000)birdRepAnc14:0.020000)birdRepAnc13:0.030000)birdRepAnc08:0.074703)birdRepAnc06:0.050000,colLiv1:0.100000)birdRepAnc05:0.050000,(anaPla1:0.100000,(galGal4:0.156254,melGal1:0.150718)birdRepAnc16:0.036045)birdRepAnc15:0.020000)birdRepAnc04:0.050000,strCam0:0.040000)birdRepAnc03:0.160000,((allMis2:0.100000,allSin1:0.100000)birdRepAnc19:0.050000,(croPor2:0.050000,ghaGan1:0.050000)birdRepAnc20:0.050000)birdRepAnc18:0.100000)birdRepAnc02:0.045143,((cheMyd1:0.100000,chrPic1:0.100000)birdRepAnc22:0.050000,(pelSin1:0.100000,apaSpi1:0.100000)birdRepAnc23:0.050000)birdRepAnc21:0.040000)birdRepAnc01:0.010000,anoCar2:0.447000)birdRepAnc00;'  
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params, rootOutgroupPath=os.path.join(TestStatus.getPathToDataSets(), "realMammals", "hg19.fa"), rootOutgroupDist=1.0))
+        #self.setupStats(outputDir, os.path.join(simDir, "burnin.maf.map"), self.params)
 
 ############End repeat masking tests
         
@@ -751,6 +733,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeHumanChimpGorillaRhesusGenomes(self.options, params))
             #self.addChildTarget(MakeCrocWholeGenomes(self.options, params))
             #self.addChildTarget(MakeLotsOfFish(self.options, params))
+            #self.addChildTarget(MakeLotsOfBirdsAndCrocodilia(self.options, params))
             
             ###Repeat masking problems
             #self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))
