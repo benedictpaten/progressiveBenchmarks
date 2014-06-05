@@ -543,6 +543,15 @@ class MakeBlanchetteHumanMouseDog(MakeEvolverPrimatesLoci1):
                                           self.params))
         self.setupStats(outputDir, os.path.join(simDir, "true.maf"), self.params)
 
+class MakeZNFTest(MakeEvolverPrimatesLoci1):
+    name = "znfTest"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "znfTest")
+        sequences, newickTreeString = getInputs(simDir, ("humanZnfCluster.fa", "chimpZnfCluster.fa", "gorillaZnfCluster.fa", "orangZnfCluster.fa", "rhesusZnfCluster.fa"))
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+
 class MakeEvolverMammalsLoci1HumanMouseDog(MakeEvolverPrimatesLoci1):
     name = "evolverMammalsLoci1HumanMouseDog"
     def run(self):
@@ -714,12 +723,14 @@ class MakeAllAlignments(Target):
         #pg = RepeatMasking()
         #pg = LastzTuning()
         for params in pg.generate():
-            self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
+            #self.addChildTarget(MakeBlanchetteHumanMouse(self.options, params))
             #self.addChildTarget(MakeBlanchetteAlignments(self.options, params))
             #self.addChildTarget(MakeBlanchetteAlignmentsStarTree(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesLoci1(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
+            
+            self.addChildTarget(MakeZNFTest(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1StarTree(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLociMedium(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesMedium(self.options, params))
