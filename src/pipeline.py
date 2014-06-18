@@ -542,6 +542,19 @@ class MakeBlanchetteHumanMouseDog(MakeEvolverPrimatesLoci1):
         self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
                                           self.params))
         self.setupStats(outputDir, os.path.join(simDir, "true.maf"), self.params)
+        
+class MakeONT(MakeEvolverPrimatesLoci1):
+    name = "ontM13"
+    def run(self):
+        simDir = os.path.join(TestStatus.getPathToDataSets(), "ont")
+        sequences = os.path.join(simDir, "lambda_ref.fasta"), os.path.join(simDir, "MA_286_lambda_burnin_06_06_14_template.fasta")
+                                                                               #"MA_434_M13_06_12_14.fasta")
+        #, newickTreeString = getInputs(simDir, ("HUMAN", "MOUSE"))
+        newickTreeString = "(REF:0.5,READS:0.5);"
+        outputDir = os.path.join(self.options.outputDir, "%s%s"  % (self.name, self.params))
+        self.addChildTarget(MakeAlignment(self.options, sequences, newickTreeString, outputDir,
+                                          self.params))
+        #self.setupStats(outputDir, os.path.join(simDir, "true.maf"), self.params)
 
 class MakeZNFTest(MakeEvolverPrimatesLoci1):
     name = "znfTest"
@@ -730,7 +743,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeEvolverMammalsLoci1HumanMouse(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1(self.options, params))
             
-            self.addChildTarget(MakeZNFTest(self.options, params))
+            #self.addChildTarget(MakeZNFTest(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLoci1StarTree(self.options, params))
             #self.addChildTarget(MakeEvolverMammalsLociMedium(self.options, params))
             #self.addChildTarget(MakeEvolverPrimatesMedium(self.options, params))
@@ -745,6 +758,7 @@ class MakeAllAlignments(Target):
             #self.addChildTarget(MakeCrocWholeGenomes(self.options, params))
             #self.addChildTarget(MakeLotsOfFish(self.options, params))
             #self.addChildTarget(MakeLotsOfBirdsAndCrocodilia(self.options, params))
+            self.addChildTarget(MakeONT(self.options, params))
             
             ###Repeat masking problems
             #self.addChildTarget(MakeBlanchetteHumanMouseDog(self.options, params))

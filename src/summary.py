@@ -18,7 +18,7 @@ from optparse import OptionParser
 from progressiveBenchmarks.src.params import Params
 from cactus.progressive.multiCactusProject import MultiCactusProject
 from cactus.progressive.multiCactusTree import MultiCactusTree
-from cactus.progressive.experimentWrapper import ExperimentWrapper
+#from cactus.progressive.experimentWrapper import ExperimentWrapper
 
 class Summary:
     Header = Params.Header + \
